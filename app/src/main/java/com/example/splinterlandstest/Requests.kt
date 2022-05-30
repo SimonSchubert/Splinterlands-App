@@ -1,0 +1,186 @@
+import android.content.Context
+import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.R
+import com.example.splinterlandstest.filterBalances
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.Serializable
+import java.text.NumberFormat
+import java.util.*
+
+
+class Requests {
+
+    private val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json()
+        }
+    }
+
+    private val cache = Cache()
+
+    private val endpoint = "https://api2.splinterlands.com"
+
+    @Serializable
+    data class Card(val card_detail_id: String, val edition: Int) {
+        fun getPath(): String {
+            return when (edition) {
+                7 -> "cards_chaos"
+                6 -> "cards_gladiator"
+                4, 5 -> "cards_untamed"
+                2 -> "cards_v2.2"
+                else -> "cards_beta"
+            }
+        }
+
+        fun getPlaceholderDrawable(): Int {
+            return when (edition) {
+                6 -> R.drawable.card6
+                5 -> R.drawable.card5
+                4 -> R.drawable.card4
+                3 -> R.drawable.card3
+                2 -> R.drawable.card2
+                1 -> R.drawable.card1
+                else -> R.drawable.card7
+            }
+        }
+
+        fun getFileEnding(): String {
+            return if (edition == 7) {
+                "jpg"
+            } else {
+                "png"
+            }
+        }
+    }
+
+    @Serializable
+    data class CardDetail(val id: String, val name: String)
+
+    @Serializable
+    data class CollectionResponse(val player: String, val cards: List<Card>)
+
+    @Serializable
+    data class Battle(
+        val winner: String,
+        val player_1: String,
+        val player_1_rating_final: Int,
+        val player_2: String,
+        val player_2_rating_final: Int,
+        val ruleset: String,
+        val inactive: String
+    ) {
+        fun getOpponent(player: String): String {
+            return if (player_1 == player) {
+                player_2
+            } else {
+                player_1
+            }
+        }
+
+        fun getOwnRating(player: String): String {
+            val numberFormat = NumberFormat.getNumberInstance(Locale.US)
+            return if (player_1 == player) {
+                numberFormat.format(player_1_rating_final)
+            } else {
+                numberFormat.format(player_2_rating_final)
+            }
+        }
+
+        fun getOpponentRating(player: String): String {
+            val numberFormat = NumberFormat.getNumberInstance(Locale.US)
+            return if (player_2 == player) {
+                numberFormat.format(player_2_rating_final)
+            } else {
+                numberFormat.format(player_1_rating_final)
+            }
+        }
+
+        fun isWin(player: String): Boolean {
+            return winner == player
+        }
+    }
+
+    @Serializable
+    data class BattleHistoryResponse(val player: String, val battles: List<Battle>)
+
+    @Serializable
+    data class PlayerDetailsResponse(
+        val capture_rate: Int,
+        val rank: String,
+        val rating: Int,
+        val wins: Int,
+        val name: String
+    )
+
+    @Serializable
+    data class BalancesResponse(val player: String, var token: String, var balance: Float) {
+        fun getDrawableResource(): Int {
+            return when (token) {
+                "DEC" -> R.drawable.dec
+                "CREDITS" -> R.drawable.credits
+                "SPS" -> R.drawable.sps
+                "MERITS" -> R.drawable.mertis
+                "GOLD" -> R.drawable.gold
+                "LEGENDARY" -> R.drawable.legendary
+                "GLADIUS" -> R.drawable.gladius
+                "DICE" -> R.drawable.dice
+                "UNTAMED" -> R.drawable.untamed
+                "ORB" -> R.drawable.orb
+                "ALPHA" -> R.drawable.alpha
+                "BETA" -> R.drawable.beta
+                "CHAOS" -> R.drawable.chaos
+                "PLOT" -> R.drawable.plot
+                "VOUCHER" -> R.drawable.voucher
+                else -> R.drawable.ic_launcher_background
+            }
+        }
+    }
+
+    suspend fun getBalances(context: Context, player: String): List<BalancesResponse> {
+        val response: HttpResponse = client.get("$endpoint/players/balances?username=$player")
+        cache.writeBalances(context, response.bodyAsText(), player)
+        return (Gson().fromJson(
+            response.bodyAsText(),
+            object : TypeToken<List<BalancesResponse>>() {}.type
+        ) as List<BalancesResponse>).filterBalances()
+    }
+
+    suspend fun getCollection(context: Context, player: String): List<Card> {
+        val response: HttpResponse = client.get("$endpoint/cards/collection/$player")
+        cache.writeCollection(context, response.bodyAsText(), player)
+        return Gson().fromJson(
+            response.bodyAsText(),
+            CollectionResponse::class.java
+        ).cards.distinctBy { it.card_detail_id }
+    }
+
+    suspend fun getCardDetails(context: Context): List<CardDetail> {
+        val response: HttpResponse = client.get("$endpoint/cards/get_details")
+        cache.writeCardDetails(context, response.bodyAsText())
+        return Gson().fromJson(
+            response.bodyAsText(),
+            object : TypeToken<List<CardDetail>>() {}.type
+        )
+    }
+
+    suspend fun getBattleHistory(context: Context, player: String): List<Battle> {
+        val response: HttpResponse =
+            client.get("$endpoint/battle/history2?player=$player&username=$player")
+        cache.writeBattleHistory(context, response.bodyAsText(), player)
+        return Gson().fromJson(response.bodyAsText(), BattleHistoryResponse::class.java).battles
+    }
+
+    suspend fun getPlayerDetails(context: Context, player: String): PlayerDetailsResponse {
+        val response: HttpResponse =
+            client.get("$endpoint/players/details?name=$player")
+        cache.writePlayerDetails(context, response.bodyAsText(), player)
+        return Gson().fromJson(response.bodyAsText(), PlayerDetailsResponse::class.java)
+    }
+}
