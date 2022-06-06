@@ -120,7 +120,18 @@ class Requests {
     )
 
 
-    data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long)
+    data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long, val chestTier: Int) {
+        fun getChestUrl(): String {
+            val league = when(chestTier) {
+                1 -> "silver"
+                2 -> "gold"
+                3 -> "diamond"
+                4 -> "champion"
+                else -> "bronze"
+            }
+            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
+        }
+    }
 
     @Serializable
     data class QuestResponse(
@@ -140,7 +151,7 @@ class Requests {
             }
 
             val requiredRshares = totalRshares - rshares
-            return QuestInfo(chests, nextChest, requiredRshares)
+            return QuestInfo(chests, nextChest, requiredRshares, chest_tier)
         }
     }
 

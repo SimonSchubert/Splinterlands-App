@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.squareup.picasso.Picasso
 import java.text.NumberFormat
 import java.util.*
 
@@ -43,10 +44,12 @@ class BattlesAdapter(val player: String) :
         private val tvNextChest: TextView
         private val tvChests: TextView
         private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
+        private val ivChest: ImageView
 
         init {
             tvNextChest = view.findViewById(R.id.tvNextChest)
             tvChests = view.findViewById(R.id.tvChests)
+            ivChest = view.findViewById(R.id.ivChest)
         }
 
         fun bind(playerQuest: Requests.QuestResponse?) {
@@ -57,6 +60,10 @@ class BattlesAdapter(val player: String) :
                         numberFormat.format(questInfo.nextChestRshares)
                     }"
                 tvChests.text = "Focus chests: ${questInfo.chests}"
+                Picasso.get()
+                    .load(questInfo.getChestUrl())
+                    .fit()
+                    .into(ivChest)
             }
         }
     }
