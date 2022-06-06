@@ -1,12 +1,12 @@
 package com.example.splinterlandstest.collection
 
-import Requests
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.Requests
 import com.squareup.picasso.Picasso
 
 class CollectionAdapter :

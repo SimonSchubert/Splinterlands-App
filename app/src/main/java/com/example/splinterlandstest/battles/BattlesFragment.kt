@@ -46,6 +46,9 @@ class BattlesFragment : Fragment() {
         model.playerDetails.observe(this) { playerDetails ->
             adapter.updatePlayerDetails(playerDetails)
         }
+        model.playerQuest.observe(this) { playerQuest ->
+            adapter.updatePlayerQuest(playerQuest)
+        }
 
         model.loadBattles(requireContext(), activityViewModel.playerName)
 

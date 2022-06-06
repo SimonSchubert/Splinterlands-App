@@ -1,7 +1,6 @@
+package com.example.splinterlandstest
+
 import android.content.Context
-import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.R
-import com.example.splinterlandstest.filterBalances
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -13,6 +12,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.pow
 
 
 class Requests {
@@ -119,6 +119,31 @@ class Requests {
         val name: String
     )
 
+
+    data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long)
+
+    @Serializable
+    data class QuestResponse(
+        val chest_tier: Int,
+        val rshares: Long
+    ) {
+        fun getCurrentQuestInfo(): QuestInfo {
+            val config = Cache().getQuestConfig(chest_tier)
+
+            var chests = -1
+            var totalRshares = 0L
+            var nextChest = 0L
+            while (rshares >= Math.round(totalRshares.toDouble())) {
+                chests++
+                nextChest = (config.base * config.multiplier.pow(chests)).toLong()
+                totalRshares += nextChest
+            }
+
+            val requiredRshares = totalRshares - rshares
+            return QuestInfo(chests, nextChest, requiredRshares)
+        }
+    }
+
     @Serializable
     data class BalancesResponse(val player: String, var token: String, var balance: Float) {
         fun getDrawableResource(): Int {
@@ -182,5 +207,15 @@ class Requests {
             client.get("$endpoint/players/details?name=$player")
         cache.writePlayerDetails(context, response.bodyAsText(), player)
         return Gson().fromJson(response.bodyAsText(), PlayerDetailsResponse::class.java)
+    }
+
+    suspend fun getPlayerQuest(context: Context, player: String): List<QuestResponse> {
+        val response: HttpResponse =
+            client.get("$endpoint/players/quests?username=$player")
+        cache.writePlayerQuest(context, response.bodyAsText(), player)
+        return Gson().fromJson(
+            response.bodyAsText(),
+            object : TypeToken<List<QuestResponse>>() {}.type
+        )
     }
 }

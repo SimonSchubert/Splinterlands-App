@@ -1,6 +1,5 @@
 package com.example.splinterlandstest.balances
 
-import Requests
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.Requests
 import java.text.NumberFormat
 import java.util.*
 

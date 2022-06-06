@@ -1,12 +1,23 @@
 package com.example.splinterlandstest
 
-import Requests
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
 class Cache {
+
+    data class QuestConfig(val base: Int, val multiplier: Float)
+
+    fun getQuestConfig(rank: Int): QuestConfig {
+        return when (rank) {
+            1 -> QuestConfig(5000, 1.13f)
+            2 -> QuestConfig(18000, 1.09f)
+            3 -> QuestConfig(43000, 1.062f)
+            4 -> QuestConfig(90000, 1.038f)
+            else -> QuestConfig(300, 1.2f)
+        }
+    }
 
     fun getPlayerName(context: Context): String {
         val file = File(context.filesDir, "player")
@@ -103,6 +114,24 @@ class Cache {
 
     fun writePlayerDetails(context: Context, response: String, player: String) {
         context.openFileOutput("details_$player", Context.MODE_PRIVATE).use {
+            it.write(response.toByteArray())
+        }
+    }
+
+    fun getPlayerQuest(context: Context, player: String): List<Requests.QuestResponse> {
+        val file = File(context.filesDir, "quest_$player")
+        return if (file.exists()) {
+            return Gson().fromJson(
+                file.readText(),
+                object : TypeToken<List<Requests.QuestResponse>>() {}.type
+            )
+        } else {
+            emptyList()
+        }
+    }
+
+    fun writePlayerQuest(context: Context, response: String, player: String) {
+        context.openFileOutput("quest_$player", Context.MODE_PRIVATE).use {
             it.write(response.toByteArray())
         }
     }

@@ -1,11 +1,11 @@
 package com.example.splinterlandstest.balances
 
-import Requests
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.Requests
 import kotlinx.coroutines.launch
 
 class BalancesFragmentViewModel : ViewModel() {
