@@ -18,7 +18,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="#00131c"
                 app:popupTheme="@style/Theme.SplinterlandsTest.PopupOverlay"/>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -35,6 +35,9 @@
                                                                        android:layout_height="wrap_content"
                                                                        app:layout_constraintBottom_toBottomOf="parent"
                                                                        app:layout_constraintStart_toStartOf="parent"
-                                                                       app:layout_constraintEnd_toEndOf="parent"/>
+                                                                       app:layout_constraintEnd_toEndOf="parent"
+                                                                       android:background="#00131c"
+                                                                       app:itemTextColor="@color/navigation_text_color"
+                                                                       app:itemIconTint="@color/navigation_text_color"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

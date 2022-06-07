@@ -14,15 +14,22 @@
             android:layout_width="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@color/white"
             android:layout_height="wrap_content" android:id="@+id/tvNextChest"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="8dp"/>
 
+    <ImageView android:layout_width="100dp" android:id="@+id/ivChest" android:layout_height="100dp"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintTop_toBottomOf="@+id/tvNextChest"/>
+
     <TextView
             tools:text="2374"
             android:layout_width="wrap_content"
+            android:textColor="@color/white"
             android:layout_height="wrap_content" android:id="@+id/tvChests"
-            app:layout_constraintTop_toBottomOf="@+id/tvNextChest"
+            app:layout_constraintTop_toBottomOf="@+id/ivChest"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="6dp" android:layout_marginBottom="6dp"/>
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="6dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
