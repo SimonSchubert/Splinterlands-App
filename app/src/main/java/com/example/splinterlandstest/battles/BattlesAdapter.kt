@@ -150,7 +150,13 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
             if (cardDetail != null) {
                 Picasso.get()
-                    .load("https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${card.getFileEnding()}")
+                    .load(
+                        "https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${
+                            card.getFileEnding(
+                                cardDetail
+                            )
+                        }"
+                    )
                     .transform(CropSquareTransformation())
                     .transform(CropCircleTransformation())
                     .into(imageView)

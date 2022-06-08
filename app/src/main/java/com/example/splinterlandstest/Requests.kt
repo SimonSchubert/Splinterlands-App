@@ -1,6 +1,7 @@
 package com.example.splinterlandstest
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -51,8 +52,9 @@ class Requests {
             }
         }
 
-        fun getFileEnding(): String {
-            return if (edition == 7) {
+        fun getFileEnding(cardDetail: CardDetail): String {
+            Log.e("Picasse", "e: $edition t: ${cardDetail.tier}")
+            return if (edition == 7 || edition == 3 && cardDetail.tier == 7) {
                 "jpg"
             } else {
                 "png"
@@ -61,7 +63,7 @@ class Requests {
     }
 
     @Serializable
-    data class CardDetail(val id: String, val name: String)
+    data class CardDetail(val id: String, val name: String, val tier: Int? = -1)
 
     @Serializable
     data class CollectionResponse(val player: String, val cards: List<Card>)

@@ -45,7 +45,13 @@ class CollectionAdapter(private var cardDetails: List<Requests.CardDetail>) :
         val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
         cardDetail?.let {
             Picasso.get()
-                .load("https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${card.getFileEnding()}")
+                .load(
+                    "https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${
+                        card.getFileEnding(
+                            cardDetail
+                        )
+                    }"
+                )
                 .placeholder(card.getPlaceholderDrawable())
                 .fit()
                 .into(viewHolder.imageView)
