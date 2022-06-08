@@ -33,7 +33,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnLogin.setOnClickListener {
-            val player = binding.etPlayerName.text.toString()
+            val player = binding.etPlayerName.text.toString().trim()
             activityViewModel.setPlayer(requireContext(), player)
         }
 

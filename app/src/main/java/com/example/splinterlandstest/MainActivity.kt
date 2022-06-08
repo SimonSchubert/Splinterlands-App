@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.loginStatus.observe(this) {
             if (it) {
                 binding.bottomNavigation.isVisible = true
-                setCurrentFragment(BattlesFragment())
+                binding.bottomNavigation.selectedItemId = R.id.battles
                 invalidateOptionsMenu()
             } else {
                 binding.bottomNavigation.isVisible = false

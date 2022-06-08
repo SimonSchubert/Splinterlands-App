@@ -8,5 +8,5 @@ fun List<Requests.BalancesResponse>.filterBalances(): List<Requests.BalancesResp
         }
     }
     return this.sortedByDescending { it.balance }
-        .filter { it.token != "ECR" && it.token != "SPSP" && it.token != "QUEST" && it.token != "PWRSTONE" && it.token != "BLDSTONE" && it.token != "RAFFLE" && it.token != "TOTEMC" && it.token != "TOTEMR" && it.token != "WAKA_COMMON" && it.token != "MYSTERY" && it.token != "TOTEME" && it.token != "TRACT" }
+        .filter { it.getDrawableResource() != R.drawable.ic_launcher_background }
 }

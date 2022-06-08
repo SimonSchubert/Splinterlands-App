@@ -174,6 +174,13 @@ class Requests {
                 "CHAOS" -> R.drawable.chaos
                 "PLOT" -> R.drawable.plot
                 "VOUCHER" -> R.drawable.voucher
+                "LICENSE" -> R.drawable.license
+                "TOTEMC" -> R.drawable.totemc
+                "TOTEMR" -> R.drawable.totemr
+                "TOTEME" -> R.drawable.toteme
+                "TOTEML" -> R.drawable.toteml
+                "TRACT" -> R.drawable.tract
+                "REGION" -> R.drawable.region
                 else -> R.drawable.ic_launcher_background
             }
         }
