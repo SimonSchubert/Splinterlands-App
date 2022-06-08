@@ -1,7 +1,10 @@
 ### Splinterlands mobile app demo
 
+*Performant, open source, multiplatform(iOS, Android) mobile and tablet client*
 
-https://user-images.githubusercontent.com/1833337/170953924-7a9456eb-0de4-40a2-bb0a-e17008119ea5.mp4
+Seeking funding, please contact me if you want to see the project going forward. I love playing Splinterlands and have 10+ years of experience in mobile development.
+
+![](screenshot_1.png) ![](screenshot_2.png) ![](screenshot_3.png)
 
 
 The copyright of the graphics in the demo project belongs to Splinterlands
