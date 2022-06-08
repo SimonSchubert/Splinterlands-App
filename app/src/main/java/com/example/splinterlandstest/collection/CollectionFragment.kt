@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.databinding.FragmentSecondBinding
 
@@ -39,7 +40,7 @@ class CollectionFragment : Fragment() {
         binding.recyclerView.layoutManager =
             GridLayoutManager(context, calculateNoOfColumns(requireContext(), 120f))
 
-        val adapter = CollectionAdapter()
+        val adapter = CollectionAdapter(Cache().getCardDetails(requireContext()))
         binding.recyclerView.adapter = adapter
 
         val model: CollectionFragmentViewModel by viewModels()

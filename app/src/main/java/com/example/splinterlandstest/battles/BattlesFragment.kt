@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.databinding.FragmentSecondBinding
 
@@ -36,7 +37,7 @@ class BattlesFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val adapter = BattlesAdapter(activityViewModel.playerName)
+        val adapter = BattlesAdapter(activityViewModel.playerName, Cache().getCardDetails(requireContext()))
         binding.recyclerView.adapter = adapter
 
         val model: BattlesFragmentViewModel by viewModels()
@@ -48,6 +49,9 @@ class BattlesFragment : Fragment() {
         }
         model.playerQuest.observe(this) { playerQuest ->
             adapter.updatePlayerQuest(playerQuest)
+        }
+        model.cardDetails.observe(this) { cardDetails ->
+            adapter.updateCardDetails(cardDetails)
         }
 
         model.loadBattles(requireContext(), activityViewModel.playerName)

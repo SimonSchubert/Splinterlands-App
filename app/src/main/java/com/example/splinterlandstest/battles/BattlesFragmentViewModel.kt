@@ -16,6 +16,7 @@ class BattlesFragmentViewModel : ViewModel() {
     val battles: MutableLiveData<List<Requests.Battle>> = MutableLiveData()
     val playerDetails: MutableLiveData<Requests.PlayerDetailsResponse> = MutableLiveData()
     val playerQuest: MutableLiveData<Requests.QuestResponse?> = MutableLiveData()
+    val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
 
     fun loadBattles(context: Context, player: String) {
         viewModelScope.launch {
@@ -25,6 +26,7 @@ class BattlesFragmentViewModel : ViewModel() {
             battles.value = requests.getBattleHistory(context, player)
             playerDetails.value = requests.getPlayerDetails(context, player)
             playerQuest.value = requests.getPlayerQuest(context, player).firstOrNull()
+            cardDetails.value = requests.getCardDetails(context)
         }
     }
 }

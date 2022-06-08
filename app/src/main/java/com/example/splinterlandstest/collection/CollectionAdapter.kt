@@ -9,11 +9,10 @@ import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
 import com.squareup.picasso.Picasso
 
-class CollectionAdapter :
+class CollectionAdapter(private var cardDetails: List<Requests.CardDetail>) :
     RecyclerView.Adapter<CollectionAdapter.ViewHolder>() {
 
     private var dataSet: List<Requests.Card> = emptyList()
-    private var cardDetails: List<Requests.CardDetail> = emptyList()
 
     fun updateCollection(dataSet: List<Requests.Card>) {
         this.dataSet = dataSet.sortedBy { it.card_detail_id }
@@ -21,8 +20,10 @@ class CollectionAdapter :
     }
 
     fun updateCardDetails(cardDetails: List<Requests.CardDetail>) {
-        this.cardDetails = cardDetails
-        notifyDataSetChanged()
+        if (cardDetails.size != this.cardDetails.size) {
+            this.cardDetails = cardDetails
+            notifyDataSetChanged()
+        }
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -19,7 +19,6 @@ class CollectionFragmentViewModel : ViewModel() {
     fun loadCollection(context: Context, player: String) {
         viewModelScope.launch {
             collection.value = cache.getCollection(context, player)
-            cardDetails.value = cache.getCardDetails(context)
             collection.value = requests.getCollection(context, player)
             cardDetails.value = requests.getCardDetails(context)
         }

@@ -67,6 +67,12 @@ class Requests {
     data class CollectionResponse(val player: String, val cards: List<Card>)
 
     @Serializable
+    data class BattleDetailsTeam(val player: String, val summoner: Card)
+
+    @Serializable
+    data class BattleDetails(val team1: BattleDetailsTeam, val team2: BattleDetailsTeam)
+
+    @Serializable
     data class Battle(
         val winner: String,
         val player_1: String,
@@ -74,7 +80,9 @@ class Requests {
         val player_2: String,
         val player_2_rating_final: Int,
         val ruleset: String,
-        val inactive: String
+        val inactive: String,
+        val mana_cap: Int,
+        val details: BattleDetails
     ) {
         fun getOpponent(player: String): String {
             return if (player_1 == player) {
@@ -102,8 +110,30 @@ class Requests {
             }
         }
 
+
+        fun getOwnDetail(player: String): BattleDetailsTeam {
+            return if (details.team1.player == player) {
+                details.team1
+            } else {
+                details.team2
+            }
+        }
+
+        fun getOpponentDetail(player: String): BattleDetailsTeam {
+            return if (details.team1.player == player) {
+                details.team2
+            } else {
+                details.team1
+            }
+        }
+
         fun isWin(player: String): Boolean {
             return winner == player
+        }
+
+        fun getRulesetImagePathes(): List<String> {
+            return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
+                .map { "https://d36mxiodymuqjm.cloudfront.net/website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
         }
     }
 
@@ -122,7 +152,7 @@ class Requests {
 
     data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long, val chestTier: Int) {
         fun getChestUrl(): String {
-            val league = when(chestTier) {
+            val league = when (chestTier) {
                 1 -> "silver"
                 2 -> "gold"
                 3 -> "diamond"
