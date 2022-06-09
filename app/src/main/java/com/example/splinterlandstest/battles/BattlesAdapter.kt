@@ -133,7 +133,7 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             tvPlayer2rating.text = battle.getOpponentRating(player)
             tvMana.text = battle.mana_cap.toString()
 
-            val rulesetImagePathes = battle.getRulesetImagePathes()
+            val rulesetImagePathes = battle.getRulesetImagePaths()
             rulesetImagePathes.forEachIndexed { index, s ->
                 Picasso.get()
                     .load(s)
@@ -142,8 +142,18 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             }
             rulesetImageViews[1].isVisible = rulesetImagePathes.size > 1
 
-            loadCardImage(summoner1, battle.getOwnDetail(player).summoner)
-            loadCardImage(summoner2, battle.getOpponentDetail(player).summoner)
+            val ownDetail = battle.getOwnDetail(player)
+            if(ownDetail != null) {
+                loadCardImage(summoner1, ownDetail.summoner)
+            } else {
+                summoner1.setImageResource(R.drawable.loose)
+            }
+            val opponentDetail = battle.getOpponentDetail(battle.getOpponent(player))
+            if(opponentDetail != null) {
+                loadCardImage(summoner2, opponentDetail.summoner)
+            } else {
+                summoner2.setImageResource(R.drawable.loose)
+            }
         }
 
         private fun loadCardImage(imageView: ImageView, card: Requests.Card) {

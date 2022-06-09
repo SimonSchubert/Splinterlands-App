@@ -1,7 +1,6 @@
 package com.example.splinterlandstest
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -14,6 +13,7 @@ import kotlinx.serialization.Serializable
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 class Requests {
@@ -53,7 +53,6 @@ class Requests {
         }
 
         fun getFileEnding(cardDetail: CardDetail): String {
-            Log.e("Picasse", "e: $edition t: ${cardDetail.tier}")
             return if (edition == 7 || edition == 3 && cardDetail.tier == 7) {
                 "jpg"
             } else {
@@ -72,7 +71,7 @@ class Requests {
     data class BattleDetailsTeam(val player: String, val summoner: Card)
 
     @Serializable
-    data class BattleDetails(val team1: BattleDetailsTeam, val team2: BattleDetailsTeam)
+    data class BattleDetails(val team1: BattleDetailsTeam?, val team2: BattleDetailsTeam?)
 
     @Serializable
     data class Battle(
@@ -112,20 +111,19 @@ class Requests {
             }
         }
 
-
-        fun getOwnDetail(player: String): BattleDetailsTeam {
-            return if (details.team1.player == player) {
+        fun getOwnDetail(player: String): BattleDetailsTeam? {
+            return if(player_1 == player) {
                 details.team1
             } else {
                 details.team2
             }
         }
 
-        fun getOpponentDetail(player: String): BattleDetailsTeam {
-            return if (details.team1.player == player) {
-                details.team2
-            } else {
+        fun getOpponentDetail(opponent: String): BattleDetailsTeam? {
+            return if(player_1 == opponent) {
                 details.team1
+            } else {
+                details.team2
             }
         }
 
@@ -133,7 +131,7 @@ class Requests {
             return winner == player
         }
 
-        fun getRulesetImagePathes(): List<String> {
+        fun getRulesetImagePaths(): List<String> {
             return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
                 .map { "https://d36mxiodymuqjm.cloudfront.net/website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
         }
@@ -150,7 +148,6 @@ class Requests {
         val wins: Int,
         val name: String
     )
-
 
     data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long, val chestTier: Int) {
         fun getChestUrl(): String {
@@ -176,7 +173,7 @@ class Requests {
             var chests = -1
             var totalRshares = 0L
             var nextChest = 0L
-            while (rshares >= Math.round(totalRshares.toDouble())) {
+            while (rshares >= totalRshares.toDouble().roundToInt()) {
                 chests++
                 nextChest = (config.base * config.multiplier.pow(chests)).toLong()
                 totalRshares += nextChest
