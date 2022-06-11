@@ -3,6 +3,7 @@ package com.example.splinterlandstest
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
 import java.io.File
 
 class Cache {
@@ -22,7 +23,7 @@ class Cache {
     fun getPlayerName(context: Context): String {
         val file = File(context.filesDir, "player")
         return if (file.exists()) {
-            File(context.filesDir, "player").readText()
+            file.readText()
         } else {
             ""
         }
@@ -31,6 +32,33 @@ class Cache {
     fun writePlayerName(context: Context, player: String) {
         context.openFileOutput("player", Context.MODE_PRIVATE).use {
             it.write(player.toByteArray())
+        }
+    }
+
+    fun getPlayerList(context: Context): List<String> {
+        val file = File(context.filesDir, "players")
+        return if (file.exists()) {
+            JSONArray(file.readText()).toStringList()
+        } else {
+            emptyList()
+        }
+    }
+
+    fun writePlayerToList(context: Context, player: String) {
+        val players = getPlayerList(context).toMutableList()
+        if (!players.contains(player)) {
+            players.add(player)
+            context.openFileOutput("players", Context.MODE_PRIVATE).use {
+                it.write(players.joinToString(prefix = "[", postfix = "]").toByteArray())
+            }
+        }
+    }
+
+    fun deletePlayerFromList(context: Context, player: String) {
+        val players = getPlayerList(context).toMutableList()
+        players.remove(player)
+        context.openFileOutput("players", Context.MODE_PRIVATE).use {
+            it.write(players.joinToString(prefix = "[", postfix = "]").toByteArray())
         }
     }
 
@@ -134,5 +162,13 @@ class Cache {
         context.openFileOutput("quest_$player", Context.MODE_PRIVATE).use {
             it.write(response.toByteArray())
         }
+    }
+
+    fun JSONArray.toStringList(): List<String> {
+        val list = mutableListOf<String>()
+        for (i in 0 until this.length()) {
+            list.add(this.optString(i, ""))
+        }
+        return list.filter { it.isNotBlank() }
     }
 }

@@ -143,13 +143,13 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             rulesetImageViews[1].isVisible = rulesetImagePathes.size > 1
 
             val ownDetail = battle.getOwnDetail(player)
-            if(ownDetail != null) {
+            if (ownDetail != null) {
                 loadCardImage(summoner1, ownDetail.summoner)
             } else {
                 summoner1.setImageResource(R.drawable.loose)
             }
             val opponentDetail = battle.getOpponentDetail(battle.getOpponent(player))
-            if(opponentDetail != null) {
+            if (opponentDetail != null) {
                 loadCardImage(summoner2, opponentDetail.summoner)
             } else {
                 summoner2.setImageResource(R.drawable.loose)

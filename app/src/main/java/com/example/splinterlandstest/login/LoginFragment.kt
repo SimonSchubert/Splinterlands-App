@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.databinding.FragmentLoginBinding
 
@@ -32,10 +34,21 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnLogin.setOnClickListener {
-            val player = binding.etPlayerName.text.toString().trim()
-            activityViewModel.setPlayer(requireContext(), player)
-        }
+        val adapter = LoginAdapter(
+            Cache().getPlayerList(requireContext()).toMutableList(),
+            activityViewModel,
+            object : OnItemClickListener {
+                override fun onClickPlayer(player: String) {
+                    activityViewModel.setPlayer(requireContext(), player)
+                }
+
+                override fun onDeletePlayer(player: String) {
+                    activityViewModel.deletePlayer(requireContext(), player)
+                }
+            })
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
 
         activity?.title = "Login"
     }

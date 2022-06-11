@@ -6,35 +6,14 @@
 
     <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
                android:src="@drawable/bg_login"
-               android:adjustViewBounds="true" android:scaleType="centerCrop"/>
-    
-    <ImageView
-            android:layout_width="wrap_content"
-            android:adjustViewBounds="true"
-            android:layout_height="wrap_content" app:srcCompat="@drawable/logo" android:id="@+id/imageView3"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintBottom_toTopOf="@+id/etPlayerName" app:layout_constraintVertical_chainStyle="packed"/>
+               android:adjustViewBounds="true" android:scaleType="centerCrop" android:id="@+id/imageView5"/>
 
-    <EditText
-            android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text=""
-            android:hint="Player"
-            android:ems="10"
-            android:id="@+id/etPlayerName"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@+id/imageView3"
-            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintBottom_toTopOf="@+id/btnLogin"/>
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <Button
-            android:text="Login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/btnLogin"
-            app:layout_constraintTop_toBottomOf="@+id/etPlayerName" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

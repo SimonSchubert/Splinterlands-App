@@ -112,7 +112,7 @@ class Requests {
         }
 
         fun getOwnDetail(player: String): BattleDetailsTeam? {
-            return if(player_1 == player) {
+            return if (player_1 == player) {
                 details.team1
             } else {
                 details.team2
@@ -120,7 +120,7 @@ class Requests {
         }
 
         fun getOpponentDetail(opponent: String): BattleDetailsTeam? {
-            return if(player_1 == opponent) {
+            return if (player_1 == opponent) {
                 details.team1
             } else {
                 details.team2
