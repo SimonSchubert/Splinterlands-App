@@ -1,6 +1,8 @@
 package com.example.splinterlandstest.battles
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,14 +58,18 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
     class CurrentQuestViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvNextChest: TextView
         private val tvChests: TextView
+        private val tvTimer: TextView
         private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
         private val ivChest: ImageView
 
         init {
             tvNextChest = view.findViewById(R.id.tvNextChest)
             tvChests = view.findViewById(R.id.tvChests)
+            tvTimer = view.findViewById(R.id.tvTimer)
             ivChest = view.findViewById(R.id.ivChest)
         }
+
+        lateinit var handlerTask: Runnable
 
         fun bind(playerQuest: Requests.QuestResponse?) {
             val questInfo = playerQuest?.getCurrentQuestInfo()
@@ -77,6 +83,13 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
                     .load(questInfo.getChestUrl())
                     .fit()
                     .into(ivChest)
+
+                handlerTask = Runnable {
+                    tvTimer.text = playerQuest.getFormattedEndDate()
+                    itemView.postDelayed(handlerTask, 1000)
+                }
+                itemView.removeCallbacks(null)
+                itemView.post(handlerTask)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.splinterlandstest
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -11,9 +12,13 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 
 class Requests {
@@ -165,7 +170,8 @@ class Requests {
     @Serializable
     data class QuestResponse(
         val chest_tier: Int,
-        val rshares: Long
+        val rshares: Long,
+        val created_date: String
     ) {
         fun getCurrentQuestInfo(): QuestInfo {
             val config = Cache().getQuestConfig(chest_tier)
@@ -181,6 +187,13 @@ class Requests {
 
             val requiredRshares = totalRshares - rshares
             return QuestInfo(chests, nextChest, requiredRshares, chest_tier)
+        }
+
+        fun getFormattedEndDate(): String {
+            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            formatter.timeZone = TimeZone.getTimeZone("UTC");
+            val milliseconds = System.currentTimeMillis() - formatter.parse(created_date).time - 1.days.inWholeMilliseconds
+            return "${milliseconds.absoluteValue.div(1000L).seconds}"
         }
     }
 
