@@ -55,16 +55,16 @@ class CollectionFilterDialogFragment : DialogFragment() {
                     checkBoxLegendary.isChecked = true
                 }
             }
-            checkBoxCommon.setOnCheckedChangeListener { buttonView, isChecked ->
+            checkBoxCommon.setOnCheckedChangeListener { _, _ ->
                 updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
             }
-            checkBoxRare.setOnCheckedChangeListener { buttonView, isChecked ->
+            checkBoxRare.setOnCheckedChangeListener { _, _ ->
                 updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
             }
-            checkBoxEpic.setOnCheckedChangeListener { buttonView, isChecked ->
+            checkBoxEpic.setOnCheckedChangeListener { _, _ ->
                 updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
             }
-            checkBoxLegendary.setOnCheckedChangeListener { buttonView, isChecked ->
+            checkBoxLegendary.setOnCheckedChangeListener { _, _ ->
                 updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
             }
 

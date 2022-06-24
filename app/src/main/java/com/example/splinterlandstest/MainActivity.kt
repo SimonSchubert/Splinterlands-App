@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener {
+        binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.battles -> setCurrentFragment(BattlesFragment())
                 R.id.collection -> setCurrentFragment(CollectionFragment())

@@ -149,7 +149,7 @@ class Requests {
         }
 
         fun getTimeAgo(): String {
-            val milliseconds = System.currentTimeMillis() - simpleDateFormat.parse(created_date).time
+            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time ?: 0L)
             return "${milliseconds.absoluteValue.div(1000L).seconds}".split(" ").first()
         }
     }
@@ -202,7 +202,7 @@ class Requests {
         }
 
         fun getFormattedEndDate(): String {
-            val milliseconds = System.currentTimeMillis() - simpleDateFormat.parse(created_date).time - 1.days.inWholeMilliseconds
+            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time ?: 0L) - 1.days.inWholeMilliseconds
             return "${milliseconds.absoluteValue.div(1000L).seconds}"
         }
     }
