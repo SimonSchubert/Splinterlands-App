@@ -1,28 +1,43 @@
-name: Build & Publish Debug APK
+name: Generate APK / AAB Debug And Release
 
 on:
+  # Triggers the workflow on push or pull request events but only for default and protected branches
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v1
-      - name: set up JDK 1.8
+
+      - name: Set Up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
-      - name: Make Gradle executable
+          java-version: 11
+
+      - name: Change wrapper permissions
         run: chmod +x ./gradlew
-      - name: Build with Gradle
+
+      - name: Run tests
+        run: ./gradlew test
+
+      # Run Build Project
+      - name: Build project
         run: ./gradlew build
-      - name: Build Debug APK
+
+      # Create APK Debug
+      - name: Build apk debug project (APK)
         run: ./gradlew assembleDebug
-      - name: Releasing using Hub
-        uses: ShaunLWM/action-release-debugapk@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          APP_FOLDER: app
-          RELEASE_TITLE: Debug
+
+      # Upload Artifact Build
+      # Noted For Output [module-name]/build/outputs/
+      - name: Upload debug build APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: App bundle(s) and APK(s) generated
+          path: app/build/outputs/
