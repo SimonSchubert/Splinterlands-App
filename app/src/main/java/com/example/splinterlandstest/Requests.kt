@@ -21,6 +21,10 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 
+val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").apply {
+    timeZone = TimeZone.getTimeZone("UTC")
+}
+
 class Requests {
 
     private val client = HttpClient(CIO) {
@@ -32,6 +36,8 @@ class Requests {
     private val cache = Cache()
 
     private val endpoint = "https://api2.splinterlands.com"
+
+
 
     @Serializable
     data class Card(val card_detail_id: String, val edition: Int) {
@@ -67,19 +73,20 @@ class Requests {
     }
 
     @Serializable
-    data class CardDetail(val id: String, val name: String, val tier: Int? = -1)
+    data class CardDetail(val id: String, val name: String, val tier: Int? = -1, val rarity: Int)
 
     @Serializable
     data class CollectionResponse(val player: String, val cards: List<Card>)
 
     @Serializable
-    data class BattleDetailsTeam(val player: String, val summoner: Card)
+    data class BattleDetailsTeam(val player: String, val summoner: Card, val monsters: List<Card>)
 
     @Serializable
     data class BattleDetails(val team1: BattleDetailsTeam?, val team2: BattleDetailsTeam?)
 
     @Serializable
     data class Battle(
+        val created_date: String,
         val winner: String,
         val player_1: String,
         val player_1_rating_final: Int,
@@ -140,6 +147,11 @@ class Requests {
             return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
                 .map { "https://d36mxiodymuqjm.cloudfront.net/website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
         }
+
+        fun getTimeAgo(): String {
+            val milliseconds = System.currentTimeMillis() - simpleDateFormat.parse(created_date).time
+            return "${milliseconds.absoluteValue.div(1000L).seconds}".split(" ").first()
+        }
     }
 
     @Serializable
@@ -190,9 +202,7 @@ class Requests {
         }
 
         fun getFormattedEndDate(): String {
-            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-            formatter.timeZone = TimeZone.getTimeZone("UTC");
-            val milliseconds = System.currentTimeMillis() - formatter.parse(created_date).time - 1.days.inWholeMilliseconds
+            val milliseconds = System.currentTimeMillis() - simpleDateFormat.parse(created_date).time - 1.days.inWholeMilliseconds
             return "${milliseconds.absoluteValue.div(1000L).seconds}"
         }
     }

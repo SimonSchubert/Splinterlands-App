@@ -11,7 +11,7 @@
             app:layout_constraintTop_toTopOf="@id/imageViewIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="123"
+            tools:text="123"
             android:textSize="18sp"
             android:layout_marginRight="12dp"
             android:textColor="@color/white"
@@ -32,6 +32,49 @@
                android:adjustViewBounds="true"
                app:layout_goneMarginRight="12dp"
                app:layout_constraintEnd_toStartOf="@id/imageViewIndicator" android:layout_marginEnd="12dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_1"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/summoner1" android:layout_marginEnd="4dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_2"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/monster1_1" android:layout_marginEnd="4dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_3"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/monster1_2" android:layout_marginEnd="4dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_4"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/monster1_3" android:layout_marginEnd="4dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_5"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/monster1_4" android:layout_marginEnd="4dp"
+               app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_6"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               android:adjustViewBounds="true"
+               app:layout_constraintEnd_toStartOf="@id/monster1_5" android:layout_marginEnd="4dp"
                app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ImageView android:layout_width="20dp" android:layout_height="20dp" android:id="@+id/ruleset1"
@@ -59,11 +102,47 @@
                android:layout_marginLeft="12dp"
                app:layout_constraintHorizontal_chainStyle="packed"/>
 
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_1"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/summoner2"
+               android:layout_marginLeft="4dp"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_2"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/monster2_1"
+               android:layout_marginLeft="4dp"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_3"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/monster2_2"
+               android:layout_marginLeft="4dp"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_4"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/monster2_3"
+               android:layout_marginLeft="4dp"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_5"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/monster2_4"
+               android:layout_marginLeft="4dp"/>
+
+    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_6"
+               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+               android:layout_marginTop="12dp"
+               app:layout_constraintStart_toEndOf="@id/monster2_5"
+               android:layout_marginLeft="4dp"/>
+
     <TextView
             android:id="@+id/tvPlayer2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="123"
+            tools:text="123"
             android:layout_marginLeft="12dp"
             android:textColor="@color/white"
             app:layout_constraintTop_toTopOf="@id/imageViewIndicator"
@@ -75,7 +154,7 @@
             android:id="@+id/tvPlayer2Rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="123"
+            tools:text="123"
             android:layout_marginLeft="12dp"
             app:layout_constraintTop_toBottomOf="@id/tvPlayer2"
             app:layout_constraintLeft_toRightOf="@id/imageViewIndicator"
@@ -88,7 +167,7 @@
             android:id="@+id/tvPlayer1Rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="123"
+            tools:text="123"
             android:layout_marginRight="12dp"
             app:layout_constraintTop_toBottomOf="@id/tvPlayer1"
             app:layout_constraintRight_toLeftOf="@id/imageViewIndicator"
@@ -97,7 +176,7 @@
             android:textSize="12sp"
             android:textStyle="bold"/>
     <TextView
-            android:text="12"
+            tools:text="12"
             android:textSize="14sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/tvMana"
@@ -105,5 +184,12 @@
             app:layout_constraintTop_toTopOf="@+id/imageViewIndicator"
             app:layout_constraintEnd_toEndOf="@+id/imageViewIndicator"
             app:layout_constraintStart_toStartOf="@+id/imageViewIndicator"/>
+    <TextView
+            tools:text="20m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvTimeAgo"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@+id/ruleset1" app:layout_constraintEnd_toStartOf="@+id/summoner2"
+            app:layout_constraintStart_toEndOf="@+id/summoner1"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

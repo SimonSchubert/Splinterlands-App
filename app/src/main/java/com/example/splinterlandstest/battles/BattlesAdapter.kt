@@ -113,12 +113,25 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
     inner class BattleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val imageView: ImageView
         private val summoner1: ImageView
+        private val monster1_1: ImageView
+        private val monster1_2: ImageView
+        private val monster1_3: ImageView
+        private val monster1_4: ImageView
+        private val monster1_5: ImageView
+        private val monster1_6: ImageView
         private val summoner2: ImageView
+        private val monster2_1: ImageView
+        private val monster2_2: ImageView
+        private val monster2_3: ImageView
+        private val monster2_4: ImageView
+        private val monster2_5: ImageView
+        private val monster2_6: ImageView
         private val tvPlayer1: TextView
         private val tvPlayer2: TextView
         private val tvPlayer2rating: TextView
         private val tvPlayer1rating: TextView
         private val tvMana: TextView
+        private val tvTimeAgo: TextView
         private val rulesetImageViews: List<ImageView>
 
         init {
@@ -129,8 +142,22 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             tvPlayer1rating = view.findViewById(R.id.tvPlayer1Rating)
             rulesetImageViews = listOf(view.findViewById(R.id.ruleset1), view.findViewById(R.id.ruleset2))
             summoner1 = view.findViewById(R.id.summoner1)
+            monster1_1 = view.findViewById(R.id.monster1_1)
+            monster1_2 = view.findViewById(R.id.monster1_2)
+            monster1_3 = view.findViewById(R.id.monster1_3)
+            monster1_4 = view.findViewById(R.id.monster1_4)
+            monster1_5 = view.findViewById(R.id.monster1_5)
+            monster1_6 = view.findViewById(R.id.monster1_6)
+            monster2_1 = view.findViewById(R.id.monster2_1)
+            monster2_2 = view.findViewById(R.id.monster2_2)
+            monster2_3 = view.findViewById(R.id.monster2_3)
+            monster2_4 = view.findViewById(R.id.monster2_4)
+            monster2_5 = view.findViewById(R.id.monster2_5)
+            monster2_6 = view.findViewById(R.id.monster2_6)
+
             summoner2 = view.findViewById(R.id.summoner2)
             tvMana = view.findViewById(R.id.tvMana)
+            tvTimeAgo = view.findViewById(R.id.tvTimeAgo)
         }
 
         fun bind(battle: Requests.Battle) {
@@ -158,20 +185,34 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             val ownDetail = battle.getOwnDetail(player)
             if (ownDetail != null) {
                 loadCardImage(summoner1, ownDetail.summoner)
+                loadCardImage(monster1_1, ownDetail.monsters.getOrNull(0))
+                loadCardImage(monster1_2, ownDetail.monsters.getOrNull(1))
+                loadCardImage(monster1_3, ownDetail.monsters.getOrNull(2))
+                loadCardImage(monster1_4, ownDetail.monsters.getOrNull(3))
+                loadCardImage(monster1_5, ownDetail.monsters.getOrNull(4))
+                loadCardImage(monster1_6, ownDetail.monsters.getOrNull(5))
             } else {
                 summoner1.setImageResource(R.drawable.loose)
             }
             val opponentDetail = battle.getOpponentDetail(battle.getOpponent(player))
             if (opponentDetail != null) {
                 loadCardImage(summoner2, opponentDetail.summoner)
+                loadCardImage(monster2_1, opponentDetail.monsters.getOrNull(0))
+                loadCardImage(monster2_2, opponentDetail.monsters.getOrNull(1))
+                loadCardImage(monster2_3, opponentDetail.monsters.getOrNull(2))
+                loadCardImage(monster2_4, opponentDetail.monsters.getOrNull(3))
+                loadCardImage(monster2_5, opponentDetail.monsters.getOrNull(4))
+                loadCardImage(monster2_6, opponentDetail.monsters.getOrNull(5))
             } else {
                 summoner2.setImageResource(R.drawable.loose)
             }
+
+            tvTimeAgo.text = battle.getTimeAgo()
         }
 
-        private fun loadCardImage(imageView: ImageView, card: Requests.Card) {
-            val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
-            if (cardDetail != null) {
+        private fun loadCardImage(imageView: ImageView, card: Requests.Card?) {
+            val cardDetail = cardDetails.firstOrNull { it.id == card?.card_detail_id }
+            if (cardDetail != null && card != null) {
                 Picasso.get()
                     .load(
                         "https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${
@@ -183,6 +224,8 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
                     .transform(CropSquareTransformation())
                     .transform(CropCircleTransformation())
                     .into(imageView)
+            } else {
+                imageView.setImageDrawable(null)
             }
         }
     }

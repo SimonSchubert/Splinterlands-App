@@ -16,11 +16,30 @@ class CollectionFragmentViewModel : ViewModel() {
     val collection: MutableLiveData<List<Requests.Card>> = MutableLiveData()
     val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
 
+    var filterRarities = listOf<Int>()
+    private var unfilteredCollection = listOf<Requests.Card>()
+
     fun loadCollection(context: Context, player: String) {
         viewModelScope.launch {
-            collection.value = cache.getCollection(context, player)
-            collection.value = requests.getCollection(context, player)
+            unfilteredCollection = cache.getCollection(context, player)
+            updateCollection()
+            unfilteredCollection = requests.getCollection(context, player)
+            updateCollection()
             cardDetails.value = requests.getCardDetails(context)
         }
+    }
+
+    private fun updateCollection() {
+        if(filterRarities.isNotEmpty() && unfilteredCollection.isNotEmpty()) {
+            val cardIds = cardDetails.value?.filter { filterRarities.contains(it.rarity) }?.map { it.id } ?: emptyList()
+            collection.value = unfilteredCollection.filter { cardIds.contains(it.card_detail_id) }
+        } else {
+            collection.value = unfilteredCollection
+        }
+    }
+
+    fun updateFilter(rarities: List<Int>) {
+        filterRarities = rarities
+        updateCollection()
     }
 }
