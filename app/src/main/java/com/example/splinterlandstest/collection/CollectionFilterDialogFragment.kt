@@ -99,7 +99,7 @@ class CollectionFilterDialogFragment : DialogFragment() {
                     updateCollection()
                 }
             }
-            if(it is ViewGroup) {
+            if (it is ViewGroup) {
                 recursiveAddChangeListener(it)
             }
         }

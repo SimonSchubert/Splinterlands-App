@@ -32,7 +32,7 @@ class CollectionFragmentViewModel : ViewModel() {
 
     private fun updateCollection() {
         var filteredCollection = unfilteredCollection
-        if(unfilteredCollection.isNotEmpty()) {
+        if (unfilteredCollection.isNotEmpty()) {
             if (filterRarities.isNotEmpty()) {
                 val cardIds =
                     cardDetails.value?.filter { filterRarities.contains(it.rarity) }?.map { it.id } ?: emptyList()

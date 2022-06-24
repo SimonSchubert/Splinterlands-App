@@ -24,58 +24,68 @@
                app:layout_constraintLeft_toLeftOf="parent"
                app:layout_constraintRight_toRightOf="parent"
                android:background="@drawable/win" app:layout_constraintTop_toTopOf="parent"
-               android:layout_marginTop="8dp"/>
+               android:layout_marginTop="12dp"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner1"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_goneMarginRight="12dp"
-               app:layout_constraintEnd_toStartOf="@id/imageViewIndicator" android:layout_marginEnd="12dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+    <com.google.android.flexbox.FlexboxLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                              app:layout_constraintEnd_toStartOf="@id/imageViewIndicator"
+                                              app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                                              app:layout_constraintStart_toStartOf="parent"
+                                              android:layout_marginTop="12dp"
+                                              android:layout_marginLeft="16dp"
+                                              app:flexWrap="wrap"
+                                              app:justifyContent="flex_end"
+                                              android:layout_marginEnd="12dp">
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_1"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/summoner1" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner1"
+                   android:adjustViewBounds="true"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_1"
+                   android:adjustViewBounds="true"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_2"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/monster1_1" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_2"
+                   android:adjustViewBounds="true"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_3"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/monster1_2" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_3"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   android:adjustViewBounds="true"
+                   app:layout_constraintEnd_toStartOf="@id/monster1_2"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_4"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/monster1_3" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_4"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   android:adjustViewBounds="true"
+                   app:layout_constraintEnd_toStartOf="@id/monster1_3"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_5"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/monster1_4" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_5"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   android:adjustViewBounds="true"
+                   app:layout_constraintEnd_toStartOf="@id/monster1_4"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_6"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               android:adjustViewBounds="true"
-               app:layout_constraintEnd_toStartOf="@id/monster1_5" android:layout_marginEnd="4dp"
-               app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_6"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   android:adjustViewBounds="true"
+                   app:layout_constraintEnd_toStartOf="@id/monster1_5"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintBottom_toBottomOf="parent"/>
+    </com.google.android.flexbox.FlexboxLayout>
 
     <ImageView android:layout_width="20dp" android:layout_height="20dp" android:id="@+id/ruleset1"
                app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
@@ -95,48 +105,56 @@
                android:layout_marginLeft="4dp"
                app:layout_constraintHorizontal_chainStyle="packed"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner2"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/imageViewIndicator"
-               android:layout_marginLeft="12dp"
-               app:layout_constraintHorizontal_chainStyle="packed"/>
+    <com.google.android.flexbox.FlexboxLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                              app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                                              app:layout_constraintStart_toEndOf="@id/imageViewIndicator"
+                                              app:flexWrap="wrap" app:layout_constraintEnd_toEndOf="parent"
+                                              android:layout_marginTop="12dp" android:layout_marginRight="12dp"
+                                              app:alignItems="flex_start" android:layout_marginStart="12dp">
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_1"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/summoner2"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner2"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/imageViewIndicator"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"
+                   app:layout_constraintHorizontal_chainStyle="packed"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_2"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/monster2_1"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_1"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/summoner2"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_3"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/monster2_2"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_2"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/monster2_1"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_4"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/monster2_3"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_3"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/monster2_2"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_5"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/monster2_4"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_4"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/monster2_3"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
 
-    <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_6"
-               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-               android:layout_marginTop="12dp"
-               app:layout_constraintStart_toEndOf="@id/monster2_5"
-               android:layout_marginLeft="4dp"/>
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_5"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/monster2_4"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
+
+        <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_6"
+                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
+                   app:layout_constraintStart_toEndOf="@id/monster2_5"
+                   android:layout_marginLeft="4dp"
+                   android:layout_marginTop="4dp"/>
+    </com.google.android.flexbox.FlexboxLayout>
 
     <TextView
             android:id="@+id/tvPlayer2"
@@ -189,7 +207,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:id="@+id/tvTimeAgo"
             android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/ruleset1" app:layout_constraintEnd_toStartOf="@+id/summoner2"
-            app:layout_constraintStart_toEndOf="@+id/summoner1"/>
+            app:layout_constraintTop_toBottomOf="@+id/ruleset1"
+            app:layout_constraintStart_toStartOf="@+id/imageViewIndicator"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewIndicator"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

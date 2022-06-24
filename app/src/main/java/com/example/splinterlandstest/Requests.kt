@@ -38,7 +38,6 @@ class Requests {
     private val endpoint = "https://api2.splinterlands.com"
 
 
-
     @Serializable
     data class Card(val card_detail_id: String, val edition: Int) {
         fun getPath(): String {
@@ -202,7 +201,8 @@ class Requests {
         }
 
         fun getFormattedEndDate(): String {
-            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time ?: 0L) - 1.days.inWholeMilliseconds
+            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
+                ?: 0L) - 1.days.inWholeMilliseconds
             return "${milliseconds.absoluteValue.div(1000L).seconds}"
         }
     }
