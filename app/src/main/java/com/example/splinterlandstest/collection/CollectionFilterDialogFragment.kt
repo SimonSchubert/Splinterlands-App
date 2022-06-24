@@ -3,17 +3,21 @@ package com.example.splinterlandstest.collection
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.view.ViewGroup
 import android.widget.CheckBox
+import androidx.core.view.children
 import androidx.fragment.app.DialogFragment
-import com.example.splinterlandstest.R
-
+import com.example.splinterlandstest.databinding.FragmentFilterBinding
 
 class CollectionFilterDialogFragment : DialogFragment() {
     private lateinit var listener: CollectionDialogInterface
 
+    private var _binding: FragmentFilterBinding? = null
+
+    private val binding get() = _binding!!
+
     interface CollectionDialogInterface {
-        fun onFilterChange(rarities: List<Int>)
+        fun onFilterChange(rarities: List<Int>, editions: List<Int>)
     }
 
     override fun onAttach(context: Context) {
@@ -33,67 +37,115 @@ class CollectionFilterDialogFragment : DialogFragment() {
             val dialog = Dialog(it)
 
             val inflater = requireActivity().layoutInflater
-            val view = inflater.inflate(R.layout.fragment_filter, null)
+
+            _binding = FragmentFilterBinding.inflate(inflater, null, false)
 
             val selectedRarities = arguments?.getIntArray("rarities")
+            val selectedEditions = arguments?.getIntArray("editions")
 
-            val checkBoxCommon = view.findViewById<CheckBox>(R.id.cbCommon)
-            val checkBoxRare = view.findViewById<CheckBox>(R.id.cbRare)
-            val checkBoxEpic = view.findViewById<CheckBox>(R.id.cbEpic)
-            val checkBoxLegendary = view.findViewById<CheckBox>(R.id.cbLegendary)
             if (selectedRarities != null) {
                 if (selectedRarities.contains(1)) {
-                    checkBoxCommon.isChecked = true
+                    binding.cbCommon.isChecked = true
                 }
                 if (selectedRarities.contains(2)) {
-                    checkBoxRare.isChecked = true
+                    binding.cbRare.isChecked = true
                 }
                 if (selectedRarities.contains(3)) {
-                    checkBoxEpic.isChecked = true
+                    binding.cbEpic.isChecked = true
                 }
                 if (selectedRarities.contains(4)) {
-                    checkBoxLegendary.isChecked = true
+                    binding.cbLegendary.isChecked = true
                 }
             }
-            checkBoxCommon.setOnCheckedChangeListener { _, _ ->
-                updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
-            }
-            checkBoxRare.setOnCheckedChangeListener { _, _ ->
-                updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
-            }
-            checkBoxEpic.setOnCheckedChangeListener { _, _ ->
-                updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
-            }
-            checkBoxLegendary.setOnCheckedChangeListener { _, _ ->
-                updateCollection(checkBoxCommon, checkBoxRare, checkBoxEpic, checkBoxLegendary)
+            if (selectedEditions != null) {
+                if (selectedEditions.contains(0)) {
+                    binding.cbAlpha.isChecked = true
+                }
+                if (selectedEditions.contains(1)) {
+                    binding.cbBeta.isChecked = true
+                }
+                if (selectedEditions.contains(2)) {
+                    binding.cbPromo.isChecked = true
+                }
+                if (selectedEditions.contains(3)) {
+                    binding.cbReward.isChecked = true
+                }
+                if (selectedEditions.contains(4)) {
+                    binding.cbUntamed.isChecked = true
+                }
+                if (selectedEditions.contains(5)) {
+                    binding.cbDice.isChecked = true
+                }
+                if (selectedEditions.contains(6)) {
+                    binding.cbGladius.isChecked = true
+                }
+                if (selectedEditions.contains(7)) {
+                    binding.cbChaos.isChecked = true
+                }
             }
 
-            dialog.setContentView(view)
+            recursiveAddChangeListener(binding.root)
+
+            dialog.setContentView(binding.root)
 
             dialog
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    private fun updateCollection(
-        checkBoxCommon: CheckBox,
-        checkBoxRare: CheckBox,
-        checkBoxEpic: CheckBox,
-        checkBoxLegendary: CheckBox
-    ) {
+    private fun recursiveAddChangeListener(viewGroup: ViewGroup) {
+        viewGroup.children.forEach {
+            if (it is CheckBox) {
+                it.setOnCheckedChangeListener { _, _ ->
+                    updateCollection()
+                }
+            }
+            if(it is ViewGroup) {
+                recursiveAddChangeListener(it)
+            }
+        }
+    }
+
+    private fun updateCollection() {
         val rarities = mutableListOf<Int>().apply {
-            if (checkBoxCommon.isChecked) {
+            if (binding.cbCommon.isChecked) {
                 add(1)
             }
-            if (checkBoxRare.isChecked) {
+            if (binding.cbRare.isChecked) {
                 add(2)
             }
-            if (checkBoxEpic.isChecked) {
+            if (binding.cbEpic.isChecked) {
                 add(3)
             }
-            if (checkBoxLegendary.isChecked) {
+            if (binding.cbLegendary.isChecked) {
                 add(4)
             }
         }.toList()
-        listener.onFilterChange(rarities)
+        val editions = mutableListOf<Int>().apply {
+            if (binding.cbAlpha.isChecked) {
+                add(0)
+            }
+            if (binding.cbBeta.isChecked) {
+                add(1)
+            }
+            if (binding.cbPromo.isChecked) {
+                add(2)
+            }
+            if (binding.cbReward.isChecked) {
+                add(3)
+            }
+            if (binding.cbUntamed.isChecked) {
+                add(4)
+            }
+            if (binding.cbDice.isChecked) {
+                add(5)
+            }
+            if (binding.cbGladius.isChecked) {
+                add(6)
+            }
+            if (binding.cbChaos.isChecked) {
+                add(7)
+            }
+        }.toList()
+        listener.onFilterChange(rarities, editions)
     }
 }

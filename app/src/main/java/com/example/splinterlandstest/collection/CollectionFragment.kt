@@ -6,7 +6,6 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.databinding.FragmentCollectionBinding
-import com.example.splinterlandstest.databinding.FragmentSecondBinding
 
 /**
  * Collection fragment
@@ -67,6 +65,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
         val dialog = CollectionFilterDialogFragment()
         val arguments = Bundle()
         arguments.putIntArray("rarities", model.filterRarities.toIntArray())
+        arguments.putIntArray("editions", model.filterEditions.toIntArray())
         dialog.arguments = arguments
         dialog.show(childFragmentManager, "NoticeDialogFragment")
     }
@@ -82,7 +81,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
         _binding = null
     }
 
-    override fun onFilterChange(rarities: List<Int>) {
-        model.updateFilter(rarities)
+    override fun onFilterChange(rarities: List<Int>, editions: List<Int>) {
+        model.updateFilter(rarities, editions)
     }
 }
