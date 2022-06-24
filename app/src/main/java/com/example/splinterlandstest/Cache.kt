@@ -38,7 +38,11 @@ class Cache {
     fun getPlayerList(context: Context): List<String> {
         val file = File(context.filesDir, "players")
         return if (file.exists()) {
-            JSONArray(file.readText()).toStringList()
+            try {
+                JSONArray(file.readText()).toStringList()
+            } catch (ignore: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
@@ -65,10 +69,14 @@ class Cache {
     fun getBalances(context: Context, player: String): List<Requests.BalancesResponse> {
         val file = File(context.filesDir, "balances_$player")
         return if (file.exists()) {
-            (Gson().fromJson(
-                file.readText(),
-                object : TypeToken<List<Requests.BalancesResponse>>() {}.type
-            ) as List<Requests.BalancesResponse>).filterBalances()
+            try {
+                (Gson().fromJson(
+                    file.readText(),
+                    object : TypeToken<List<Requests.BalancesResponse>>() {}.type
+                ) as List<Requests.BalancesResponse>).filterBalances()
+            } catch (exception: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
@@ -83,10 +91,14 @@ class Cache {
     fun getCollection(context: Context, player: String): List<Requests.Card> {
         val file = File(context.filesDir, "collection_$player")
         return if (file.exists()) {
-            Gson().fromJson(
-                file.readText(),
-                Requests.CollectionResponse::class.java
-            ).cards.distinctBy { it.card_detail_id }
+            try {
+                Gson().fromJson(
+                    file.readText(),
+                    Requests.CollectionResponse::class.java
+                ).cards.distinctBy { it.card_detail_id }
+            } catch (ignore: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
@@ -101,10 +113,14 @@ class Cache {
     fun getCardDetails(context: Context): List<Requests.CardDetail> {
         val file = File(context.filesDir, "card_details")
         return if (file.exists()) {
-            return Gson().fromJson(
-                file.readText(),
-                object : TypeToken<List<Requests.CardDetail>>() {}.type
-            )
+            try {
+                return Gson().fromJson(
+                    file.readText(),
+                    object : TypeToken<List<Requests.CardDetail>>() {}.type
+                )
+            } catch (exception: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
@@ -119,7 +135,11 @@ class Cache {
     fun getBattleHistory(context: Context, player: String): List<Requests.Battle> {
         val file = File(context.filesDir, "battles_$player")
         return if (file.exists()) {
-            Gson().fromJson(file.readText(), Requests.BattleHistoryResponse::class.java).battles
+            try {
+                Gson().fromJson(file.readText(), Requests.BattleHistoryResponse::class.java).battles
+            } catch (exception: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
@@ -134,7 +154,11 @@ class Cache {
     fun getPlayerDetails(context: Context, player: String): Requests.PlayerDetailsResponse {
         val file = File(context.filesDir, "details_$player")
         return if (file.exists()) {
-            Gson().fromJson(file.readText(), Requests.PlayerDetailsResponse::class.java)
+            try {
+                Gson().fromJson(file.readText(), Requests.PlayerDetailsResponse::class.java)
+            } catch (exception: Exception) {
+                Requests.PlayerDetailsResponse(0, "", 0, 0, "")
+            }
         } else {
             Requests.PlayerDetailsResponse(0, "", 0, 0, "")
         }
@@ -149,10 +173,14 @@ class Cache {
     fun getPlayerQuest(context: Context, player: String): List<Requests.QuestResponse> {
         val file = File(context.filesDir, "quest_$player")
         return if (file.exists()) {
-            return Gson().fromJson(
-                file.readText(),
-                object : TypeToken<List<Requests.QuestResponse>>() {}.type
-            )
+            try {
+                return Gson().fromJson(
+                    file.readText(),
+                    object : TypeToken<List<Requests.QuestResponse>>() {}.type
+                )
+            } catch (exception: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
