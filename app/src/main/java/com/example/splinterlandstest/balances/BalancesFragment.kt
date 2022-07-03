@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.splinterlandstest.MainActivityViewModel
+import com.example.splinterlandstest.R
 import com.example.splinterlandstest.databinding.FragmentFirstBinding
 
 
@@ -24,6 +25,8 @@ class BalancesFragment : Fragment() {
     private var _binding: FragmentFirstBinding? = null
 
     private val binding get() = _binding!!
+
+    private val model: BalancesFragmentViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,14 +46,13 @@ class BalancesFragment : Fragment() {
         val adapter = BalancesAdapter()
         binding.recyclerView.adapter = adapter
 
-        val model: BalancesFragmentViewModel by viewModels()
         model.balances.observe(this) { balances ->
             adapter.updateBalances(balances)
         }
 
-        model.loadUsers(requireContext(), activityViewModel.playerName)
+        model.loadBalances(requireContext(), activityViewModel.playerName)
 
-        activity?.title = "Balances"
+        activity?.title = getString(R.string.balances)
     }
 
     fun calculateNoOfColumns(context: Context, columnWidthDp: Float): Int {

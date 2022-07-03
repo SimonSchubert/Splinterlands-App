@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
+import com.example.splinterlandstest.R
 import com.example.splinterlandstest.databinding.FragmentSecondBinding
 
 /**
@@ -56,7 +57,7 @@ class BattlesFragment : Fragment() {
 
         model.loadBattles(requireContext(), activityViewModel.playerName)
 
-        activity?.title = "Battles"
+        activity?.title = getString(R.string.battles)
     }
 
     override fun onDestroyView() {

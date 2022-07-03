@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
+import com.example.splinterlandstest.R
 import com.example.splinterlandstest.databinding.FragmentCollectionBinding
 
 /**
@@ -25,7 +26,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
 
     private val binding get() = _binding!!
 
-    val model: CollectionFragmentViewModel by viewModels()
+    private val model: CollectionFragmentViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +59,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
             showFilterDialog()
         }
 
-        activity?.title = "Collection"
+        activity?.title = getString(R.string.collection)
     }
 
     private fun showFilterDialog() {
@@ -67,7 +68,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
         arguments.putIntArray("rarities", model.filterRarities.toIntArray())
         arguments.putIntArray("editions", model.filterEditions.toIntArray())
         dialog.arguments = arguments
-        dialog.show(childFragmentManager, "NoticeDialogFragment")
+        dialog.show(childFragmentManager, "FilterDialogFragment")
     }
 
     fun calculateNoOfColumns(context: Context, columnWidthDp: Float): Int {

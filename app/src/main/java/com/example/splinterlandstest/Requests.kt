@@ -1,7 +1,6 @@
 package com.example.splinterlandstest
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -21,7 +20,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 
-val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").apply {
+val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US).apply {
     timeZone = TimeZone.getTimeZone("UTC")
 }
 
@@ -203,7 +202,16 @@ class Requests {
         fun getFormattedEndDate(): String {
             val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
                 ?: 0L) - 1.days.inWholeMilliseconds
-            return "${milliseconds.absoluteValue.div(1000L).seconds}"
+            return if (milliseconds > 0) {
+                "Claim reward"
+            } else {
+                "${milliseconds.absoluteValue.div(1000L).seconds}"
+            }
+        }
+
+        fun getFormattedEndDateShort(): String {
+            val date = getFormattedEndDate()
+            return date.split(" ").first()
         }
     }
 

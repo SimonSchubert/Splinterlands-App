@@ -15,7 +15,7 @@ class BalancesFragmentViewModel : ViewModel() {
 
     val balances: MutableLiveData<List<Requests.BalancesResponse>> = MutableLiveData()
 
-    fun loadUsers(context: Context, player: String) {
+    fun loadBalances(context: Context, player: String) {
         viewModelScope.launch {
             balances.value = cache.getBalances(context, player)
             balances.value = requests.getBalances(context, player)

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.Requests
 
 interface OnItemClickListener {
     fun onClickPlayer(player: String)
@@ -22,6 +23,12 @@ class LoginAdapter(
     private val listener: OnItemClickListener
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var questsInfo = hashMapOf<String, Requests.QuestResponse>()
+    fun updateQuests(quests: HashMap<String, Requests.QuestResponse>) {
+        questsInfo = quests
+        notifyDataSetChanged()
+    }
 
     companion object {
         const val VIEW_TYPE_PLAYER = 1
@@ -39,7 +46,13 @@ class LoginAdapter(
         }
 
         fun bind(player: String) {
-            textView.text = player
+            if (questsInfo.containsKey(player)) {
+                val info = questsInfo[player]!!
+                textView.text = "$player (${info.getCurrentQuestInfo().chests}C) ${info.getFormattedEndDateShort()}"
+            } else {
+                textView.text = player
+            }
+
             itemView.setOnClickListener {
                 listener.onClickPlayer(player)
             }
