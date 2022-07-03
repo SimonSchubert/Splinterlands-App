@@ -37,54 +37,33 @@
                                               android:layout_marginEnd="12dp">
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner1"
-                   android:adjustViewBounds="true"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_1"
-                   android:adjustViewBounds="true"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_2"
-                   android:adjustViewBounds="true"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_3"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   android:adjustViewBounds="true"
-                   app:layout_constraintEnd_toStartOf="@id/monster1_2"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_4"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   android:adjustViewBounds="true"
-                   app:layout_constraintEnd_toStartOf="@id/monster1_3"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_5"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   android:adjustViewBounds="true"
-                   app:layout_constraintEnd_toStartOf="@id/monster1_4"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster1_6"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   android:adjustViewBounds="true"
-                   app:layout_constraintEnd_toStartOf="@id/monster1_5"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintBottom_toBottomOf="parent"/>
+                   android:layout_marginTop="4dp"/>
+
     </com.google.android.flexbox.FlexboxLayout>
 
     <ImageView android:layout_width="20dp" android:layout_height="20dp" android:id="@+id/ruleset1"
@@ -109,51 +88,38 @@
                                               app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
                                               app:layout_constraintStart_toEndOf="@id/imageViewIndicator"
                                               app:flexWrap="wrap" app:layout_constraintEnd_toEndOf="parent"
+                                              app:justifyContent="flex_start"
                                               android:layout_marginTop="12dp" android:layout_marginRight="12dp"
-                                              app:alignItems="flex_start" android:layout_marginStart="12dp">
+                                              android:layout_marginStart="12dp">
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/summoner2"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/imageViewIndicator"
                    android:layout_marginLeft="4dp"
-                   android:layout_marginTop="4dp"
-                   app:layout_constraintHorizontal_chainStyle="packed"/>
+                   android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_1"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/summoner2"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_2"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/monster2_1"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_3"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/monster2_2"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_4"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/monster2_3"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_5"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/monster2_4"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
 
         <ImageView android:layout_width="30dp" android:layout_height="30dp" android:id="@+id/monster2_6"
-                   app:layout_constraintTop_toBottomOf="@id/imageViewIndicator"
-                   app:layout_constraintStart_toEndOf="@id/monster2_5"
                    android:layout_marginLeft="4dp"
                    android:layout_marginTop="4dp"/>
+
     </com.google.android.flexbox.FlexboxLayout>
 
     <TextView

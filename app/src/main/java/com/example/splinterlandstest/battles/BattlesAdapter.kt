@@ -224,8 +224,9 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
                     .transform(CropSquareTransformation())
                     .transform(CropCircleTransformation())
                     .into(imageView)
+                imageView.isVisible = true
             } else {
-                imageView.setImageDrawable(null)
+                imageView.isVisible = false
             }
         }
     }
