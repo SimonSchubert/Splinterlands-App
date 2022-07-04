@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.loadCard
 import com.squareup.picasso.Picasso
 
 class CollectionAdapter(private var cardDetails: List<Requests.CardDetail>) :
@@ -44,17 +45,7 @@ class CollectionAdapter(private var cardDetails: List<Requests.CardDetail>) :
         val card = dataSet[position]
         val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
         cardDetail?.let {
-            Picasso.get()
-                .load(
-                    "https://d36mxiodymuqjm.cloudfront.net/${card.getPath()}/${cardDetail.name}.${
-                        card.getFileEnding(
-                            cardDetail
-                        )
-                    }"
-                )
-                .placeholder(card.getPlaceholderDrawable())
-                .fit()
-                .into(viewHolder.imageView)
+            Picasso.get().loadCard(viewHolder.imageView, card, cardDetail)
         }
     }
 

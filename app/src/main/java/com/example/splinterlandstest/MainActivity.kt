@@ -15,6 +15,7 @@ import com.example.splinterlandstest.battles.BattlesFragment
 import com.example.splinterlandstest.collection.CollectionFragment
 import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.example.splinterlandstest.login.LoginFragment
+import com.example.splinterlandstest.rewards.RewardsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -81,6 +82,10 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_logout -> {
                 viewModel.logout(this)
+                return true
+            }
+            R.id.menu_rewards -> {
+                setCurrentFragment(RewardsFragment())
                 return true
             }
             else -> super.onOptionsItemSelected(item)

@@ -4,12 +4,16 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.content.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
+import org.json.JSONObject
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,15 +42,22 @@ class Requests {
 
 
     @Serializable
-    data class Card(val card_detail_id: String, val edition: Int) {
-        fun getPath(): String {
-            return when (edition) {
+    data class Card(val card_detail_id: String, val edition: Int, val gold: Boolean = false) {
+        fun getPath(cardDetail: CardDetail): String {
+            val editionPath = when (edition) {
                 7 -> "cards_chaos"
                 6 -> "cards_gladiator"
                 4, 5 -> "cards_untamed"
                 2 -> "cards_v2.2"
                 else -> "cards_beta"
             }
+            val fileEnding = getFileEnding(cardDetail)
+            val isGoldPath = if (gold) {
+                "_gold"
+            } else {
+                ""
+            }
+            return "https://d36mxiodymuqjm.cloudfront.net/$editionPath/${cardDetail.name}${isGoldPath}.$fileEnding"
         }
 
         fun getPlaceholderDrawable(): Int {
@@ -61,7 +72,7 @@ class Requests {
             }
         }
 
-        fun getFileEnding(cardDetail: CardDetail): String {
+        private fun getFileEnding(cardDetail: CardDetail): String {
             return if (edition == 7 || edition == 3 && cardDetail.tier == 7) {
                 "jpg"
             } else {
@@ -296,4 +307,74 @@ class Requests {
             object : TypeToken<List<QuestResponse>>() {}.type
         )
     }
+
+    sealed class Reward
+    data class DecReward(val quantity: Int) : Reward()
+    data class CreditsReward(val quantity: Int) : Reward()
+    data class GoldPotionReward(val quantity: Int) : Reward()
+    data class LegendaryPotionReward(val quantity: Int) : Reward()
+    object PackReward : Reward()
+    data class CardReward(val cardId: Int, val isGold: Boolean) : Reward()
+
+    private suspend fun getLatestClaimRewardTransactionId(player: String): String {
+        val jsonBody =
+            "{\"id\":4,\"jsonrpc\":\"2.0\",\"method\":\"condenser_api.get_account_history\",\"params\":[\"$player\",-1,300]}"
+        val request: HttpResponse = client.post("https://anyx.io/") {
+            header("accept", "*/*")
+            setBody(TextContent(jsonBody, ContentType.Application.Json))
+        }.body()
+        val json = JSONObject(request.bodyAsText())
+        json.getJSONArray("result").toArrayList().reversed().forEach {
+            val obj = it.getJSONObject(1)
+            val data = obj.getJSONArray("op").getJSONObject(1)
+            val dataId = data.optString("id", "")
+            if (dataId == "sm_claim_reward") {
+                return obj.getString("trx_id")
+            }
+        }
+        return ""
+    }
+
+    suspend fun getRecentRewards(player: String): List<Reward> {
+        val transactionId = getLatestClaimRewardTransactionId(player)
+        if (transactionId.isNotBlank()) {
+            val request2: HttpResponse =
+                client.get("$endpoint/transactions/lookup?trx_id=$transactionId") {
+                    header("accept", "*/*")
+                }.body()
+            val json3 = JSONObject(request2.bodyAsText())
+            if (json3.optString("error", "") == "") {
+                val rewards = mutableListOf<Reward>()
+                val json2 = JSONObject(json3.getJSONObject("trx_info").getString("result"))
+                json2.getJSONArray("rewards").toObjectList().forEach {
+                    when (it.getString("type")) {
+                        "potion" -> {
+                            if (it.getString("potion_type") == "gold") {
+                                rewards.add(GoldPotionReward(it.getInt("quantity")))
+                            } else {
+                                rewards.add(LegendaryPotionReward(it.getInt("quantity")))
+                            }
+                        }
+                        "reward_card" -> {
+                            val cardDetailId = it.getJSONObject("card").getInt("card_detail_id")
+                            val isGold = it.getJSONObject("card").getBoolean("gold")
+                            rewards.add(CardReward(cardDetailId, isGold))
+                        }
+                        "credits" -> {
+                            rewards.add(CreditsReward(it.getInt("quantity")))
+                        }
+                        "dec" -> {
+                            rewards.add(DecReward(it.getInt("quantity")))
+                        }
+                        "pack" -> {
+                            rewards.add(PackReward)
+                        }
+                    }
+                }
+                return rewards.toList()
+            }
+        }
+        return emptyList()
+    }
+
 }

@@ -57,13 +57,19 @@ class LoginFragment : Fragment() {
         model.quests.observe(this) { quests ->
             adapter.updateQuests(quests)
         }
-        model.loadUsers(requireContext(), players)
 
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
 
         activity?.title = "Login"
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val players = Cache().getPlayerList(requireContext()).toMutableList()
+        model.loadUsers(requireContext(), players)
     }
 
     override fun onDestroyView() {

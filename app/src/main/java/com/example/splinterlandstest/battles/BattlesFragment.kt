@@ -22,6 +22,8 @@ class BattlesFragment : Fragment() {
 
     private var _binding: FragmentSecondBinding? = null
 
+    private val model: BattlesFragmentViewModel by viewModels()
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -41,7 +43,6 @@ class BattlesFragment : Fragment() {
         val adapter = BattlesAdapter(activityViewModel.playerName, Cache().getCardDetails(requireContext()))
         binding.recyclerView.adapter = adapter
 
-        val model: BattlesFragmentViewModel by viewModels()
         model.battles.observe(this) { battles ->
             adapter.updateBattles(battles)
         }
@@ -55,9 +56,13 @@ class BattlesFragment : Fragment() {
             adapter.updateCardDetails(cardDetails)
         }
 
-        model.loadBattles(requireContext(), activityViewModel.playerName)
-
         activity?.title = getString(R.string.battles)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        model.loadBattles(requireContext(), activityViewModel.playerName)
     }
 
     override fun onDestroyView() {
