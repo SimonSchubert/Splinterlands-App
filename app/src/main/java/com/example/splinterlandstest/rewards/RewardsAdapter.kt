@@ -56,6 +56,10 @@ class RewardsAdapter :
                 viewHolder.textView.text = "${numberFormat.format(reward.quantity)} CREDITS"
                 viewHolder.imageView.setImageResource(R.drawable.credits)
             }
+            is Requests.MeritsReward -> {
+                viewHolder.textView.text = "${numberFormat.format(reward.quantity)} Merits"
+                viewHolder.imageView.setImageResource(R.drawable.mertis)
+            }
             is Requests.PackReward -> {
                 viewHolder.textView.text = "PACK"
                 viewHolder.imageView.setImageResource(R.drawable.chaos)

@@ -311,6 +311,7 @@ class Requests {
     sealed class Reward
     data class DecReward(val quantity: Int) : Reward()
     data class CreditsReward(val quantity: Int) : Reward()
+    data class MeritsReward(val quantity: Int) : Reward()
     data class GoldPotionReward(val quantity: Int) : Reward()
     data class LegendaryPotionReward(val quantity: Int) : Reward()
     object PackReward : Reward()
@@ -362,6 +363,9 @@ class Requests {
                         }
                         "credits" -> {
                             rewards.add(CreditsReward(it.getInt("quantity")))
+                        }
+                        "merits" -> {
+                            rewards.add(MeritsReward(it.getInt("quantity")))
                         }
                         "dec" -> {
                             rewards.add(DecReward(it.getInt("quantity")))
