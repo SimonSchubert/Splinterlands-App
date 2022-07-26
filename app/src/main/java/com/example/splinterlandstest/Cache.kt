@@ -12,11 +12,11 @@ class Cache {
 
     fun getQuestConfig(rank: Int): QuestConfig {
         return when (rank) {
-            1 -> QuestConfig(5000, 1.13f)
-            2 -> QuestConfig(18000, 1.09f)
-            3 -> QuestConfig(43000, 1.062f)
-            4 -> QuestConfig(90000, 1.038f)
-            else -> QuestConfig(300, 1.2f)
+            1 -> QuestConfig(6500, 1.13f)
+            2 -> QuestConfig(22500, 1.09f)
+            3 -> QuestConfig(53750, 1.062f)
+            4 -> QuestConfig(112500, 1.038f)
+            else -> QuestConfig(390, 1.2f)
         }
     }
 

@@ -12,7 +12,7 @@ fun List<Requests.BalancesResponse>.filterBalances(): List<Requests.BalancesResp
             sps.balance += it.balance
         }
     }
-    return this.sortedByDescending { it.balance }
+    return this.sortedByDescending { it.balance }.filter { it.balance.toInt() > 0 }
         .filter { it.getDrawableResource() != R.drawable.ic_launcher_background }
 }
 

@@ -198,16 +198,19 @@ class Requests {
             val config = Cache().getQuestConfig(chest_tier)
 
             var chests = -1
-            var totalRshares = 0L
-            var nextChest = 0L
-            while (rshares >= totalRshares.toDouble().roundToInt()) {
+            var totalRshares = 0.0
+            var nextChest = 0.0
+            while (rshares >= totalRshares.roundToInt()) {
                 chests++
-                nextChest = (config.base * config.multiplier.pow(chests)).toLong()
+                nextChest = (config.base * config.multiplier.pow(chests)).toDouble()
                 totalRshares += nextChest
             }
 
             val requiredRshares = totalRshares - rshares
-            return QuestInfo(chests, nextChest, requiredRshares, chest_tier)
+            if(chests > 30) {
+                chests = 30
+            }
+            return QuestInfo(chests, nextChest.toLong(), requiredRshares.toLong(), chest_tier)
         }
 
         fun getFormattedEndDate(): String {

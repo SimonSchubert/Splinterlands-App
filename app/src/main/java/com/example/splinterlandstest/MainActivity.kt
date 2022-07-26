@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
+        menu.findItem(R.id.menu_rewards).isVisible = viewModel.isLoggedIn()
         return true
     }
 
