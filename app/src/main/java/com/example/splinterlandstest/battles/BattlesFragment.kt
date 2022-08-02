@@ -1,5 +1,7 @@
 package com.example.splinterlandstest.battles
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +14,7 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.databinding.FragmentSecondBinding
+
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -40,7 +43,10 @@ class BattlesFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val adapter = BattlesAdapter(activityViewModel.playerName, Cache().getCardDetails(requireContext()))
+        val adapter = BattlesAdapter(activityViewModel.playerName, Cache().getCardDetails(requireContext())) {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://splinterlands.com/?p=battle&id=${it}"))
+            startActivity(browserIntent)
+        }
         binding.recyclerView.adapter = adapter
 
         model.battles.observe(viewLifecycleOwner) { battles ->

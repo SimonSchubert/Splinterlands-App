@@ -104,7 +104,8 @@ class Requests {
         val ruleset: String,
         val inactive: String,
         val mana_cap: Int,
-        val details: BattleDetails
+        val details: BattleDetails,
+        val battle_queue_id_1: String
     ) {
         fun getOpponent(player: String): String {
             return if (player_1 == player) {
@@ -288,10 +289,17 @@ class Requests {
     }
 
     suspend fun getBattleHistory(context: Context, player: String): List<Battle> {
-        val response: HttpResponse =
+        val responseWild: HttpResponse =
             client.get("$endpoint/battle/history2?player=$player&username=$player")
-        cache.writeBattleHistory(context, response.bodyAsText(), player)
-        return Gson().fromJson(response.bodyAsText(), BattleHistoryResponse::class.java).battles
+        cache.writeBattleHistory(context, responseWild.bodyAsText(), player, "wild")
+
+        val responseModern: HttpResponse =
+            client.get("$endpoint/battle/history2?player=$player&username=$player&format=modern")
+        cache.writeBattleHistory(context, responseModern.bodyAsText(), player, "modern")
+
+        val battles = Gson().fromJson(responseWild.bodyAsText(), BattleHistoryResponse::class.java).battles +
+                Gson().fromJson(responseModern.bodyAsText(), BattleHistoryResponse::class.java).battles
+        return battles.sortedByDescending { it.created_date }
     }
 
     suspend fun getPlayerDetails(context: Context, player: String): PlayerDetailsResponse {

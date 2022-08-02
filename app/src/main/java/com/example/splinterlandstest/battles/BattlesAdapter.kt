@@ -17,7 +17,7 @@ import java.text.NumberFormat
 import java.util.*
 
 
-class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDetail>) :
+class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDetail>, val onLickBattle: (battleId: String) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -206,6 +206,10 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             }
 
             tvTimeAgo.text = battle.getTimeAgo()
+
+            itemView.setOnClickListener {
+                onLickBattle.invoke(battle.battle_queue_id_1)
+            }
         }
 
         private fun loadCardImage(imageView: ImageView, card: Requests.Card?) {

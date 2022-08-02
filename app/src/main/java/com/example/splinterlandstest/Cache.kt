@@ -133,20 +133,31 @@ class Cache {
     }
 
     fun getBattleHistory(context: Context, player: String): List<Requests.Battle> {
-        val file = File(context.filesDir, "battles_$player")
-        return if (file.exists()) {
+        val battles = mutableListOf<Requests.Battle>()
+        val fileWild = File(context.filesDir, "battles_${player}_wild")
+        if (fileWild.exists()) {
             try {
-                Gson().fromJson(file.readText(), Requests.BattleHistoryResponse::class.java).battles
-            } catch (exception: Exception) {
-                emptyList()
+                battles.addAll(Gson().fromJson(fileWild.readText(), Requests.BattleHistoryResponse::class.java).battles)
+            } catch (ignore: Exception) {
             }
-        } else {
-            emptyList()
         }
+        val fileModern = File(context.filesDir, "battles_${player}_modern")
+        if (fileModern.exists()) {
+            try {
+                battles.addAll(
+                    Gson().fromJson(
+                        fileModern.readText(),
+                        Requests.BattleHistoryResponse::class.java
+                    ).battles
+                )
+            } catch (ignore: Exception) {
+            }
+        }
+        return battles.sortedByDescending { it.created_date }
     }
 
-    fun writeBattleHistory(context: Context, response: String, player: String) {
-        context.openFileOutput("battles_$player", Context.MODE_PRIVATE).use {
+    fun writeBattleHistory(context: Context, response: String, player: String, format: String) {
+        context.openFileOutput("battles_${player}_$format", Context.MODE_PRIVATE).use {
             it.write(response.toByteArray())
         }
     }
