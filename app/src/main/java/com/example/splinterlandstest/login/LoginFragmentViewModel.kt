@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Requests
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LoginFragmentViewModel : ViewModel() {
@@ -14,8 +16,8 @@ class LoginFragmentViewModel : ViewModel() {
     val quests: MutableLiveData<HashMap<String, Requests.QuestResponse>> = MutableLiveData()
 
     fun loadUsers(context: Context, players: List<String>) {
-        viewModelScope.launch {
-            quests.value = hashMapOf()
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            quests.postValue(hashMapOf())
             players.forEach { player ->
                 val questInfo = requests.getPlayerQuest(context, player).firstOrNull()
                 if (questInfo != null) {
@@ -24,5 +26,9 @@ class LoginFragmentViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
     }
 }

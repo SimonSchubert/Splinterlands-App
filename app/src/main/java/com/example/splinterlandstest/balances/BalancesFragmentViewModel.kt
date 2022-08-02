@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BalancesFragmentViewModel : ViewModel() {
@@ -16,9 +18,13 @@ class BalancesFragmentViewModel : ViewModel() {
     val balances: MutableLiveData<List<Requests.BalancesResponse>> = MutableLiveData()
 
     fun loadBalances(context: Context, player: String) {
-        viewModelScope.launch {
-            balances.value = cache.getBalances(context, player)
-            balances.value = requests.getBalances(context, player)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            balances.postValue(cache.getBalances(context, player))
+            balances.postValue(requests.getBalances(context, player))
         }
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
     }
 }

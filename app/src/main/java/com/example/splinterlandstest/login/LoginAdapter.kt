@@ -89,6 +89,7 @@ class LoginAdapter(
                 val detailViewHolder = (viewHolder as PlayerViewHolder)
                 detailViewHolder.bind(dataSet[position - 1])
             }
+
             VIEW_TYPE_LOGIN -> {
                 val loginViewHolder = (viewHolder as LoginViewHolder)
                 loginViewHolder.bind()
@@ -104,12 +105,14 @@ class LoginAdapter(
                         .inflate(R.layout.logo_row_item, viewGroup, false)
                 )
             }
+
             VIEW_TYPE_LOGIN -> {
                 LoginViewHolder(
                     LayoutInflater.from(viewGroup.context)
                         .inflate(R.layout.login_row_item, viewGroup, false)
                 )
             }
+
             else -> {
                 PlayerViewHolder(
                     LayoutInflater.from(viewGroup.context)

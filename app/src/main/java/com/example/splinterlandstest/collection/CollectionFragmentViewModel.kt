@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CollectionFragmentViewModel : ViewModel() {
@@ -21,12 +23,12 @@ class CollectionFragmentViewModel : ViewModel() {
     private var unfilteredCollection = listOf<Requests.Card>()
 
     fun loadCollection(context: Context, player: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             unfilteredCollection = cache.getCollection(context, player)
             updateCollection()
             unfilteredCollection = requests.getCollection(context, player)
             updateCollection()
-            cardDetails.value = requests.getCardDetails(context)
+            cardDetails.postValue(requests.getCardDetails(context))
         }
     }
 
@@ -42,12 +44,16 @@ class CollectionFragmentViewModel : ViewModel() {
                 filteredCollection = filteredCollection.filter { filterEditions.contains(it.edition) }
             }
         }
-        collection.value = filteredCollection
+        collection.postValue(filteredCollection)
     }
 
     fun updateFilter(rarities: List<Int>, editions: List<Int>) {
         filterRarities = rarities
         filterEditions = editions
         updateCollection()
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
     }
 }

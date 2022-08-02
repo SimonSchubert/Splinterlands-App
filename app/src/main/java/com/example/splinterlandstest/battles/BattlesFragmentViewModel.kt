@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class BattlesFragmentViewModel : ViewModel() {
@@ -19,14 +21,18 @@ class BattlesFragmentViewModel : ViewModel() {
     val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
 
     fun loadBattles(context: Context, player: String) {
-        viewModelScope.launch {
-            battles.value = cache.getBattleHistory(context, player)
-            playerDetails.value = cache.getPlayerDetails(context, player)
-            playerQuest.value = cache.getPlayerQuest(context, player).firstOrNull()
-            battles.value = requests.getBattleHistory(context, player)
-            playerDetails.value = requests.getPlayerDetails(context, player)
-            playerQuest.value = requests.getPlayerQuest(context, player).firstOrNull()
-            cardDetails.value = requests.getCardDetails(context)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            battles.postValue(cache.getBattleHistory(context, player))
+            playerDetails.postValue(cache.getPlayerDetails(context, player))
+            playerQuest.postValue(cache.getPlayerQuest(context, player).firstOrNull())
+            battles.postValue(requests.getBattleHistory(context, player))
+            playerDetails.postValue(requests.getPlayerDetails(context, player))
+            playerQuest.postValue(requests.getPlayerQuest(context, player).firstOrNull())
+            cardDetails.postValue(requests.getCardDetails(context))
         }
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
     }
 }

@@ -46,10 +46,10 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
         val adapter = CollectionAdapter(Cache().getCardDetails(requireContext()))
         binding.recyclerView.adapter = adapter
 
-        model.collection.observe(this) { collection ->
+        model.collection.observe(viewLifecycleOwner) { collection ->
             adapter.updateCollection(collection)
         }
-        model.cardDetails.observe(this) { cardDetails ->
+        model.cardDetails.observe(viewLifecycleOwner) { cardDetails ->
             adapter.updateCardDetails(cardDetails)
         }
 

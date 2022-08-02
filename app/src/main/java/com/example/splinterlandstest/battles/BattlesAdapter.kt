@@ -248,12 +248,14 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
                         .inflate(R.layout.player_detail_row_item, viewGroup, false)
                 )
             }
+
             VIEW_TYPE_CURRENT_QUEST -> {
                 CurrentQuestViewHolder(
                     LayoutInflater.from(viewGroup.context)
                         .inflate(R.layout.player_quest_row_item, viewGroup, false)
                 )
             }
+
             else -> {
                 BattleViewHolder(
                     LayoutInflater.from(viewGroup.context)

@@ -52,18 +52,22 @@ class RewardsAdapter :
                 viewHolder.textView.text = "${numberFormat.format(reward.quantity)} DEC"
                 viewHolder.imageView.setImageResource(R.drawable.dec)
             }
+
             is Requests.CreditsReward -> {
                 viewHolder.textView.text = "${numberFormat.format(reward.quantity)} CREDITS"
                 viewHolder.imageView.setImageResource(R.drawable.credits)
             }
+
             is Requests.MeritsReward -> {
                 viewHolder.textView.text = "${numberFormat.format(reward.quantity)} Merits"
                 viewHolder.imageView.setImageResource(R.drawable.mertis)
             }
+
             is Requests.PackReward -> {
                 viewHolder.textView.text = "PACK"
                 viewHolder.imageView.setImageResource(R.drawable.chaos)
             }
+
             is Requests.CardReward -> {
                 val card = Requests.Card(reward.cardId.toString(), 3, reward.isGold)
 
@@ -74,10 +78,12 @@ class RewardsAdapter :
                     Picasso.get().loadCard(viewHolder.imageView, card, cardDetail)
                 }
             }
+
             is Requests.GoldPotionReward -> {
                 viewHolder.textView.text = "${reward.quantity} POTION"
                 viewHolder.imageView.setImageResource(R.drawable.gold)
             }
+
             is Requests.LegendaryPotionReward -> {
                 viewHolder.textView.text = "${reward.quantity} POTION"
                 viewHolder.imageView.setImageResource(R.drawable.legendary)

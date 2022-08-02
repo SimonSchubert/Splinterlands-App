@@ -85,10 +85,12 @@ class MainActivity : AppCompatActivity() {
                 viewModel.logout(this)
                 return true
             }
+
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
                 return true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

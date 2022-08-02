@@ -47,10 +47,10 @@ class RewardsFragment : Fragment() {
         val adapter = RewardsAdapter()
         binding.recyclerView.adapter = adapter
 
-        model.cardDetails.observe(this) { cardDetails ->
+        model.cardDetails.observe(viewLifecycleOwner) { cardDetails ->
             adapter.updateCardDetails(cardDetails)
         }
-        model.rewards.observe(this) { balances ->
+        model.rewards.observe(viewLifecycleOwner) { balances ->
             adapter.updateRewards(balances)
             binding.progressBar.isVisible = false
         }

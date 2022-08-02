@@ -207,7 +207,7 @@ class Requests {
             }
 
             val requiredRshares = totalRshares - rshares
-            if(chests > 30) {
+            if (chests > 30) {
                 chests = 30
             }
             return QuestInfo(chests, nextChest.toLong(), requiredRshares.toLong(), chest_tier)
@@ -359,20 +359,25 @@ class Requests {
                                 rewards.add(LegendaryPotionReward(it.getInt("quantity")))
                             }
                         }
+
                         "reward_card" -> {
                             val cardDetailId = it.getJSONObject("card").getInt("card_detail_id")
                             val isGold = it.getJSONObject("card").getBoolean("gold")
                             rewards.add(CardReward(cardDetailId, isGold))
                         }
+
                         "credits" -> {
                             rewards.add(CreditsReward(it.getInt("quantity")))
                         }
+
                         "merits" -> {
                             rewards.add(MeritsReward(it.getInt("quantity")))
                         }
+
                         "dec" -> {
                             rewards.add(DecReward(it.getInt("quantity")))
                         }
+
                         "pack" -> {
                             rewards.add(PackReward)
                         }

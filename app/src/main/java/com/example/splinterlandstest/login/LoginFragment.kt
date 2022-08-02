@@ -54,7 +54,7 @@ class LoginFragment : Fragment() {
                 }
             })
 
-        model.quests.observe(this) { quests ->
+        model.quests.observe(viewLifecycleOwner) { quests ->
             adapter.updateQuests(quests)
         }
 

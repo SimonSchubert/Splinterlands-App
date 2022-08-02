@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RewardsFragmentViewModel : ViewModel() {
@@ -17,13 +19,16 @@ class RewardsFragmentViewModel : ViewModel() {
     val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
 
     fun loadRewards(context: Context, player: String) {
-        viewModelScope.launch {
-            cardDetails.value = cache.getCardDetails(context)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            cardDetails.postValue(cache.getCardDetails(context))
             if (cardDetails.value?.isEmpty() == true) {
-                cardDetails.value = requests.getCardDetails(context)
+                cardDetails.postValue(requests.getCardDetails(context))
             }
-
-            rewards.value = requests.getRecentRewards(player)
+            rewards.postValue(requests.getRecentRewards(player))
         }
+    }
+
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
     }
 }

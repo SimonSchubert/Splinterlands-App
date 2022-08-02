@@ -43,16 +43,16 @@ class BattlesFragment : Fragment() {
         val adapter = BattlesAdapter(activityViewModel.playerName, Cache().getCardDetails(requireContext()))
         binding.recyclerView.adapter = adapter
 
-        model.battles.observe(this) { battles ->
+        model.battles.observe(viewLifecycleOwner) { battles ->
             adapter.updateBattles(battles)
         }
-        model.playerDetails.observe(this) { playerDetails ->
+        model.playerDetails.observe(viewLifecycleOwner) { playerDetails ->
             adapter.updatePlayerDetails(playerDetails)
         }
-        model.playerQuest.observe(this) { playerQuest ->
+        model.playerQuest.observe(viewLifecycleOwner) { playerQuest ->
             adapter.updatePlayerQuest(playerQuest)
         }
-        model.cardDetails.observe(this) { cardDetails ->
+        model.cardDetails.observe(viewLifecycleOwner) { cardDetails ->
             adapter.updateCardDetails(cardDetails)
         }
 

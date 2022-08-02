@@ -46,7 +46,7 @@ class BalancesFragment : Fragment() {
         val adapter = BalancesAdapter()
         binding.recyclerView.adapter = adapter
 
-        model.balances.observe(this) { balances ->
+        model.balances.observe(viewLifecycleOwner) { balances ->
             adapter.updateBalances(balances)
         }
 
