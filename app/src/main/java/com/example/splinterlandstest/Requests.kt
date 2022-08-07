@@ -91,7 +91,7 @@ class Requests {
     data class BattleDetailsTeam(val player: String, val summoner: Card, val monsters: List<Card>)
 
     @Serializable
-    data class BattleDetails(val team1: BattleDetailsTeam?, val team2: BattleDetailsTeam?)
+    data class BattleDetails(val team1: BattleDetailsTeam?, val team2: BattleDetailsTeam?, val is_brawl: Boolean = false)
 
     @Serializable
     data class Battle(
@@ -105,7 +105,9 @@ class Requests {
         val inactive: String,
         val mana_cap: Int,
         val details: BattleDetails,
-        val battle_queue_id_1: String
+        val battle_queue_id_1: String,
+        val match_type: String,
+        val format: String
     ) {
         fun getOpponent(player: String): String {
             return if (player_1 == player) {
@@ -172,6 +174,7 @@ class Requests {
         val capture_rate: Int,
         val rank: String,
         val rating: Int,
+        val modern_rating: Int,
         val wins: Int,
         val name: String
     )

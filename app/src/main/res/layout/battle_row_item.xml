@@ -176,5 +176,14 @@
             app:layout_constraintTop_toBottomOf="@+id/ruleset1"
             app:layout_constraintStart_toStartOf="@+id/imageViewIndicator"
             app:layout_constraintEnd_toEndOf="@+id/imageViewIndicator"/>
+    <TextView
+            tools:text="20m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tvType"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@+id/tvTimeAgo"
+            android:layout_marginTop="6px"
+            app:layout_constraintStart_toStartOf="@+id/imageViewIndicator"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewIndicator"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

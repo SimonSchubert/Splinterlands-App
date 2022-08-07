@@ -17,7 +17,11 @@ import java.text.NumberFormat
 import java.util.*
 
 
-class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDetail>, val onLickBattle: (battleId: String) -> Unit) :
+class BattlesAdapter(
+    val player: String,
+    var cardDetails: List<Requests.CardDetail>,
+    val onLickBattle: (battleId: String) -> Unit
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -104,7 +108,8 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
 
         fun bind(playerDetails: Requests.PlayerDetailsResponse?) {
             tvPlayerName.text = playerDetails?.name
-            tvPlayerRating.text = numberFormat.format(playerDetails?.rating)
+            tvPlayerRating.text =
+                "W: ${numberFormat.format(playerDetails?.rating)}, M: ${numberFormat.format(playerDetails?.modern_rating)}"
         }
     }
 
@@ -130,6 +135,7 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
         private val tvPlayer1rating: TextView
         private val tvMana: TextView
         private val tvTimeAgo: TextView
+        private val tvType: TextView
         private val rulesetImageViews: List<ImageView>
 
         init {
@@ -156,6 +162,7 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             summoner2 = view.findViewById(R.id.summoner2)
             tvMana = view.findViewById(R.id.tvMana)
             tvTimeAgo = view.findViewById(R.id.tvTimeAgo)
+            tvType = view.findViewById(R.id.tvType)
         }
 
         fun bind(battle: Requests.Battle) {
@@ -206,6 +213,17 @@ class BattlesAdapter(val player: String, var cardDetails: List<Requests.CardDeta
             }
 
             tvTimeAgo.text = battle.getTimeAgo()
+            tvType.text = if (battle.match_type == "Ranked") {
+                if (battle.format == "modern") {
+                    "Modern"
+                } else {
+                    "Wild"
+                }
+            } else if(battle.details.is_brawl) {
+                "Brawl"
+            } else {
+                battle.match_type
+            }
 
             itemView.setOnClickListener {
                 onLickBattle.invoke(battle.battle_queue_id_1)

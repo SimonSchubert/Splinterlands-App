@@ -168,10 +168,10 @@ class Cache {
             try {
                 Gson().fromJson(file.readText(), Requests.PlayerDetailsResponse::class.java)
             } catch (exception: Exception) {
-                Requests.PlayerDetailsResponse(0, "", 0, 0, "")
+                Requests.PlayerDetailsResponse(0, "", 0, 0, 0,"")
             }
         } else {
-            Requests.PlayerDetailsResponse(0, "", 0, 0, "")
+            Requests.PlayerDetailsResponse(0, "", 0, 0, 0, "")
         }
     }
 
