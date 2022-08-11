@@ -24,8 +24,8 @@ class LoginAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var questsInfo = hashMapOf<String, Requests.QuestResponse>()
-    fun updateQuests(quests: HashMap<String, Requests.QuestResponse>) {
+    private var questsInfo = hashMapOf<String, Requests.RewardsInfo>()
+    fun updateQuests(quests: HashMap<String, Requests.RewardsInfo>) {
         questsInfo = quests
         notifyDataSetChanged()
     }
@@ -48,7 +48,8 @@ class LoginAdapter(
         fun bind(player: String) {
             if (questsInfo.containsKey(player)) {
                 val info = questsInfo[player]!!
-                textView.text = "$player (${info.getCurrentQuestInfo().chests}C) ${info.getFormattedEndDateShort()}"
+                textView.text =
+                    "$player (${info.quest_reward_info.chest_earned}C) ${info.quest_reward_info.getFormattedEndDateShort()}"
             } else {
                 textView.text = player
             }

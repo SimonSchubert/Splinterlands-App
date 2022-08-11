@@ -17,17 +17,17 @@ class BattlesFragmentViewModel : ViewModel() {
 
     val battles: MutableLiveData<List<Requests.Battle>> = MutableLiveData()
     val playerDetails: MutableLiveData<Requests.PlayerDetailsResponse> = MutableLiveData()
-    val playerQuest: MutableLiveData<Requests.QuestResponse?> = MutableLiveData()
+    val rewardsInfo: MutableLiveData<Requests.RewardsInfo?> = MutableLiveData()
     val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
 
     fun loadBattles(context: Context, player: String) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             battles.postValue(cache.getBattleHistory(context, player))
             playerDetails.postValue(cache.getPlayerDetails(context, player))
-            playerQuest.postValue(cache.getPlayerQuest(context, player).firstOrNull())
+            rewardsInfo.postValue(cache.getRewardsInfo(context, player))
             battles.postValue(requests.getBattleHistory(context, player))
             playerDetails.postValue(requests.getPlayerDetails(context, player))
-            playerQuest.postValue(requests.getPlayerQuest(context, player).firstOrNull())
+            rewardsInfo.postValue(requests.getRewardsInfo(context, player))
             cardDetails.postValue(requests.getCardDetails(context))
         }
     }

@@ -91,7 +91,11 @@ class Requests {
     data class BattleDetailsTeam(val player: String, val summoner: Card, val monsters: List<Card>)
 
     @Serializable
-    data class BattleDetails(val team1: BattleDetailsTeam?, val team2: BattleDetailsTeam?, val is_brawl: Boolean = false)
+    data class BattleDetails(
+        val team1: BattleDetailsTeam?,
+        val team2: BattleDetailsTeam?,
+        val is_brawl: Boolean = false
+    )
 
     @Serializable
     data class Battle(
@@ -189,6 +193,64 @@ class Requests {
                 else -> "bronze"
             }
             return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
+        }
+    }
+
+    @Serializable
+    data class RewardsInfo(val quest_reward_info: QuestRewardInfo, val season_reward_info: SeasonRewardInfo)
+
+    @Serializable
+    data class SeasonRewardInfo(
+        val chest_tier: Int,
+        val chest_earned: Int,
+        val rshares: Long
+    ) {
+
+        fun getChestUrl(): String {
+            val league = when (chest_tier) {
+                1 -> "silver"
+                2 -> "gold"
+                3 -> "diamond"
+                4 -> "champion"
+                else -> "bronze"
+            }
+            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
+        }
+
+    }
+
+    @Serializable
+    data class QuestRewardInfo(
+        val chest_tier: Int,
+        val chest_earned: Int,
+        val created_date: String,
+        val rshares: Long
+    ) {
+
+        fun getChestUrl(): String {
+            val league = when (chest_tier) {
+                1 -> "silver"
+                2 -> "gold"
+                3 -> "diamond"
+                4 -> "champion"
+                else -> "bronze"
+            }
+            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
+        }
+
+        fun getFormattedEndDate(): String {
+            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
+                ?: 0L) - 1.days.inWholeMilliseconds
+            return if (milliseconds > 0) {
+                "Claim reward"
+            } else {
+                "${milliseconds.absoluteValue.div(1000L).seconds}"
+            }
+        }
+
+        fun getFormattedEndDateShort(): String {
+            val date = getFormattedEndDate()
+            return date.split(" ").first()
         }
     }
 
@@ -312,14 +374,11 @@ class Requests {
         return Gson().fromJson(response.bodyAsText(), PlayerDetailsResponse::class.java)
     }
 
-    suspend fun getPlayerQuest(context: Context, player: String): List<QuestResponse> {
+    suspend fun getRewardsInfo(context: Context, player: String): RewardsInfo {
         val response: HttpResponse =
-            client.get("$endpoint/players/quests?username=$player")
-        cache.writePlayerQuest(context, response.bodyAsText(), player)
-        return Gson().fromJson(
-            response.bodyAsText(),
-            object : TypeToken<List<QuestResponse>>() {}.type
-        )
+            client.get("$endpoint/players/current_rewards?username=$player")
+        cache.writeRewardsInfo(context, response.bodyAsText(), player)
+        return Gson().fromJson(response.bodyAsText(), RewardsInfo::class.java)
     }
 
     sealed class Reward

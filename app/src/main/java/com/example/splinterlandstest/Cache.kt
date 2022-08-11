@@ -168,7 +168,7 @@ class Cache {
             try {
                 Gson().fromJson(file.readText(), Requests.PlayerDetailsResponse::class.java)
             } catch (exception: Exception) {
-                Requests.PlayerDetailsResponse(0, "", 0, 0, 0,"")
+                Requests.PlayerDetailsResponse(0, "", 0, 0, 0, "")
             }
         } else {
             Requests.PlayerDetailsResponse(0, "", 0, 0, 0, "")
@@ -181,24 +181,21 @@ class Cache {
         }
     }
 
-    fun getPlayerQuest(context: Context, player: String): List<Requests.QuestResponse> {
-        val file = File(context.filesDir, "quest_$player")
+    fun getRewardsInfo(context: Context, player: String): Requests.RewardsInfo? {
+        val file = File(context.filesDir, "rewards_info_$player")
         return if (file.exists()) {
             try {
-                return Gson().fromJson(
-                    file.readText(),
-                    object : TypeToken<List<Requests.QuestResponse>>() {}.type
-                )
+                Gson().fromJson(file.readText(), Requests.RewardsInfo::class.java)
             } catch (exception: Exception) {
-                emptyList()
+                null
             }
         } else {
-            emptyList()
+            null
         }
     }
 
-    fun writePlayerQuest(context: Context, response: String, player: String) {
-        context.openFileOutput("quest_$player", Context.MODE_PRIVATE).use {
+    fun writeRewardsInfo(context: Context, response: String, player: String) {
+        context.openFileOutput("rewards_info_$player", Context.MODE_PRIVATE).use {
             it.write(response.toByteArray())
         }
     }

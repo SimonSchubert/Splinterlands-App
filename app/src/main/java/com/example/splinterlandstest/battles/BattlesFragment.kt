@@ -55,8 +55,8 @@ class BattlesFragment : Fragment() {
         model.playerDetails.observe(viewLifecycleOwner) { playerDetails ->
             adapter.updatePlayerDetails(playerDetails)
         }
-        model.playerQuest.observe(viewLifecycleOwner) { playerQuest ->
-            adapter.updatePlayerQuest(playerQuest)
+        model.rewardsInfo.observe(viewLifecycleOwner) { playerQuest ->
+            adapter.updateRewardsInfo(playerQuest)
         }
         model.cardDetails.observe(viewLifecycleOwner) { cardDetails ->
             adapter.updateCardDetails(cardDetails)

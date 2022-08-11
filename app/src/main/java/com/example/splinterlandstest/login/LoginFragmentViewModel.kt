@@ -13,17 +13,15 @@ class LoginFragmentViewModel : ViewModel() {
 
     private val requests = Requests()
 
-    val quests: MutableLiveData<HashMap<String, Requests.QuestResponse>> = MutableLiveData()
+    val quests: MutableLiveData<HashMap<String, Requests.RewardsInfo>> = MutableLiveData()
 
     fun loadUsers(context: Context, players: List<String>) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             quests.postValue(hashMapOf())
             players.forEach { player ->
-                val questInfo = requests.getPlayerQuest(context, player).firstOrNull()
-                if (questInfo != null) {
-                    quests.value!![player] = questInfo
-                    quests.postValue(quests.value)
-                }
+                val questInfo = requests.getRewardsInfo(context, player)
+                quests.value!![player] = questInfo
+                quests.postValue(quests.value)
             }
         }
     }

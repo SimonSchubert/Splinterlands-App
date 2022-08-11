@@ -33,7 +33,7 @@ class BattlesAdapter(
 
     private var dataSet: List<Requests.Battle> = emptyList()
     private var playerDetails: Requests.PlayerDetailsResponse? = null
-    private var playerQuest: Requests.QuestResponse? = null
+    private var rewardsInfo: Requests.RewardsInfo? = null
 
     fun updateBattles(dataSet: List<Requests.Battle>) {
         this.dataSet = dataSet
@@ -52,42 +52,45 @@ class BattlesAdapter(
         notifyDataSetChanged()
     }
 
-    fun updatePlayerQuest(playerQuest: Requests.QuestResponse?) {
-        this.playerQuest = playerQuest
+    fun updateRewardsInfo(rewardsInfo: Requests.RewardsInfo?) {
+        this.rewardsInfo = rewardsInfo
         notifyDataSetChanged()
     }
 
     class CurrentQuestViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val tvNextChest: TextView
-        private val tvChests: TextView
+        private val tvFocusChests: TextView
+        private val tvSeasonChests: TextView
         private val tvTimer: TextView
         private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
-        private val ivChest: ImageView
+        private val ivFocusChest: ImageView
+        private val ivSeasonChest: ImageView
 
         init {
-            tvNextChest = view.findViewById(R.id.tvNextChest)
-            tvChests = view.findViewById(R.id.tvChests)
+            tvFocusChests = view.findViewById(R.id.tvFocusChests)
+            tvSeasonChests = view.findViewById(R.id.tvSeasonChests)
             tvTimer = view.findViewById(R.id.tvTimer)
-            ivChest = view.findViewById(R.id.ivChest)
+            ivFocusChest = view.findViewById(R.id.ivFocusChest)
+            ivSeasonChest = view.findViewById(R.id.ivSeasonChest)
         }
 
         lateinit var handlerTask: Runnable
 
-        fun bind(playerQuest: Requests.QuestResponse?) {
-            val questInfo = playerQuest?.getCurrentQuestInfo()
-            if (questInfo != null) {
-                tvNextChest.text =
-                    "FP to next chest: ${numberFormat.format(questInfo.nextChestRshares - questInfo.requiredRshares)}/${
-                        numberFormat.format(questInfo.nextChestRshares)
-                    }"
-                tvChests.text = "Focus chests: ${questInfo.chests}"
+        fun bind(playerQuest: Requests.RewardsInfo?) {
+            if (playerQuest != null) {
+                tvFocusChests.text = "Focus chests: ${playerQuest.quest_reward_info.chest_earned}"
+                tvSeasonChests.text = "Season chests: ${playerQuest.season_reward_info.chest_earned}"
+
                 Picasso.get()
-                    .load(questInfo.getChestUrl())
+                    .load(playerQuest.quest_reward_info.getChestUrl())
                     .fit()
-                    .into(ivChest)
+                    .into(ivFocusChest)
+                Picasso.get()
+                    .load(playerQuest.season_reward_info.getChestUrl())
+                    .fit()
+                    .into(ivSeasonChest)
 
                 handlerTask = Runnable {
-                    tvTimer.text = playerQuest.getFormattedEndDate()
+                    tvTimer.text = playerQuest.quest_reward_info.getFormattedEndDate()
                     itemView.postDelayed(handlerTask, 1000)
                 }
                 itemView.removeCallbacks(null)
@@ -219,7 +222,7 @@ class BattlesAdapter(
                 } else {
                     "Wild"
                 }
-            } else if(battle.details.is_brawl) {
+            } else if (battle.details.is_brawl) {
                 "Brawl"
             } else {
                 battle.match_type
@@ -290,13 +293,13 @@ class BattlesAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             VIEW_TYPE_DETAILS -> (viewHolder as DetailViewHolder).bind(playerDetails)
-            VIEW_TYPE_CURRENT_QUEST -> (viewHolder as CurrentQuestViewHolder).bind(playerQuest)
+            VIEW_TYPE_CURRENT_QUEST -> (viewHolder as CurrentQuestViewHolder).bind(rewardsInfo)
             else -> {
                 var battlesPosition = position
                 if (playerDetails != null) {
                     battlesPosition -= 1
                 }
-                if (playerQuest != null) {
+                if (rewardsInfo != null) {
                     battlesPosition -= 1
                 }
                 (viewHolder as BattleViewHolder).bind(dataSet[battlesPosition])
@@ -309,7 +312,7 @@ class BattlesAdapter(
     override fun getItemViewType(position: Int): Int {
         return if (position == 0 && playerDetails != null) {
             VIEW_TYPE_DETAILS
-        } else if (position == 1 && playerQuest != null) {
+        } else if (position == 1 && rewardsInfo != null) {
             VIEW_TYPE_CURRENT_QUEST
         } else {
             VIEW_TYPE_BATTLE
