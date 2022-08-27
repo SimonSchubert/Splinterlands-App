@@ -63,6 +63,11 @@ class RewardsAdapter :
                 viewHolder.imageView.setImageResource(R.drawable.mertis)
             }
 
+            is Requests.SPSReward -> {
+                viewHolder.textView.text = "${reward.quantity} SPS"
+                viewHolder.imageView.setImageResource(R.drawable.sps)
+            }
+
             is Requests.PackReward -> {
                 viewHolder.textView.text = "PACK"
                 viewHolder.imageView.setImageResource(R.drawable.chaos)

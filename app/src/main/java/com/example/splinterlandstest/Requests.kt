@@ -1,6 +1,7 @@
 package com.example.splinterlandstest
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -385,6 +386,7 @@ class Requests {
     data class DecReward(val quantity: Int) : Reward()
     data class CreditsReward(val quantity: Int) : Reward()
     data class MeritsReward(val quantity: Int) : Reward()
+    data class SPSReward(val quantity: Float) : Reward()
     data class GoldPotionReward(val quantity: Int) : Reward()
     data class LegendaryPotionReward(val quantity: Int) : Reward()
     object PackReward : Reward()
@@ -412,15 +414,15 @@ class Requests {
     suspend fun getRecentRewards(player: String): List<Reward> {
         val transactionId = getLatestClaimRewardTransactionId(player)
         if (transactionId.isNotBlank()) {
-            val request2: HttpResponse =
+            val request: HttpResponse =
                 client.get("$endpoint/transactions/lookup?trx_id=$transactionId") {
                     header("accept", "*/*")
                 }.body()
-            val json3 = JSONObject(request2.bodyAsText())
-            if (json3.optString("error", "") == "") {
+            val json = JSONObject(request.bodyAsText())
+            if (json.optString("error", "") == "") {
                 val rewards = mutableListOf<Reward>()
-                val json2 = JSONObject(json3.getJSONObject("trx_info").getString("result"))
-                json2.getJSONArray("rewards").toObjectList().forEach {
+                val resultJson = JSONObject(json.getJSONObject("trx_info").getString("result"))
+                resultJson.getJSONArray("rewards").toObjectList().forEach {
                     when (it.getString("type")) {
                         "potion" -> {
                             if (it.getString("potion_type") == "gold") {
@@ -442,6 +444,10 @@ class Requests {
 
                         "merits" -> {
                             rewards.add(MeritsReward(it.getInt("quantity")))
+                        }
+
+                        "sps" -> {
+                            rewards.add(SPSReward(it.getDouble("quantity").toFloat()))
                         }
 
                         "dec" -> {
