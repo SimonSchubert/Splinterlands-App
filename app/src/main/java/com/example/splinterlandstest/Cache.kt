@@ -207,4 +207,23 @@ class Cache {
         }
         return list.filter { it.isNotBlank() }
     }
+
+    fun getSettings(context: Context): Requests.GameSettings {
+        val file = File(context.filesDir, "game_settings")
+        return if (file.exists()) {
+            try {
+                Gson().fromJson(file.readText(), Requests.GameSettings::class.java)
+            } catch (exception: Exception) {
+                Requests.GameSettings("", Requests.SeasonSettings(""))
+            }
+        } else {
+            Requests.GameSettings("", Requests.SeasonSettings(""))
+        }
+    }
+
+    fun writeSettings(context: Context, response: String) {
+        context.openFileOutput("game_settings", Context.MODE_PRIVATE).use {
+            it.write(response.toByteArray())
+        }
+    }
 }

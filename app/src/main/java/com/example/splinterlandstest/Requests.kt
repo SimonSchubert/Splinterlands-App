@@ -28,6 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US).apply {
     timeZone = TimeZone.getTimeZone("UTC")
 }
+var assetUrl = ""
 
 class Requests {
 
@@ -58,7 +59,7 @@ class Requests {
             } else {
                 ""
             }
-            return "https://d36mxiodymuqjm.cloudfront.net/$editionPath/${cardDetail.name}${isGoldPath}.$fileEnding"
+            return "${assetUrl}$editionPath/${cardDetail.name}${isGoldPath}.$fileEnding"
         }
 
         fun getPlaceholderDrawable(): Int {
@@ -162,7 +163,7 @@ class Requests {
 
         fun getRulesetImagePaths(): List<String> {
             return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
-                .map { "https://d36mxiodymuqjm.cloudfront.net/website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
+                .map { "${assetUrl}website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
         }
 
         fun getTimeAgo(): String {
@@ -184,19 +185,6 @@ class Requests {
         val name: String
     )
 
-    data class QuestInfo(val chests: Int, val nextChestRshares: Long, val requiredRshares: Long, val chestTier: Int) {
-        fun getChestUrl(): String {
-            val league = when (chestTier) {
-                1 -> "silver"
-                2 -> "gold"
-                3 -> "diamond"
-                4 -> "champion"
-                else -> "bronze"
-            }
-            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
-        }
-    }
-
     @Serializable
     data class RewardsInfo(val quest_reward_info: QuestRewardInfo, val season_reward_info: SeasonRewardInfo)
 
@@ -215,9 +203,8 @@ class Requests {
                 4 -> "champion"
                 else -> "bronze"
             }
-            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
+            return "${assetUrl}website/ui_elements/updated_rewards/img_chest_modern_$league.png"
         }
-
     }
 
     @Serializable
@@ -236,48 +223,7 @@ class Requests {
                 4 -> "champion"
                 else -> "bronze"
             }
-            return "https://d36mxiodymuqjm.cloudfront.net/website/ui_elements/updated_rewards/img_chest_modern_$league.png"
-        }
-
-        fun getFormattedEndDate(): String {
-            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
-                ?: 0L) - 1.days.inWholeMilliseconds
-            return if (milliseconds > 0) {
-                "Claim reward"
-            } else {
-                "${milliseconds.absoluteValue.div(1000L).seconds}"
-            }
-        }
-
-        fun getFormattedEndDateShort(): String {
-            val date = getFormattedEndDate()
-            return date.split(" ").first()
-        }
-    }
-
-    @Serializable
-    data class QuestResponse(
-        val chest_tier: Int,
-        val rshares: Long,
-        val created_date: String
-    ) {
-        fun getCurrentQuestInfo(): QuestInfo {
-            val config = Cache().getQuestConfig(chest_tier)
-
-            var chests = -1
-            var totalRshares = 0.0
-            var nextChest = 0.0
-            while (rshares >= totalRshares.roundToInt()) {
-                chests++
-                nextChest = (config.base * config.multiplier.pow(chests)).toDouble()
-                totalRshares += nextChest
-            }
-
-            val requiredRshares = totalRshares - rshares
-            if (chests > 30) {
-                chests = 30
-            }
-            return QuestInfo(chests, nextChest.toLong(), requiredRshares.toLong(), chest_tier)
+            return "${assetUrl}website/ui_elements/updated_rewards/img_chest_modern_$league.png"
         }
 
         fun getFormattedEndDate(): String {
@@ -325,6 +271,31 @@ class Requests {
                 else -> R.drawable.ic_launcher_background
             }
         }
+    }
+
+    @Serializable
+    data class GameSettings(val asset_url: String, val season: SeasonSettings)
+
+    @Serializable
+    data class SeasonSettings(val ends: String) {
+        fun getFormattedEndDate(): String {
+            val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(ends)?.time
+                ?: 0L) - 1.days.inWholeMilliseconds
+            return if (milliseconds > 0) {
+                "Claim reward"
+            } else {
+                "${milliseconds.absoluteValue.div(1000L).seconds}"
+            }
+        }
+    }
+
+    suspend fun getSettings(context: Context): GameSettings {
+        val response: HttpResponse = client.get("$endpoint/settings")
+        cache.writeSettings(context, response.bodyAsText())
+        return Gson().fromJson(
+            response.bodyAsText(),
+            GameSettings::class.java
+        )
     }
 
     suspend fun getBalances(context: Context, player: String): List<BalancesResponse> {

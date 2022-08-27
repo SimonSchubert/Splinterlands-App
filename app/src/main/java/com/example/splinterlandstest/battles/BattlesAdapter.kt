@@ -20,6 +20,7 @@ import java.util.*
 class BattlesAdapter(
     val player: String,
     var cardDetails: List<Requests.CardDetail>,
+    val gameSettings: Requests.GameSettings,
     val onLickBattle: (battleId: String) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -60,22 +61,23 @@ class BattlesAdapter(
     class CurrentQuestViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvFocusChests: TextView
         private val tvSeasonChests: TextView
-        private val tvTimer: TextView
-        private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
+        private val tvFocusTimer: TextView
+        private val tvSeasonTimer: TextView
         private val ivFocusChest: ImageView
         private val ivSeasonChest: ImageView
 
         init {
             tvFocusChests = view.findViewById(R.id.tvFocusChests)
             tvSeasonChests = view.findViewById(R.id.tvSeasonChests)
-            tvTimer = view.findViewById(R.id.tvTimer)
+            tvFocusTimer = view.findViewById(R.id.tvFocusTimer)
+            tvSeasonTimer = view.findViewById(R.id.tvSeasonTimer)
             ivFocusChest = view.findViewById(R.id.ivFocusChest)
             ivSeasonChest = view.findViewById(R.id.ivSeasonChest)
         }
 
         lateinit var handlerTask: Runnable
 
-        fun bind(playerQuest: Requests.RewardsInfo?) {
+        fun bind(playerQuest: Requests.RewardsInfo?, gameSettings: Requests.GameSettings) {
             if (playerQuest != null) {
                 tvFocusChests.text = "Focus chests: ${playerQuest.quest_reward_info.chest_earned}"
                 tvSeasonChests.text = "Season chests: ${playerQuest.season_reward_info.chest_earned}"
@@ -90,7 +92,8 @@ class BattlesAdapter(
                     .into(ivSeasonChest)
 
                 handlerTask = Runnable {
-                    tvTimer.text = playerQuest.quest_reward_info.getFormattedEndDate()
+                    tvFocusTimer.text = playerQuest.quest_reward_info.getFormattedEndDate()
+                    tvSeasonTimer.text = gameSettings.season.getFormattedEndDate()
                     itemView.postDelayed(handlerTask, 1000)
                 }
                 itemView.removeCallbacks(null)
@@ -293,7 +296,7 @@ class BattlesAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             VIEW_TYPE_DETAILS -> (viewHolder as DetailViewHolder).bind(playerDetails)
-            VIEW_TYPE_CURRENT_QUEST -> (viewHolder as CurrentQuestViewHolder).bind(rewardsInfo)
+            VIEW_TYPE_CURRENT_QUEST -> (viewHolder as CurrentQuestViewHolder).bind(rewardsInfo, gameSettings)
             else -> {
                 var battlesPosition = position
                 if (playerDetails != null) {

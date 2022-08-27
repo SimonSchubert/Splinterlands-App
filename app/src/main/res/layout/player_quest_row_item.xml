@@ -35,14 +35,24 @@
             app:layout_constraintTop_toBottomOf="@+id/ivSeasonChest"
             app:layout_constraintEnd_toEndOf="@+id/ivSeasonChest"
             app:layout_constraintStart_toStartOf="@+id/ivSeasonChest"/>
+
     <TextView
             tools:text="timer"
             android:layout_width="wrap_content"
             android:textColor="@color/white"
-            android:layout_height="wrap_content" android:id="@+id/tvTimer"
+            android:layout_height="wrap_content" android:id="@+id/tvFocusTimer"
             app:layout_constraintTop_toBottomOf="@+id/tvFocusChests"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="@+id/ivFocusChest"
             app:layout_constraintEnd_toEndOf="@+id/ivFocusChest" android:layout_marginBottom="6dp"/>
+
+    <TextView
+            tools:text="timer"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" android:id="@+id/tvSeasonTimer"
+            app:layout_constraintTop_toBottomOf="@+id/tvSeasonChests"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="@+id/ivSeasonChest"
+            app:layout_constraintEnd_toEndOf="@+id/ivSeasonChest" android:layout_marginBottom="6dp"/>
 
     <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
                                                 android:id="@+id/guideline2"
