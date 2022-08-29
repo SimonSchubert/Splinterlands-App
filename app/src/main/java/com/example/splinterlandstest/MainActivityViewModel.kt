@@ -14,6 +14,7 @@ class MainActivityViewModel : ViewModel() {
 
     private val requests = Requests()
     private val cache = Cache()
+    var isInitialized = false
 
     fun setPlayer(context: Context, playerName: String) {
         this.playerName = playerName
@@ -29,12 +30,13 @@ class MainActivityViewModel : ViewModel() {
     fun init(context: Context) {
         playerName = Cache().getPlayerName(context)
         viewModelScope.launch {
-            cache.getSettings(context)?.let {
+            cache.getSettings(context).let {
                 assetUrl = it.asset_url
             }
             val gameSettings = requests.getSettings(context)
             assetUrl = gameSettings.asset_url
         }
+        isInitialized = true
     }
 
     fun isLoggedIn(): Boolean {

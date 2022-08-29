@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || !viewModel.isInitialized) {
             viewModel.init(this)
             if (viewModel.isLoggedIn()) {
                 setCurrentFragment(BattlesFragment())
