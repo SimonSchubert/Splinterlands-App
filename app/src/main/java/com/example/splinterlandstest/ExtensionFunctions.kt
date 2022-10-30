@@ -39,11 +39,3 @@ fun Picasso.loadCard(imageView: ImageView, card: Requests.Card, cardDetail: Requ
         .fit()
         .into(imageView)
 }
-
-fun Picasso.loadCard(imageView: ImageView, card: Requests.Card, path: String) {
-    this
-        .load(path)
-        .placeholder(card.getPlaceholderDrawable())
-        .fit()
-        .into(imageView)
-}
