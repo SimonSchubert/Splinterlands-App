@@ -34,7 +34,7 @@ fun JSONArray.toObjectList(): List<JSONObject> {
 
 fun Picasso.loadCard(imageView: ImageView, card: Requests.Card, cardDetail: Requests.CardDetail) {
     this
-        .load(card.getPath(cardDetail))
+        .load(card.getImageUrl(cardDetail))
         .placeholder(card.getPlaceholderDrawable())
         .fit()
         .into(imageView)

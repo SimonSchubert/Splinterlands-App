@@ -158,6 +158,17 @@
             android:layout_marginTop="4dp"
             android:button="@null"/>
 
+        <CheckBox
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/cbRift"
+            app:layout_constraintTop_toBottomOf="@id/tvEditions"
+            app:layout_constraintLeft_toRightOf="@id/cbChaos"
+            android:background="@drawable/ic_rift"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:button="@null"/>
+
     </com.google.android.flexbox.FlexboxLayout>
 
 

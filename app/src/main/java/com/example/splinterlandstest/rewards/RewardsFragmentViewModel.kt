@@ -37,7 +37,7 @@ class RewardsFragmentViewModel(context: Context, player: String) : ViewModel() {
                     val card = Requests.Card(it.cardId.toString(), 3, it.isGold)
                     val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
                     if (cardDetail != null) {
-                        it.url = card.getPath(cardDetail)
+                        it.url = card.getImageUrl(cardDetail)
                         it.name = cardDetail.name
                     }
                 }

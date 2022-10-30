@@ -82,6 +82,9 @@ class CollectionFilterDialogFragment : DialogFragment() {
                 if (selectedEditions.contains(7)) {
                     binding.cbChaos.isChecked = true
                 }
+                if (selectedEditions.contains(8)) {
+                    binding.cbRift.isChecked = true
+                }
             }
 
             recursiveAddChangeListener(binding.root)
@@ -144,6 +147,9 @@ class CollectionFilterDialogFragment : DialogFragment() {
             }
             if (binding.cbChaos.isChecked) {
                 add(7)
+            }
+            if (binding.cbRift.isChecked) {
+                add(8)
             }
         }.toList()
         listener.onFilterChange(rarities, editions)

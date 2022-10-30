@@ -39,11 +39,11 @@ class Requests {
 
     private val endpoint = "https://api2.splinterlands.com"
 
-
     @Serializable
     data class Card(val card_detail_id: String, val edition: Int, val gold: Boolean = false) {
-        fun getPath(cardDetail: CardDetail): String {
+        fun getImageUrl(cardDetail: CardDetail): String {
             val editionPath = when (edition) {
+                8 -> "cards_riftwatchers"
                 7 -> "cards_chaos"
                 6 -> "cards_gladiator"
                 4, 5 -> "cards_untamed"
@@ -61,6 +61,8 @@ class Requests {
 
         fun getPlaceholderDrawable(): Int {
             return when (edition) {
+                8 -> R.drawable.card8
+                7 -> R.drawable.card7
                 6 -> R.drawable.card6
                 5 -> R.drawable.card5
                 4 -> R.drawable.card4
@@ -72,7 +74,7 @@ class Requests {
         }
 
         private fun getFileEnding(cardDetail: CardDetail): String {
-            return if (edition == 7 || edition == 3 && cardDetail.tier == 7) {
+            return if (edition == 8 || edition == 7 || edition == 3 && cardDetail.tier == 7) {
                 "jpg"
             } else {
                 "png"

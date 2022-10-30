@@ -240,7 +240,7 @@ class BattlesAdapter(
             val cardDetail = cardDetails.firstOrNull { it.id == card?.card_detail_id }
             if (cardDetail != null && card != null) {
                 Picasso.get()
-                    .load(card.getPath(cardDetail))
+                    .load(card.getImageUrl(cardDetail))
                     .transform(CropSquareTransformation())
                     .transform(CropCircleTransformation())
                     .into(imageView)
