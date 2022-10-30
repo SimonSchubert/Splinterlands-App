@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -37,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.rewards.RewardItem
 import java.text.NumberFormat
 import java.util.*
 
@@ -119,5 +121,17 @@ fun BalanceItem(balance: Requests.BalancesResponse) {
             fontSize = TextUnit(18f, TextUnitType.Sp),
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+@Preview
+fun BalancesPreview() {
+    Column {
+        BalanceItem(balance = Requests.BalancesResponse("", "LICENSE", 1f))
+        BalanceItem(balance = Requests.BalancesResponse("", "CHAOS", 6f))
+        BalanceItem(balance = Requests.BalancesResponse("", "NIGHTMARE", 18f))
+        BalanceItem(balance = Requests.BalancesResponse("", "PLOT", 3f))
+
     }
 }

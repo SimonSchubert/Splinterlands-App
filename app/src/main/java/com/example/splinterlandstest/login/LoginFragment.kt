@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -244,4 +246,16 @@ fun PlayerItem(
                 Icon(imageVector = Icons.Filled.Delete, contentDescription = null, tint = Color.White)
             }
         })
+}
+
+@Composable
+@Preview
+fun PlayerRowPreview() {
+
+    val minWidth = remember{ mutableStateOf(10.dp) }
+    PlayerItem(
+        player = LoginFragmentViewModel.PlayerRowInfo("splinteraccount"),
+        minTextWidth = minWidth,
+        onClick = {},
+        onDelete = {})
 }
