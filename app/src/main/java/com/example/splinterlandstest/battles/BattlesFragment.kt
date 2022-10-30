@@ -44,7 +44,11 @@ class BattlesFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
         val cache = Cache()
-        val adapter = BattlesAdapter(activityViewModel.playerName, cache.getCardDetails(requireContext()), cache.getSettings(requireContext())) {
+        val adapter = BattlesAdapter(
+            activityViewModel.playerName,
+            cache.getCardDetails(requireContext()),
+            cache.getSettings(requireContext())
+        ) {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://splinterlands.com/?p=battle&id=${it}"))
             startActivity(browserIntent)
         }

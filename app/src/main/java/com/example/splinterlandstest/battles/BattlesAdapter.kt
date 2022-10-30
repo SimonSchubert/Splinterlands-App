@@ -113,7 +113,7 @@ class BattlesAdapter(
         }
 
         fun bind(playerDetails: Requests.PlayerDetailsResponse?) {
-            tvPlayerName.text = playerDetails?.name
+            tvPlayerName.text = playerDetails?.name?.uppercase()
             tvPlayerRating.text =
                 "W: ${numberFormat.format(playerDetails?.rating)}, M: ${numberFormat.format(playerDetails?.modern_rating)}"
         }

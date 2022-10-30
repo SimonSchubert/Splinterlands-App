@@ -1,7 +1,6 @@
 package com.example.splinterlandstest
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
@@ -19,8 +18,6 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
-import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
@@ -259,6 +256,8 @@ class Requests {
                 "ALPHA" -> R.drawable.alpha
                 "BETA" -> R.drawable.beta
                 "CHAOS" -> R.drawable.chaos
+                "NIGHTMARE" -> R.drawable.nightmare
+                "RIFT" -> R.drawable.rift
                 "PLOT" -> R.drawable.plot
                 "VOUCHER" -> R.drawable.voucher
                 "LICENSE" -> R.drawable.license
@@ -279,6 +278,9 @@ class Requests {
     @Serializable
     data class SeasonSettings(val ends: String) {
         fun getFormattedEndDate(): String {
+            if (ends.isEmpty()) {
+                return ""
+            }
             val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(ends)?.time
                 ?: 0L) - 1.days.inWholeMilliseconds
             return if (milliseconds > 0) {
@@ -353,15 +355,58 @@ class Requests {
         return Gson().fromJson(response.bodyAsText(), RewardsInfo::class.java)
     }
 
-    sealed class Reward
-    data class DecReward(val quantity: Int) : Reward()
-    data class CreditsReward(val quantity: Int) : Reward()
-    data class MeritsReward(val quantity: Int) : Reward()
-    data class SPSReward(val quantity: Float) : Reward()
-    data class GoldPotionReward(val quantity: Int) : Reward()
-    data class LegendaryPotionReward(val quantity: Int) : Reward()
-    object PackReward : Reward()
-    data class CardReward(val cardId: Int, val isGold: Boolean) : Reward()
+    sealed class Reward {
+        abstract fun getTitle(): String
+    }
+
+    data class DecReward(val quantity: Int) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity DEC"
+        }
+    }
+
+    data class CreditsReward(val quantity: Int) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity CREDITS"
+        }
+    }
+
+    data class MeritsReward(val quantity: Int) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity MERITS"
+        }
+    }
+
+    data class SPSReward(val quantity: Float) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity SPS"
+        }
+    }
+
+    data class GoldPotionReward(val quantity: Int) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity"
+        }
+    }
+
+    data class LegendaryPotionReward(val quantity: Int) : Reward() {
+        override fun getTitle(): String {
+            return "$quantity"
+        }
+    }
+
+    object PackReward : Reward() {
+        override fun getTitle(): String {
+            return "PACK"
+        }
+    }
+
+    data class CardReward(val cardId: Int, val isGold: Boolean, var name: String = "", var url: String = "") :
+        Reward() {
+        override fun getTitle(): String {
+            return name
+        }
+    }
 
     private suspend fun getLatestClaimRewardTransactionId(player: String): String {
         val jsonBody =

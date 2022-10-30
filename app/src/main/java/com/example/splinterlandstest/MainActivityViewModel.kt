@@ -18,13 +18,13 @@ class MainActivityViewModel : ViewModel() {
 
     fun setPlayer(context: Context, playerName: String) {
         this.playerName = playerName
-        Cache().writePlayerName(context, playerName)
-        Cache().writePlayerToList(context, playerName)
+        cache.writePlayerName(context, playerName)
+        cache.writePlayerToList(context, playerName)
         loginStatus.value = true
     }
 
     fun deletePlayer(context: Context, playerName: String) {
-        Cache().deletePlayerFromList(context, playerName)
+        cache.deletePlayerFromList(context, playerName)
     }
 
     fun init(context: Context) {
@@ -45,7 +45,7 @@ class MainActivityViewModel : ViewModel() {
 
     fun logout(context: Context) {
         playerName = ""
-        Cache().writePlayerName(context, "")
+        cache.writePlayerName(context, "")
         loginStatus.value = false
     }
 }
