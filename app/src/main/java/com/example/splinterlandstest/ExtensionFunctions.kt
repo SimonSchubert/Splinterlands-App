@@ -1,11 +1,14 @@
 package com.example.splinterlandstest
 
 import android.widget.ImageView
+import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Card
+import com.example.splinterlandstest.models.CardDetail
 import com.squareup.picasso.Picasso
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun List<Requests.BalancesResponse>.filterBalances(): List<Requests.BalancesResponse> {
+fun List<BalancesResponse>.filterBalances(): List<BalancesResponse> {
     val sps = this.firstOrNull { it.token == "SPS" }
     this.firstOrNull { it.token == "SPSP" }?.let {
         if (sps != null) {
@@ -32,7 +35,7 @@ fun JSONArray.toObjectList(): List<JSONObject> {
     return list
 }
 
-fun Picasso.loadCard(imageView: ImageView, card: Requests.Card, cardDetail: Requests.CardDetail) {
+fun Picasso.loadCard(imageView: ImageView, card: Card, cardDetail: CardDetail) {
     this
         .load(card.getImageUrl(cardDetail))
         .placeholder(card.getPlaceholderDrawable())

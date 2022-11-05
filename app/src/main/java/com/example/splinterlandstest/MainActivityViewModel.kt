@@ -1,39 +1,32 @@
 package com.example.splinterlandstest
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
     val loginStatus: MutableLiveData<Boolean> = MutableLiveData()
 
     var playerName = ""
 
-    private val requests = Requests()
-    private val cache = Cache()
     var isInitialized = false
 
-    fun setPlayer(context: Context, playerName: String) {
+    fun setPlayer(playerName: String) {
         this.playerName = playerName
-        cache.writePlayerName(context, playerName)
-        cache.writePlayerToList(context, playerName)
+        cache.writeSelectedPlayerName(playerName)
         loginStatus.value = true
     }
 
-    fun deletePlayer(context: Context, playerName: String) {
-        cache.deletePlayerFromList(context, playerName)
-    }
-
-    fun init(context: Context) {
-        playerName = Cache().getPlayerName(context)
+    fun init() {
+        playerName = cache.getSelectedPlayerName()
         viewModelScope.launch {
-            cache.getSettings(context).let {
+            cache.getSettings()?.let {
                 assetUrl = it.asset_url
             }
-            val gameSettings = requests.getSettings(context)
+            val gameSettings = requests.getSettings()
             assetUrl = gameSettings.asset_url
         }
         isInitialized = true
@@ -43,9 +36,16 @@ class MainActivityViewModel : ViewModel() {
         return playerName != ""
     }
 
-    fun logout(context: Context) {
+    fun logout() {
         playerName = ""
-        cache.writePlayerName(context, "")
+        cache.writeSelectedPlayerName("")
         loginStatus.value = false
+    }
+}
+
+class MainActivityViewModelFactory(val cache: Cache, val requests: Requests) :
+    ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return MainActivityViewModel(cache, requests) as T
     }
 }

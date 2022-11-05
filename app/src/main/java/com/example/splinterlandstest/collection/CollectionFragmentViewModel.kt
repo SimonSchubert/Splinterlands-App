@@ -1,34 +1,32 @@
 package com.example.splinterlandstest.collection
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.models.Card
+import com.example.splinterlandstest.models.CardDetail
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CollectionFragmentViewModel : ViewModel() {
+class CollectionFragmentViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
-    private val requests = Requests()
-    private val cache = Cache()
-
-    val collection: MutableLiveData<List<Requests.Card>> = MutableLiveData()
-    val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
+    val collection: MutableLiveData<List<Card>> = MutableLiveData()
+    val cardDetails: MutableLiveData<List<CardDetail>> = MutableLiveData()
 
     var filterRarities = listOf<Int>()
     var filterEditions = listOf<Int>()
-    private var unfilteredCollection = listOf<Requests.Card>()
+    private var unfilteredCollection = listOf<Card>()
 
-    fun loadCollection(context: Context, player: String) {
+    fun loadCollection(player: String) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            unfilteredCollection = cache.getCollection(context, player)
+            unfilteredCollection = cache.getCollection(player)
             updateCollection()
-            unfilteredCollection = requests.getCollection(context, player)
+            unfilteredCollection = requests.getCollection(player)
             updateCollection()
-            cardDetails.postValue(requests.getCardDetails(context))
+            cardDetails.postValue(requests.getCardDetails())
         }
     }
 

@@ -16,13 +16,20 @@ import com.example.splinterlandstest.collection.CollectionFragment
 import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.example.splinterlandstest.login.LoginFragment
 import com.example.splinterlandstest.rewards.RewardsFragment
+import org.koin.android.ext.android.get
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    private val viewModel: MainActivityViewModel by viewModels()
+    val cache: Cache = get()
+    val requests: Requests = get()
+
+    private val viewModel: MainActivityViewModel by viewModels {
+        MainActivityViewModelFactory(cache, requests)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null || !viewModel.isInitialized) {
-            viewModel.init(this)
+            viewModel.init()
             if (viewModel.isLoggedIn()) {
                 setCurrentFragment(BattlesFragment())
             } else {
@@ -82,10 +89,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_logout -> {
-                viewModel.logout(this)
+                viewModel.logout()
                 return true
             }
-
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
                 return true

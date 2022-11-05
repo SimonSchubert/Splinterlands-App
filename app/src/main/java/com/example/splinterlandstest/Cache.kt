@@ -1,27 +1,25 @@
 package com.example.splinterlandstest
 
 import android.content.Context
+import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Battle
+import com.example.splinterlandstest.models.BattleHistoryResponse
+import com.example.splinterlandstest.models.Card
+import com.example.splinterlandstest.models.CardDetail
+import com.example.splinterlandstest.models.CollectionResponse
+import com.example.splinterlandstest.models.GameSettings
+import com.example.splinterlandstest.models.PlayerDetailsResponse
+import com.example.splinterlandstest.models.RewardsInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import java.io.File
+import java.lang.reflect.Type
 
-class Cache {
+class Cache(val context: Context) {
 
-    data class QuestConfig(val base: Int, val multiplier: Float)
-
-    fun getQuestConfig(rank: Int): QuestConfig {
-        return when (rank) {
-            1 -> QuestConfig(6500, 1.13f)
-            2 -> QuestConfig(22500, 1.09f)
-            3 -> QuestConfig(53750, 1.062f)
-            4 -> QuestConfig(112500, 1.038f)
-            else -> QuestConfig(390, 1.2f)
-        }
-    }
-
-    fun getPlayerName(context: Context): String {
-        val file = File(context.filesDir, "player")
+    fun getSelectedPlayerName(): String {
+        val file = File(context.filesDir, "player_name.json")
         return if (file.exists()) {
             file.readText()
         } else {
@@ -29,14 +27,14 @@ class Cache {
         }
     }
 
-    fun writePlayerName(context: Context, player: String) {
-        context.openFileOutput("player", Context.MODE_PRIVATE).use {
+    fun writeSelectedPlayerName(player: String) {
+        context.openFileOutput("player_name.json", Context.MODE_PRIVATE).use {
             it.write(player.toByteArray())
         }
     }
 
-    fun getPlayerList(context: Context): List<String> {
-        val file = File(context.filesDir, "players")
+    fun getPlayerList(): List<String> {
+        val file = File(context.filesDir, "players.json")
         return if (file.exists()) {
             try {
                 JSONArray(file.readText()).toStringList()
@@ -48,156 +46,118 @@ class Cache {
         }
     }
 
-    fun writePlayerToList(context: Context, player: String) {
-        val players = getPlayerList(context).toMutableList()
+    fun writePlayerToList(player: String) {
+        val players = getPlayerList().toMutableList()
         if (!players.contains(player)) {
             players.add(player)
-            context.openFileOutput("players", Context.MODE_PRIVATE).use {
-                it.write(players.joinToString(prefix = "[", postfix = "]").toByteArray())
-            }
+            write(
+                fileName = "players.json",
+                data = players.joinToString(prefix = "[", postfix = "]")
+            )
         }
     }
 
-    fun deletePlayerFromList(context: Context, player: String) {
-        val players = getPlayerList(context).toMutableList()
+    fun deletePlayerFromList(player: String) {
+        val players = getPlayerList().toMutableList()
         players.remove(player)
-        context.openFileOutput("players", Context.MODE_PRIVATE).use {
-            it.write(players.joinToString(prefix = "[", postfix = "]").toByteArray())
+        write(
+            fileName = "players.json",
+            data = players.joinToString(prefix = "[", postfix = "]")
+        )
+    }
+
+    fun getBalances(player: String): List<BalancesResponse> {
+        return get<List<BalancesResponse>?>(
+            fileName = "balances_${player}.json",
+            type = object : TypeToken<List<BalancesResponse>>() {}.type
+        )?.filterBalances() ?: emptyList()
+    }
+
+    fun write(fileName: String, data: String) {
+        context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
+            it.write(data.toByteArray())
         }
     }
 
-    fun getBalances(context: Context, player: String): List<Requests.BalancesResponse> {
-        val file = File(context.filesDir, "balances_$player")
-        return if (file.exists()) {
+    fun <T> get(fileName: String, type: Class<T>): T? {
+        val file = File(context.filesDir, fileName)
+        if (file.exists()) {
             try {
-                (Gson().fromJson(
-                    file.readText(),
-                    object : TypeToken<List<Requests.BalancesResponse>>() {}.type
-                ) as List<Requests.BalancesResponse>).filterBalances()
+                return Gson().fromJson(file.readText(), type)
             } catch (exception: Exception) {
-                emptyList()
+                exception.printStackTrace()
             }
-        } else {
-            emptyList()
         }
+        return null
     }
 
-    fun writeBalances(context: Context, response: String, player: String) {
-        context.openFileOutput("balances_$player", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
-    }
-
-    fun getCollection(context: Context, player: String): List<Requests.Card> {
-        val file = File(context.filesDir, "collection_$player")
-        return if (file.exists()) {
+    fun <T> get(fileName: String, type: Type): T? {
+        val file = File(context.filesDir, fileName)
+        if (file.exists()) {
             try {
-                Gson().fromJson(
-                    file.readText(),
-                    Requests.CollectionResponse::class.java
-                ).cards.distinctBy { it.card_detail_id }
-            } catch (ignore: Exception) {
-                emptyList()
-            }
-        } else {
-            emptyList()
-        }
-    }
-
-    fun writeCollection(context: Context, response: String, player: String) {
-        context.openFileOutput("collection_$player", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
-    }
-
-    fun getCardDetails(context: Context): List<Requests.CardDetail> {
-        val file = File(context.filesDir, "card_details")
-        return if (file.exists()) {
-            try {
-                return Gson().fromJson(
-                    file.readText(),
-                    object : TypeToken<List<Requests.CardDetail>>() {}.type
-                )
+                return Gson().fromJson(file.readText(), type)
             } catch (exception: Exception) {
-                emptyList()
+                exception.printStackTrace()
             }
-        } else {
-            emptyList()
         }
+        return null
     }
 
-    fun writeCardDetails(context: Context, response: String) {
-        context.openFileOutput("card_details", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
+    fun getCollection(player: String): List<Card> {
+        return get(
+            fileName = "collection_${player}.json",
+            type = CollectionResponse::class.java
+        )?.cards?.distinctBy { it.card_detail_id } ?: emptyList()
     }
 
-    fun getBattleHistory(context: Context, player: String): List<Requests.Battle> {
-        val battles = mutableListOf<Requests.Battle>()
-        val fileWild = File(context.filesDir, "battles_${player}_wild")
-        if (fileWild.exists()) {
-            try {
-                battles.addAll(Gson().fromJson(fileWild.readText(), Requests.BattleHistoryResponse::class.java).battles)
-            } catch (ignore: Exception) {
-            }
+    fun getCardDetails(): List<CardDetail> {
+        return get(
+            fileName = "card_details.json",
+            type = object : TypeToken<List<CardDetail>>() {}.type
+        ) ?: emptyList()
+    }
+
+    fun getBattleHistory(player: String): List<Battle> {
+        val battles = mutableListOf<Battle>()
+
+        val wildBattles: BattleHistoryResponse? = get(
+            fileName = "battles_${player}_wild.json",
+            type = BattleHistoryResponse::class.java
+        )
+        wildBattles?.battles?.let {
+            battles.addAll(it)
         }
-        val fileModern = File(context.filesDir, "battles_${player}_modern")
-        if (fileModern.exists()) {
-            try {
-                battles.addAll(
-                    Gson().fromJson(
-                        fileModern.readText(),
-                        Requests.BattleHistoryResponse::class.java
-                    ).battles
-                )
-            } catch (ignore: Exception) {
-            }
+
+        val modernBattles: BattleHistoryResponse? = get(
+            fileName = "battles_${player}_modern.json",
+            type = BattleHistoryResponse::class.java
+        )
+        modernBattles?.battles?.let {
+            battles.addAll(it)
         }
+
         return battles.sortedByDescending { it.created_date }
     }
 
-    fun writeBattleHistory(context: Context, response: String, player: String, format: String) {
-        context.openFileOutput("battles_${player}_$format", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
+    fun getPlayerDetails(player: String): PlayerDetailsResponse? {
+        return get(
+            fileName = "details_${player}.json",
+            type = PlayerDetailsResponse::class.java
+        )
     }
 
-    fun getPlayerDetails(context: Context, player: String): Requests.PlayerDetailsResponse {
-        val file = File(context.filesDir, "details_$player")
-        return if (file.exists()) {
-            try {
-                Gson().fromJson(file.readText(), Requests.PlayerDetailsResponse::class.java)
-            } catch (exception: Exception) {
-                Requests.PlayerDetailsResponse(0, "", 0, 0, 0, "")
-            }
-        } else {
-            Requests.PlayerDetailsResponse(0, "", 0, 0, 0, "")
-        }
+    fun getRewardsInfo(player: String): RewardsInfo? {
+        return get(
+            fileName = "rewards_info_${player}.json",
+            type = RewardsInfo::class.java
+        )
     }
 
-    fun writePlayerDetails(context: Context, response: String, player: String) {
-        context.openFileOutput("details_$player", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
-    }
-
-    fun getRewardsInfo(context: Context, player: String): Requests.RewardsInfo? {
-        val file = File(context.filesDir, "rewards_info_$player")
-        return if (file.exists()) {
-            try {
-                Gson().fromJson(file.readText(), Requests.RewardsInfo::class.java)
-            } catch (exception: Exception) {
-                null
-            }
-        } else {
-            null
-        }
-    }
-
-    fun writeRewardsInfo(context: Context, response: String, player: String) {
-        context.openFileOutput("rewards_info_$player", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
+    fun getSettings(): GameSettings? {
+        return get(
+            fileName = "game_settings.json",
+            type = GameSettings::class.java
+        )
     }
 
     fun JSONArray.toStringList(): List<String> {
@@ -208,22 +168,4 @@ class Cache {
         return list.filter { it.isNotBlank() }
     }
 
-    fun getSettings(context: Context): Requests.GameSettings {
-        val file = File(context.filesDir, "game_settings")
-        return if (file.exists()) {
-            try {
-                Gson().fromJson(file.readText(), Requests.GameSettings::class.java)
-            } catch (exception: Exception) {
-                Requests.GameSettings("", Requests.SeasonSettings(""))
-            }
-        } else {
-            Requests.GameSettings("", Requests.SeasonSettings(""))
-        }
-    }
-
-    fun writeSettings(context: Context, response: String) {
-        context.openFileOutput("game_settings", Context.MODE_PRIVATE).use {
-            it.write(response.toByteArray())
-        }
-    }
 }

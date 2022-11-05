@@ -9,7 +9,12 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
-import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.models.Battle
+import com.example.splinterlandstest.models.Card
+import com.example.splinterlandstest.models.CardDetail
+import com.example.splinterlandstest.models.GameSettings
+import com.example.splinterlandstest.models.PlayerDetailsResponse
+import com.example.splinterlandstest.models.RewardsInfo
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
@@ -19,8 +24,8 @@ import java.util.*
 
 class BattlesAdapter(
     val player: String,
-    var cardDetails: List<Requests.CardDetail>,
-    val gameSettings: Requests.GameSettings,
+    var cardDetails: List<CardDetail>,
+    val gameSettings: GameSettings?,
     val onLickBattle: (battleId: String) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -31,29 +36,28 @@ class BattlesAdapter(
         const val VIEW_TYPE_CURRENT_QUEST = 3
     }
 
+    private var dataSet: List<Battle> = emptyList()
+    private var playerDetails: PlayerDetailsResponse? = null
+    private var rewardsInfo: RewardsInfo? = null
 
-    private var dataSet: List<Requests.Battle> = emptyList()
-    private var playerDetails: Requests.PlayerDetailsResponse? = null
-    private var rewardsInfo: Requests.RewardsInfo? = null
-
-    fun updateBattles(dataSet: List<Requests.Battle>) {
+    fun updateBattles(dataSet: List<Battle>) {
         this.dataSet = dataSet
         notifyDataSetChanged()
     }
 
-    fun updateCardDetails(cardDetails: List<Requests.CardDetail>) {
+    fun updateCardDetails(cardDetails: List<CardDetail>) {
         if (cardDetails.size != this.cardDetails.size) {
             this.cardDetails = cardDetails
             notifyDataSetChanged()
         }
     }
 
-    fun updatePlayerDetails(playerDetails: Requests.PlayerDetailsResponse) {
+    fun updatePlayerDetails(playerDetails: PlayerDetailsResponse?) {
         this.playerDetails = playerDetails
         notifyDataSetChanged()
     }
 
-    fun updateRewardsInfo(rewardsInfo: Requests.RewardsInfo?) {
+    fun updateRewardsInfo(rewardsInfo: RewardsInfo?) {
         this.rewardsInfo = rewardsInfo
         notifyDataSetChanged()
     }
@@ -77,7 +81,7 @@ class BattlesAdapter(
 
         lateinit var handlerTask: Runnable
 
-        fun bind(playerQuest: Requests.RewardsInfo?, gameSettings: Requests.GameSettings) {
+        fun bind(playerQuest: RewardsInfo?, gameSettings: GameSettings?) {
             if (playerQuest != null) {
                 tvFocusChests.text = "Focus chests: ${playerQuest.quest_reward_info.chest_earned}"
                 tvSeasonChests.text = "Season chests: ${playerQuest.season_reward_info.chest_earned}"
@@ -93,7 +97,7 @@ class BattlesAdapter(
 
                 handlerTask = Runnable {
                     tvFocusTimer.text = playerQuest.quest_reward_info.getFormattedEndDate()
-                    tvSeasonTimer.text = gameSettings.season.getFormattedEndDate()
+                    tvSeasonTimer.text = gameSettings?.season?.getFormattedEndDate()
                     itemView.postDelayed(handlerTask, 1000)
                 }
                 itemView.removeCallbacks(null)
@@ -112,7 +116,7 @@ class BattlesAdapter(
             tvPlayerRating = view.findViewById(R.id.tvPlayerRating)
         }
 
-        fun bind(playerDetails: Requests.PlayerDetailsResponse?) {
+        fun bind(playerDetails: PlayerDetailsResponse?) {
             tvPlayerName.text = playerDetails?.name?.uppercase()
             tvPlayerRating.text =
                 "W: ${numberFormat.format(playerDetails?.rating)}, M: ${numberFormat.format(playerDetails?.modern_rating)}"
@@ -171,7 +175,7 @@ class BattlesAdapter(
             tvType = view.findViewById(R.id.tvType)
         }
 
-        fun bind(battle: Requests.Battle) {
+        fun bind(battle: Battle) {
             if (battle.isWin(player)) {
                 imageView.setImageResource(R.drawable.win)
             } else {
@@ -236,7 +240,7 @@ class BattlesAdapter(
             }
         }
 
-        private fun loadCardImage(imageView: ImageView, card: Requests.Card?) {
+        private fun loadCardImage(imageView: ImageView, card: Card?) {
             val cardDetail = cardDetails.firstOrNull { it.id == card?.card_detail_id }
             if (cardDetail != null && card != null) {
                 Picasso.get()
@@ -305,7 +309,9 @@ class BattlesAdapter(
                 if (rewardsInfo != null) {
                     battlesPosition -= 1
                 }
-                (viewHolder as BattleViewHolder).bind(dataSet[battlesPosition])
+                if (battlesPosition >= 0) {
+                    (viewHolder as BattleViewHolder).bind(dataSet[battlesPosition])
+                }
             }
         }
     }

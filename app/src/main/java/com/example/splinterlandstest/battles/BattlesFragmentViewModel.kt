@@ -1,34 +1,34 @@
 package com.example.splinterlandstest.battles
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.models.Battle
+import com.example.splinterlandstest.models.CardDetail
+import com.example.splinterlandstest.models.PlayerDetailsResponse
+import com.example.splinterlandstest.models.RewardsInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BattlesFragmentViewModel : ViewModel() {
+class BattlesFragmentViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
-    private val requests = Requests()
-    private val cache = Cache()
+    val battles: MutableLiveData<List<Battle>> = MutableLiveData()
+    val playerDetails: MutableLiveData<PlayerDetailsResponse> = MutableLiveData()
+    val rewardsInfo: MutableLiveData<RewardsInfo?> = MutableLiveData()
+    val cardDetails: MutableLiveData<List<CardDetail>> = MutableLiveData()
 
-    val battles: MutableLiveData<List<Requests.Battle>> = MutableLiveData()
-    val playerDetails: MutableLiveData<Requests.PlayerDetailsResponse> = MutableLiveData()
-    val rewardsInfo: MutableLiveData<Requests.RewardsInfo?> = MutableLiveData()
-    val cardDetails: MutableLiveData<List<Requests.CardDetail>> = MutableLiveData()
-
-    fun loadBattles(context: Context, player: String) {
+    fun loadBattles(player: String) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            battles.postValue(cache.getBattleHistory(context, player))
-            playerDetails.postValue(cache.getPlayerDetails(context, player))
-            rewardsInfo.postValue(cache.getRewardsInfo(context, player))
-            battles.postValue(requests.getBattleHistory(context, player))
-            playerDetails.postValue(requests.getPlayerDetails(context, player))
-            rewardsInfo.postValue(requests.getRewardsInfo(context, player))
-            cardDetails.postValue(requests.getCardDetails(context))
+            battles.postValue(cache.getBattleHistory(player))
+            playerDetails.postValue(cache.getPlayerDetails(player))
+            rewardsInfo.postValue(cache.getRewardsInfo(player))
+            battles.postValue(requests.getBattleHistory(player))
+            playerDetails.postValue(requests.getPlayerDetails(player))
+            rewardsInfo.postValue(requests.getRewardsInfo(player))
+            cardDetails.postValue(requests.getCardDetails())
         }
     }
 

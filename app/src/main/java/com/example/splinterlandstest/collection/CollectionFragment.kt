@@ -8,12 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.databinding.FragmentCollectionBinding
+import org.koin.android.ext.android.get
 
 /**
  * Collection fragment
@@ -22,11 +23,14 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
 
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
+    val cache: Cache = get()
+    val requests: Requests = get()
+
     private var _binding: FragmentCollectionBinding? = null
 
     private val binding get() = _binding!!
 
-    private val model: CollectionFragmentViewModel by viewModels()
+    private val model: CollectionFragmentViewModel = CollectionFragmentViewModel(cache, requests)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +47,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
         binding.recyclerView.layoutManager =
             GridLayoutManager(context, calculateNoOfColumns(requireContext(), 120f))
 
-        val adapter = CollectionAdapter(Cache().getCardDetails(requireContext()))
+        val adapter = CollectionAdapter(cache.getCardDetails())
         binding.recyclerView.adapter = adapter
 
         model.collection.observe(viewLifecycleOwner) { collection ->
@@ -53,7 +57,7 @@ class CollectionFragment : Fragment(), CollectionFilterDialogFragment.Collection
             adapter.updateCardDetails(cardDetails)
         }
 
-        model.loadCollection(requireContext(), activityViewModel.playerName)
+        model.loadCollection(activityViewModel.playerName)
 
         binding.fabFilter.setOnClickListener {
             showFilterDialog()

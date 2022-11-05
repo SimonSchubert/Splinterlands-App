@@ -8,12 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.databinding.FragmentSecondBinding
+import org.koin.android.ext.android.get
 
 
 /**
@@ -21,11 +22,14 @@ import com.example.splinterlandstest.databinding.FragmentSecondBinding
  */
 class BattlesFragment : Fragment() {
 
+    val cache: Cache = get()
+    val requests: Requests = get()
+
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private var _binding: FragmentSecondBinding? = null
 
-    private val model: BattlesFragmentViewModel by viewModels()
+    private val model: BattlesFragmentViewModel = BattlesFragmentViewModel(cache, requests)
 
     private val binding get() = _binding!!
 
@@ -43,11 +47,10 @@ class BattlesFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val cache = Cache()
         val adapter = BattlesAdapter(
             activityViewModel.playerName,
-            cache.getCardDetails(requireContext()),
-            cache.getSettings(requireContext())
+            cache.getCardDetails(),
+            cache.getSettings()
         ) {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://splinterlands.com/?p=battle&id=${it}"))
             startActivity(browserIntent)
@@ -73,7 +76,7 @@ class BattlesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        model.loadBattles(requireContext(), activityViewModel.playerName)
+        model.loadBattles(activityViewModel.playerName)
     }
 
     override fun onDestroyView() {

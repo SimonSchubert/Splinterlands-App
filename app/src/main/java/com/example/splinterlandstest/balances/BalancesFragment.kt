@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -34,11 +36,15 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.fragment.app.viewModels
+import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
-import com.example.splinterlandstest.rewards.RewardItem
+import com.example.splinterlandstest.models.BalancesResponse
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import org.koin.android.ext.android.get
 import java.text.NumberFormat
 import java.util.*
 
@@ -48,7 +54,13 @@ import java.util.*
  */
 class BalancesFragment : Fragment() {
 
+    val cache: Cache = get()
+    private val requests: Requests = get()
+
     private val activityViewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel by viewModels<BalancesViewModel> {
+        BalancesViewModelFactory(activityViewModel.playerName, cache, requests)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,50 +71,86 @@ class BalancesFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                BalancesGrid(activityViewModel.playerName)
+                Content(viewModel.state.collectAsState().value)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.loadRewards()
     }
 }
 
 private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
 
 @Composable
-fun BalancesGrid(
-    player: String,
-    viewModel: BalancesFragmentViewModel = viewModel(factory = BasicGroupModelFactory(LocalContext.current, player))
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+fun Content(state: BalancesViewState) {
+    val swipeRefreshState = rememberSwipeRefreshState(false)
+    val context = LocalContext.current
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        swipeEnabled = state !is BalancesViewState.Loading,
+        onRefresh = {
+            state.onRefresh(context)
+        },
     ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painterResource(id = R.drawable.bg_balance),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
 
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
-
-        val state = viewModel.state.collectAsState().value
-
-        if (state.isEmpty()) {
-            CircularProgressIndicator()
-        } else {
-            LazyVerticalGrid(
-                modifier = Modifier.matchParentSize(),
-                columns = GridCells.Adaptive(minSize = 96.dp)
-            ) {
-                items(state.size) { balance ->
-                    BalanceItem(state[balance])
-                }
+            when (state) {
+                is BalancesViewState.Loading -> LoadingScreen()
+                is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
+                is BalancesViewState.Error -> ErrorScreen()
             }
         }
     }
 }
 
 @Composable
-fun BalanceItem(balance: Requests.BalancesResponse) {
+fun LoadingScreen() {
+    CircularProgressIndicator()
+}
+
+@Composable
+fun ReadyScreen(balances: List<BalancesResponse>) {
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Adaptive(minSize = 96.dp)
+    ) {
+        items(balances.size, key = { balances[it].token }) { balance ->
+            BalanceItem(balances[balance])
+        }
+    }
+}
+
+@Composable
+fun ErrorScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Something went wrong",
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun BalanceItem(balance: BalancesResponse) {
     Column(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -127,11 +175,11 @@ fun BalanceItem(balance: Requests.BalancesResponse) {
 @Composable
 @Preview
 fun BalancesPreview() {
-    Column {
-        BalanceItem(balance = Requests.BalancesResponse("", "LICENSE", 1f))
-        BalanceItem(balance = Requests.BalancesResponse("", "CHAOS", 6f))
-        BalanceItem(balance = Requests.BalancesResponse("", "NIGHTMARE", 18f))
-        BalanceItem(balance = Requests.BalancesResponse("", "PLOT", 3f))
-
-    }
+    val mockBalances = listOf(
+        BalancesResponse("", "LICENSE", 1f),
+        BalancesResponse("", "CHAOS", 6f),
+        BalancesResponse("", "NIGHTMARE", 18f),
+        BalancesResponse("", "PLOT", 3f)
+    )
+    ReadyScreen(mockBalances)
 }

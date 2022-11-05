@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,11 +36,16 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.fragment.app.viewModels
 import coil.compose.rememberAsyncImagePainter
+import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.models.*
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import org.koin.android.ext.android.get
 
 
 /**
@@ -47,7 +53,13 @@ import com.example.splinterlandstest.Requests
  */
 class RewardsFragment : Fragment() {
 
+    val cache: Cache = get()
+    private val requests: Requests = get()
+
     private val activityViewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel by viewModels<RewardsViewModel> {
+        RewardsViewModelFactory(activityViewModel.playerName, cache, requests)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,50 +70,85 @@ class RewardsFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                RewardsGrid(activityViewModel.playerName)
+                Content(viewModel.state.collectAsState().value)
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.loadRewards()
+    }
 }
 
 @Composable
-fun RewardsGrid(
-    player: String,
-    viewModel: RewardsFragmentViewModel = viewModel(factory = RewardModelModelFactory(LocalContext.current, player))
+fun Content(state: RewardsViewState) {
+    val swipeRefreshState = rememberSwipeRefreshState(false)
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        swipeEnabled = state !is RewardsViewState.Loading,
+        onRefresh = {
+            state.onRefresh()
+        },
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painterResource(id = R.drawable.bg_balance),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+
+            when (state) {
+                is RewardsViewState.Loading -> LoadingScreen()
+                is RewardsViewState.Success -> ReadyScreen(rewards = state.rewards)
+                is RewardsViewState.Error -> ErrorScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    CircularProgressIndicator()
+}
+
+@Composable
+fun ReadyScreen(
+    rewards: List<Reward>
 ) {
-    Box(
+    LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Adaptive(minSize = 96.dp)
+    ) {
+        items(rewards.size) { balance ->
+            RewardItem(rewards[balance])
+        }
+    }
+}
+
+@Composable
+fun ErrorScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
         contentAlignment = Alignment.Center
     ) {
-
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
+        Text(
+            text = "Something went wrong",
+            color = Color.White
         )
-
-        val state = viewModel.state.collectAsState().value
-
-        if (state.isEmpty()) {
-            CircularProgressIndicator()
-        } else {
-            LazyVerticalGrid(
-                modifier = Modifier.matchParentSize(),
-                columns = GridCells.Adaptive(minSize = 96.dp)
-            ) {
-                items(state.size) { balance ->
-                    RewardItem(state[balance])
-                }
-            }
-        }
     }
 }
 
-
 @Composable
-fun RewardItem(reward: Requests.Reward) {
+fun RewardItem(reward: Reward) {
     Column(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -126,32 +173,31 @@ fun RewardItem(reward: Requests.Reward) {
 }
 
 @Composable
-fun getPainter(reward: Requests.Reward): Painter {
-    return if (reward is Requests.CardReward) {
+fun getPainter(reward: Reward): Painter {
+    return if (reward is CardReward) {
         rememberAsyncImagePainter(reward.url)
     } else {
         val resId = when (reward) {
-            is Requests.SPSReward -> R.drawable.sps
-            is Requests.CreditsReward -> R.drawable.credits
-            is Requests.DecReward -> R.drawable.dec
-            is Requests.GoldPotionReward -> R.drawable.gold
-            is Requests.LegendaryPotionReward -> R.drawable.legendary
-            is Requests.MeritsReward -> R.drawable.mertis
-            is Requests.PackReward -> R.drawable.chaos
+            is SPSReward -> R.drawable.sps
+            is CreditsReward -> R.drawable.credits
+            is DecReward -> R.drawable.dec
+            is GoldPotionReward -> R.drawable.gold
+            is LegendaryPotionReward -> R.drawable.legendary
+            is MeritsReward -> R.drawable.mertis
+            is PackReward -> R.drawable.chaos
             else -> throw Exception()
         }
         painterResource(id = resId)
     }
 }
 
-
 @Composable
 @Preview
 fun RewardsPreview() {
-    Column {
-        RewardItem(reward = Requests.DecReward(12))
-        RewardItem(reward = Requests.PackReward)
-        RewardItem(reward = Requests.GoldPotionReward(5))
-
-    }
+    val mockRewards = listOf(
+        DecReward(12),
+        PackReward,
+        GoldPotionReward(5)
+    )
+    ReadyScreen(rewards = mockRewards)
 }

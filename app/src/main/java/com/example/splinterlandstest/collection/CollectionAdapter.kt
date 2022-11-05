@@ -6,21 +6,22 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.splinterlandstest.R
-import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.loadCard
+import com.example.splinterlandstest.models.Card
+import com.example.splinterlandstest.models.CardDetail
 import com.squareup.picasso.Picasso
 
-class CollectionAdapter(private var cardDetails: List<Requests.CardDetail>) :
+class CollectionAdapter(private var cardDetails: List<CardDetail>) :
     RecyclerView.Adapter<CollectionAdapter.ViewHolder>() {
 
-    private var dataSet: List<Requests.Card> = emptyList()
+    private var dataSet: List<Card> = emptyList()
 
-    fun updateCollection(dataSet: List<Requests.Card>) {
+    fun updateCollection(dataSet: List<Card>) {
         this.dataSet = dataSet.sortedBy { it.card_detail_id }
         notifyDataSetChanged()
     }
 
-    fun updateCardDetails(cardDetails: List<Requests.CardDetail>) {
+    fun updateCardDetails(cardDetails: List<CardDetail>) {
         if (cardDetails.size != this.cardDetails.size) {
             this.cardDetails = cardDetails
             notifyDataSetChanged()

@@ -64,6 +64,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.3.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.27.0")
+
+    implementation("io.insert-koin:koin-core:3.2.2")
+    implementation("io.insert-koin:koin-android:3.3.0")
 
     androidTestImplementation("io.ktor:ktor-client-mock:2.1.3")
 
