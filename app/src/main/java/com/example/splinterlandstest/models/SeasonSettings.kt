@@ -18,4 +18,9 @@ data class SeasonSettings(val ends: String = "") {
             "${milliseconds.div(1000L).seconds}"
         }
     }
+
+    fun getEndTimestamp(): Long {
+        return (simpleDateFormat.parse(ends)?.time?.div(1_000)
+            ?: 0L)
+    }
 }

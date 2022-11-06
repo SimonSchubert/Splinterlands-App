@@ -1,8 +1,8 @@
 package com.example.splinterlandstest
 
-import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Balances
 import com.example.splinterlandstest.models.Battle
-import com.example.splinterlandstest.models.BattleHistoryResponse
+import com.example.splinterlandstest.models.BattleHistory
 import com.example.splinterlandstest.models.Card
 import com.example.splinterlandstest.models.CardDetail
 import com.example.splinterlandstest.models.CardReward
@@ -14,7 +14,7 @@ import com.example.splinterlandstest.models.GoldPotionReward
 import com.example.splinterlandstest.models.LegendaryPotionReward
 import com.example.splinterlandstest.models.MeritsReward
 import com.example.splinterlandstest.models.PackReward
-import com.example.splinterlandstest.models.PlayerDetailsResponse
+import com.example.splinterlandstest.models.PlayerDetails
 import com.example.splinterlandstest.models.Reward
 import com.example.splinterlandstest.models.RewardsInfo
 import com.example.splinterlandstest.models.SPSReward
@@ -60,13 +60,13 @@ class Requests(val cache: Cache) {
         )
     }
 
-    suspend fun getBalances(player: String): List<BalancesResponse> {
+    suspend fun getBalances(player: String): List<Balances> {
         val response: HttpResponse = client.get("$endpoint/players/balances?username=$player")
         cache.write("balances_${player}.json", response.bodyAsText())
         return (Gson().fromJson(
             response.bodyAsText(),
-            object : TypeToken<List<BalancesResponse>>() {}.type
-        ) as List<BalancesResponse>).filterBalances()
+            object : TypeToken<List<Balances>>() {}.type
+        ) as List<Balances>).filterBalances()
     }
 
     suspend fun getCollection(player: String): List<Card> {
@@ -96,16 +96,16 @@ class Requests(val cache: Cache) {
             client.get("$endpoint/battle/history2?player=$player&username=$player&format=modern")
         cache.write("battles_${player}_modern.json", responseModern.bodyAsText())
 
-        val battles = Gson().fromJson(responseWild.bodyAsText(), BattleHistoryResponse::class.java).battles +
-                Gson().fromJson(responseModern.bodyAsText(), BattleHistoryResponse::class.java).battles
+        val battles = Gson().fromJson(responseWild.bodyAsText(), BattleHistory::class.java).battles +
+                Gson().fromJson(responseModern.bodyAsText(), BattleHistory::class.java).battles
         return battles.sortedByDescending { it.created_date }
     }
 
-    suspend fun getPlayerDetails(player: String): PlayerDetailsResponse {
+    suspend fun getPlayerDetails(player: String): PlayerDetails {
         val response: HttpResponse =
             client.get("$endpoint/players/details?name=$player")
         cache.write("details_${player}.json", response.bodyAsText())
-        return Gson().fromJson(response.bodyAsText(), PlayerDetailsResponse::class.java)
+        return Gson().fromJson(response.bodyAsText(), PlayerDetails::class.java)
     }
 
     suspend fun getRewardsInfo(player: String): RewardsInfo {

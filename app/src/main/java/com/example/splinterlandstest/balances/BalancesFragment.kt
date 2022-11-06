@@ -41,7 +41,7 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
-import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Balances
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
@@ -123,7 +123,7 @@ fun LoadingScreen() {
 }
 
 @Composable
-fun ReadyScreen(balances: List<BalancesResponse>) {
+fun ReadyScreen(balances: List<Balances>) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(minSize = 96.dp)
@@ -150,7 +150,7 @@ fun ErrorScreen() {
 }
 
 @Composable
-fun BalanceItem(balance: BalancesResponse) {
+fun BalanceItem(balance: Balances) {
     Column(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -176,10 +176,10 @@ fun BalanceItem(balance: BalancesResponse) {
 @Preview
 fun BalancesPreview() {
     val mockBalances = listOf(
-        BalancesResponse("", "LICENSE", 1f),
-        BalancesResponse("", "CHAOS", 6f),
-        BalancesResponse("", "NIGHTMARE", 18f),
-        BalancesResponse("", "PLOT", 3f)
+        Balances("", "LICENSE", 1f),
+        Balances("", "CHAOS", 6f),
+        Balances("", "NIGHTMARE", 18f),
+        Balances("", "PLOT", 3f)
     )
     ReadyScreen(mockBalances)
 }

@@ -3,7 +3,7 @@ package com.example.splinterlandstest.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlayerDetailsResponse(
+data class PlayerDetails(
     val capture_rate: Int,
     val rank: String,
     val rating: Int,

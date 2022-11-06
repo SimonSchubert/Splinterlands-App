@@ -25,16 +25,16 @@ data class Battle(
     val format: String
 ) {
     fun getOpponent(player: String): String {
-        return if (player_1 == player) {
-            player_2
+        return if (player_1.uppercase() == player.uppercase()) {
+            player_2.uppercase()
         } else {
-            player_1
+            player_1.uppercase()
         }
     }
 
     fun getOwnRating(player: String): String {
         val numberFormat = NumberFormat.getNumberInstance(Locale.US)
-        return if (player_1 == player) {
+        return if (player_1.uppercase() == player.uppercase()) {
             numberFormat.format(player_1_rating_final)
         } else {
             numberFormat.format(player_2_rating_final)
@@ -43,7 +43,7 @@ data class Battle(
 
     fun getOpponentRating(player: String): String {
         val numberFormat = NumberFormat.getNumberInstance(Locale.US)
-        return if (player_2 == player) {
+        return if (player_1.uppercase() == player.uppercase()) {
             numberFormat.format(player_2_rating_final)
         } else {
             numberFormat.format(player_1_rating_final)
@@ -51,18 +51,18 @@ data class Battle(
     }
 
     fun getOwnDetail(player: String): BattleDetailsTeam? {
-        return if (player_1 == player) {
+        return if (player_1.uppercase() == player.uppercase()) {
             details.team1
         } else {
             details.team2
         }
     }
 
-    fun getOpponentDetail(opponent: String): BattleDetailsTeam? {
-        return if (player_1 == opponent) {
-            details.team1
-        } else {
+    fun getOpponentDetail(player: String): BattleDetailsTeam? {
+        return if (player_1.uppercase() == player.uppercase()) {
             details.team2
+        } else {
+            details.team1
         }
     }
 
@@ -70,7 +70,7 @@ data class Battle(
         return winner == player
     }
 
-    fun getRulesetImagePaths(): List<String> {
+    fun getRulesetImageUrls(): List<String> {
         return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
             .map { "${assetUrl}website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
     }
@@ -78,5 +78,19 @@ data class Battle(
     fun getTimeAgo(): String {
         val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time ?: 0L)
         return "${milliseconds.absoluteValue.div(1000L).seconds}".split(" ").first()
+    }
+
+    fun getType(): String {
+        return if (match_type == "Ranked") {
+            if (format == "modern") {
+                "Modern"
+            } else {
+                "Wild"
+            }
+        } else if (details.is_brawl) {
+            "Brawl"
+        } else {
+            match_type
+        }
     }
 }

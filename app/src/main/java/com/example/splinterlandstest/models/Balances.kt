@@ -4,7 +4,7 @@ import com.example.splinterlandstest.R
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BalancesResponse(val player: String, var token: String, var balance: Float) {
+data class Balances(val player: String, var token: String, var balance: Float) {
     fun getDrawableResource(): Int {
         return when (token) {
             "DEC" -> R.drawable.dec

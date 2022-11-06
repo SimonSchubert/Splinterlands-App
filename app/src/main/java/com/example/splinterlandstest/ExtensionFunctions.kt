@@ -1,14 +1,14 @@
 package com.example.splinterlandstest
 
 import android.widget.ImageView
-import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Balances
 import com.example.splinterlandstest.models.Card
 import com.example.splinterlandstest.models.CardDetail
 import com.squareup.picasso.Picasso
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun List<BalancesResponse>.filterBalances(): List<BalancesResponse> {
+fun List<Balances>.filterBalances(): List<Balances> {
     val sps = this.firstOrNull { it.token == "SPS" }
     this.firstOrNull { it.token == "SPSP" }?.let {
         if (sps != null) {

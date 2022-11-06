@@ -1,14 +1,14 @@
 package com.example.splinterlandstest
 
 import android.content.Context
-import com.example.splinterlandstest.models.BalancesResponse
+import com.example.splinterlandstest.models.Balances
 import com.example.splinterlandstest.models.Battle
-import com.example.splinterlandstest.models.BattleHistoryResponse
+import com.example.splinterlandstest.models.BattleHistory
 import com.example.splinterlandstest.models.Card
 import com.example.splinterlandstest.models.CardDetail
 import com.example.splinterlandstest.models.CollectionResponse
 import com.example.splinterlandstest.models.GameSettings
-import com.example.splinterlandstest.models.PlayerDetailsResponse
+import com.example.splinterlandstest.models.PlayerDetails
 import com.example.splinterlandstest.models.RewardsInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -66,10 +66,10 @@ class Cache(val context: Context) {
         )
     }
 
-    fun getBalances(player: String): List<BalancesResponse> {
-        return get<List<BalancesResponse>?>(
+    fun getBalances(player: String): List<Balances> {
+        return get<List<Balances>?>(
             fileName = "balances_${player}.json",
-            type = object : TypeToken<List<BalancesResponse>>() {}.type
+            type = object : TypeToken<List<Balances>>() {}.type
         )?.filterBalances() ?: emptyList()
     }
 
@@ -120,17 +120,17 @@ class Cache(val context: Context) {
     fun getBattleHistory(player: String): List<Battle> {
         val battles = mutableListOf<Battle>()
 
-        val wildBattles: BattleHistoryResponse? = get(
+        val wildBattles: BattleHistory? = get(
             fileName = "battles_${player}_wild.json",
-            type = BattleHistoryResponse::class.java
+            type = BattleHistory::class.java
         )
         wildBattles?.battles?.let {
             battles.addAll(it)
         }
 
-        val modernBattles: BattleHistoryResponse? = get(
+        val modernBattles: BattleHistory? = get(
             fileName = "battles_${player}_modern.json",
-            type = BattleHistoryResponse::class.java
+            type = BattleHistory::class.java
         )
         modernBattles?.battles?.let {
             battles.addAll(it)
@@ -139,10 +139,10 @@ class Cache(val context: Context) {
         return battles.sortedByDescending { it.created_date }
     }
 
-    fun getPlayerDetails(player: String): PlayerDetailsResponse? {
+    fun getPlayerDetails(player: String): PlayerDetails? {
         return get(
             fileName = "details_${player}.json",
-            type = PlayerDetailsResponse::class.java
+            type = PlayerDetails::class.java
         )
     }
 

@@ -26,6 +26,11 @@ data class QuestRewardInfo(
         return "${assetUrl}website/ui_elements/updated_rewards/img_chest_modern_$league.png"
     }
 
+    fun getEndTimestamp(): Long {
+        return (simpleDateFormat.parse(created_date)?.time?.div(1_000)
+            ?: 0L) + 1.days.inWholeSeconds
+    }
+
     fun getFormattedEndDate(): String {
         val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
             ?: 0L) - 1.days.inWholeMilliseconds
