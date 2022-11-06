@@ -6,7 +6,9 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -47,13 +49,13 @@ class ComposeScreenshots {
         }
 
         // Add players
-        val cache = Cache()
-        cache.writePlayerToList(context, "taug")
-        cache.writePlayerToList(context, "arschibald")
-        cache.writePlayerToList(context, "cryptoreaper")
-        cache.writePlayerToList(context, "calynn")
-        cache.writePlayerToList(context, "grosh")
-        cache.writePlayerToList(context, "jacekw")
+        val cache = Cache(context)
+        cache.writePlayerToList("taug")
+        cache.writePlayerToList("arschibald")
+        cache.writePlayerToList("cryptoreaper")
+        cache.writePlayerToList("calynn")
+        cache.writePlayerToList("grosh")
+        cache.writePlayerToList("jacekw")
 
         scenario = ActivityScenario.launch(MainActivity::class.java)
     }
@@ -70,9 +72,21 @@ class ComposeScreenshots {
         }
 
         // Login
-        composeTestRule.takeScreenshot("screen-1.png")
+        composeTestRule.takeScreenshot("screen-4.png")
 
-        // composeTestRule.onNodeWithText("ARSCHIBALD").performClick()
+
+        composeTestRule.onNodeWithText("ARSCHIBALD").performClick()
+
+        // TODO: mock api responses
+        runBlocking {
+            repeat(10) {
+                delay(500L)
+                composeTestRule.waitForIdle()
+            }
+        }
+
+        // Battles
+        composeTestRule.takeScreenshot("screen-1.png")
     }
 
     private fun ComposeTestRule.takeScreenshot(file: String) {
