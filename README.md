@@ -23,7 +23,7 @@ The **goal** of the project is to KISS (Keep it stupid simple) and **focus on pe
 
 ### Automatic screenshot
 
-[ComposeScreenshots.kt](main/app/src/androidTest/java/com/example/splinterlandstest/ComposeScreenshots.kt)
+[ComposeScreenshots.kt](app/src/androidTest/java/com/example/splinterlandstest/ComposeScreenshots.kt)
 
 
 The copyright of the graphics in the demo project belongs to Splinterlands
