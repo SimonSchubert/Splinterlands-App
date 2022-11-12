@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
@@ -20,9 +22,13 @@ class MainActivityViewModel(val cache: Cache, val requests: Requests) : ViewMode
         loginStatus.value = true
     }
 
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        throwable.printStackTrace()
+    }
+
     fun init() {
         playerName = cache.getSelectedPlayerName()
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             cache.getSettings()?.let {
                 assetUrl = it.asset_url
             }

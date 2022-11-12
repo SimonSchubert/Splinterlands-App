@@ -7,30 +7,30 @@ import kotlinx.serialization.Serializable
 data class Balances(val player: String, var token: String, var balance: Float) {
     fun getDrawableResource(): Int {
         return when (token) {
-            "DEC" -> R.drawable.dec
-            "CREDITS" -> R.drawable.credits
-            "SPS" -> R.drawable.sps
-            "MERITS" -> R.drawable.mertis
-            "GOLD" -> R.drawable.gold
-            "LEGENDARY" -> R.drawable.legendary
-            "GLADIUS" -> R.drawable.gladius
-            "DICE" -> R.drawable.dice
-            "UNTAMED" -> R.drawable.untamed
-            "ORB" -> R.drawable.orb
-            "ALPHA" -> R.drawable.alpha
-            "BETA" -> R.drawable.beta
-            "CHAOS" -> R.drawable.chaos
-            "NIGHTMARE" -> R.drawable.nightmare
-            "RIFT" -> R.drawable.rift
-            "PLOT" -> R.drawable.plot
-            "VOUCHER" -> R.drawable.voucher
-            "LICENSE" -> R.drawable.license
-            "TOTEMC" -> R.drawable.totemc
-            "TOTEMR" -> R.drawable.totemr
-            "TOTEME" -> R.drawable.toteme
-            "TOTEML" -> R.drawable.toteml
-            "TRACT" -> R.drawable.tract
-            "REGION" -> R.drawable.region
+            "DEC" -> R.drawable.asset_dec
+            "CREDITS" -> R.drawable.asset_credits
+            "SPS" -> R.drawable.asset_sps
+            "MERITS" -> R.drawable.asset_merits
+            "GOLD" -> R.drawable.asset_potion_gold
+            "LEGENDARY" -> R.drawable.asset_potion_legendary
+            "GLADIUS" -> R.drawable.asset_pack_gladius
+            "DICE" -> R.drawable.asset_pack_dice
+            "UNTAMED" -> R.drawable.asset_pack_untamed
+            "ORB" -> R.drawable.asset_pack_orb
+            "ALPHA" -> R.drawable.asset_pack_alpha
+            "BETA" -> R.drawable.asset_pack_beta
+            "CHAOS" -> R.drawable.asset_pack_chaos
+            "NIGHTMARE" -> R.drawable.asset_pack_nightmare
+            "RIFT" -> R.drawable.asset_pack_rift
+            "PLOT" -> R.drawable.asset_land_plot
+            "VOUCHER" -> R.drawable.asset_voucher
+            "LICENSE" -> R.drawable.asset_node_license
+            "TOTEMC" -> R.drawable.asset_totem_common
+            "TOTEMR" -> R.drawable.asset_totem_rare
+            "TOTEME" -> R.drawable.asset_totem_epic
+            "TOTEML" -> R.drawable.asset_totem_legendary
+            "TRACT" -> R.drawable.asset_land_tract
+            "REGION" -> R.drawable.asset_plot_region
             else -> R.drawable.ic_launcher_background
         }
     }

@@ -90,24 +90,24 @@ fun Content(state: BalancesViewState) {
     val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        swipeEnabled = state !is BalancesViewState.Loading,
-        onRefresh = {
-            state.onRefresh(context)
-        },
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painterResource(id = R.drawable.bg_balance),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
+        Image(
+            painterResource(id = R.drawable.bg_balance),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
 
+        SwipeRefresh(
+            state = swipeRefreshState,
+            swipeEnabled = state !is BalancesViewState.Loading,
+            onRefresh = {
+                state.onRefresh(context)
+            },
+        ) {
             when (state) {
                 is BalancesViewState.Loading -> LoadingScreen()
                 is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
@@ -119,7 +119,13 @@ fun Content(state: BalancesViewState) {
 
 @Composable
 fun LoadingScreen() {
-    CircularProgressIndicator()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable

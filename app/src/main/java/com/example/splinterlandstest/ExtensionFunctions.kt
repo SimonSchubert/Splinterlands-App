@@ -1,10 +1,6 @@
 package com.example.splinterlandstest
 
-import android.widget.ImageView
 import com.example.splinterlandstest.models.Balances
-import com.example.splinterlandstest.models.Card
-import com.example.splinterlandstest.models.CardDetail
-import com.squareup.picasso.Picasso
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -33,14 +29,6 @@ fun JSONArray.toObjectList(): List<JSONObject> {
         list.add(this.getJSONObject(i))
     }
     return list
-}
-
-fun Picasso.loadCard(imageView: ImageView, card: Card, cardDetail: CardDetail) {
-    this
-        .load(card.getImageUrl(cardDetail))
-        .placeholder(card.getPlaceholderDrawable())
-        .fit()
-        .into(imageView)
 }
 
 fun String.getRulesetImageUrl(): String {

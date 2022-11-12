@@ -114,24 +114,24 @@ fun Content(
     val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        swipeEnabled = state !is LoginViewState.Loading,
-        onRefresh = {
-            state.onRefresh(context)
-        },
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painterResource(id = R.drawable.bg_login),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
 
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painterResource(id = R.drawable.bg_login),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
+        SwipeRefresh(
+            state = swipeRefreshState,
+            swipeEnabled = state !is LoginViewState.Loading,
+            onRefresh = {
+                state.onRefresh(context)
+            },
+        ) {
             when (state) {
                 is LoginViewState.Loading -> LoadingScreen()
                 is LoginViewState.Success -> ReadyScreen(
@@ -149,7 +149,13 @@ fun Content(
 
 @Composable
 fun LoadingScreen() {
-    CircularProgressIndicator()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 
@@ -203,9 +209,13 @@ fun ReadyScreen(
                         .align(alignment = Alignment.CenterHorizontally)
                 ) {
                     var text by remember { mutableStateOf(TextFieldValue("")) }
-                    TextField(value = text, textStyle = TextStyle.Default.copy(color = Color.White), onValueChange = {
-                        text = it
-                    },
+                    TextField(
+                        value = text,
+                        textStyle = TextStyle.Default.copy(color = Color.White),
+                        singleLine = true,
+                        onValueChange = {
+                            text = it
+                        },
                         placeholder = {
                             Text(
                                 "Player",

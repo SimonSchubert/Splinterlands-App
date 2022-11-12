@@ -86,24 +86,23 @@ class RewardsFragment : Fragment() {
 fun Content(state: RewardsViewState) {
     val swipeRefreshState = rememberSwipeRefreshState(false)
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        swipeEnabled = state !is RewardsViewState.Loading,
-        onRefresh = {
-            state.onRefresh()
-        },
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Image(
+            painterResource(id = R.drawable.bg_balance),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
+        SwipeRefresh(
+            state = swipeRefreshState,
+            swipeEnabled = state !is RewardsViewState.Loading,
+            onRefresh = {
+                state.onRefresh()
+            },
         ) {
-            Image(
-                painterResource(id = R.drawable.bg_balance),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
-
             when (state) {
                 is RewardsViewState.Loading -> LoadingScreen()
                 is RewardsViewState.Success -> ReadyScreen(rewards = state.rewards)
@@ -115,7 +114,13 @@ fun Content(state: RewardsViewState) {
 
 @Composable
 fun LoadingScreen() {
-    CircularProgressIndicator()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
@@ -178,13 +183,13 @@ fun getPainter(reward: Reward): Painter {
         rememberAsyncImagePainter(reward.url)
     } else {
         val resId = when (reward) {
-            is SPSReward -> R.drawable.sps
-            is CreditsReward -> R.drawable.credits
-            is DecReward -> R.drawable.dec
-            is GoldPotionReward -> R.drawable.gold
-            is LegendaryPotionReward -> R.drawable.legendary
-            is MeritsReward -> R.drawable.mertis
-            is PackReward -> R.drawable.chaos
+            is SPSReward -> R.drawable.asset_sps
+            is CreditsReward -> R.drawable.asset_credits
+            is DecReward -> R.drawable.asset_dec
+            is GoldPotionReward -> R.drawable.asset_potion_gold
+            is LegendaryPotionReward -> R.drawable.asset_potion_legendary
+            is MeritsReward -> R.drawable.asset_merits
+            is PackReward -> R.drawable.asset_pack_chaos
             else -> throw Exception()
         }
         painterResource(id = resId)

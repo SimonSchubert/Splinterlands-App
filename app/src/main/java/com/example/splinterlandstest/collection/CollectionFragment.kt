@@ -63,7 +63,7 @@ class CollectionFragment : Fragment() {
     val requests: Requests = get()
 
     private val activityViewModel: MainActivityViewModel by activityViewModels()
-    private val viewModel by viewModels<CollectionFragmentViewModel> {
+    private val viewModel by viewModels<CollectionViewModel> {
         CollectionViewModelFactory(activityViewModel.playerName, cache, requests)
     }
 

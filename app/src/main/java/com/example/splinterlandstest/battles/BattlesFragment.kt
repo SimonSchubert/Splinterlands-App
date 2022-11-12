@@ -53,6 +53,7 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.models.CardFoilUrl
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -102,24 +103,23 @@ fun Content(state: BattlesViewState) {
     val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
 
-    SwipeRefresh(
-        state = swipeRefreshState,
-        swipeEnabled = state !is BattlesViewState.Loading,
-        onRefresh = {
-            state.onRefresh(context)
-        },
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painterResource(id = R.drawable.bg_balance),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize()
-            )
+        Image(
+            painterResource(id = R.drawable.bg_balance),
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.matchParentSize()
+        )
 
+        SwipeRefresh(
+            state = swipeRefreshState,
+            swipeEnabled = state !is BattlesViewState.Loading,
+            onRefresh = {
+                state.onRefresh(context)
+            },
+        ) {
             when (state) {
                 is BattlesViewState.Loading -> LoadingScreen()
                 is BattlesViewState.Success -> ReadyScreen(
@@ -141,7 +141,13 @@ fun Content(state: BattlesViewState) {
 
 @Composable
 fun LoadingScreen() {
-    CircularProgressIndicator()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
@@ -158,10 +164,11 @@ fun ReadyScreen(
 ) {
     LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        item {
+        item(key = "player") {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
+                modifier = Modifier,
                 text = playerName,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -174,7 +181,7 @@ fun ReadyScreen(
             )
         }
 
-        item {
+        item(key = "chests") {
             ChestRow(
                 focusChests,
                 focusChestUrl,
@@ -185,7 +192,7 @@ fun ReadyScreen(
             )
         }
 
-        items(battles) { battle ->
+        items(items = battles, key = { it.id }) { battle ->
             Battle(battle)
         }
     }
@@ -200,15 +207,15 @@ fun ChestRow(
     seasonChestUrl: String,
     seasonEndTimestamp: Long
 ) {
-    val currentTimestamp = remember { mutableStateOf(System.currentTimeMillis().div(1_000)) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1.seconds)
-            currentTimestamp.value = System.currentTimeMillis().div(1_000)
-        }
-    }
-
     Row {
+
+        val currentTimestamp = remember { mutableStateOf(System.currentTimeMillis().div(1_000)) }
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(1.seconds)
+                currentTimestamp.value = System.currentTimeMillis().div(1_000)
+            }
+        }
 
         RewardChest(
             chestUrl = focusChestUrl,
@@ -243,42 +250,12 @@ fun Battle(battle: BattleViewState) {
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.End
         ) {
-
-            Text(
-                text = battle.player1Name,
-                fontSize = 16.sp,
-                color = Color.White
-            )
-
-            Text(
-                text = battle.player1Rating,
-                color = Color.White
-            )
-
-            FlowRow(
+            BattleLineUp(
                 mainAxisAlignment = MainAxisAlignment.End,
-                mainAxisSpacing = 4.dp,
-                crossAxisSpacing = 4.dp
-            ) {
-                battle.player1CardUrls.forEach { url ->
-                    val image: Painter = rememberAsyncImagePainter(url.url)
-                    Image(
-                        painter = image,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .border(
-                                2.dp, if (url.isGold) {
-                                    Color(0XFFffd700)
-                                } else {
-                                    Color.Gray
-                                }, CircleShape
-                            ),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-            }
+                battle.player1Name,
+                battle.player1Rating,
+                battle.player1CardUrls
+            )
         }
 
         Column(
@@ -298,14 +275,12 @@ fun Battle(battle: BattleViewState) {
                             } else {
                                 Color(0XFFFF6666)
                             },
-                            radius = size.maxDimension
-                                .div(2)
-                                .plus(10.dp.value)
+                            radius = 32.dp.value
                         )
                     }
             )
 
-            Row(modifier = Modifier) {
+            Row {
                 battle.rulesetUrls.forEach { url ->
                     val image: Painter = rememberAsyncImagePainter(url)
                     Image(
@@ -331,42 +306,52 @@ fun Battle(battle: BattleViewState) {
         }
 
         Column(modifier = Modifier.weight(1f)) {
-
-            Text(
-                text = battle.player2Name,
-                fontSize = 16.sp,
-                color = Color.White
-            )
-
-            Text(
-                text = battle.player2Rating,
-                color = Color.White
-            )
-
-            FlowRow(
+            BattleLineUp(
                 mainAxisAlignment = MainAxisAlignment.Start,
-                mainAxisSpacing = 4.dp,
-                crossAxisSpacing = 4.dp
-            ) {
-                battle.player2CardUrls.forEach { url ->
-                    val image: Painter = rememberAsyncImagePainter(url.url)
-                    Image(
-                        painter = image,
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .border(
-                                2.dp, if (url.isGold) {
-                                    Color(0XFFffd700)
-                                } else {
-                                    Color.Gray
-                                }, CircleShape
-                            ),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-            }
+                battle.player2Name,
+                battle.player2Rating,
+                battle.player2CardUrls
+            )
+        }
+
+    }
+}
+
+@Composable
+fun BattleLineUp(mainAxisAlignment: MainAxisAlignment, playerName: String, rating: String, cardUrls: List<CardFoilUrl>) {
+    Text(
+        text = playerName,
+        fontSize = 16.sp,
+        color = Color.White
+    )
+
+    Text(
+        text = rating,
+        color = Color.White
+    )
+
+    FlowRow(
+        mainAxisAlignment = mainAxisAlignment,
+        mainAxisSpacing = 4.dp,
+        crossAxisSpacing = 4.dp
+    ) {
+        cardUrls.forEach { url ->
+            val image: Painter = rememberAsyncImagePainter(url.url)
+            Image(
+                painter = image,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .border(
+                        2.dp, if (url.isGold) {
+                            Color(0XFFffd700)
+                        } else {
+                            Color.Gray
+                        }, CircleShape
+                    ),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+            )
         }
     }
 }

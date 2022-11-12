@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Card(val card_detail_id: String, val edition: Int, val gold: Boolean = false) {
+
     fun getImageUrl(cardDetail: CardDetail): String {
         val editionPath = when (edition) {
             8 -> "cards_riftwatchers"
@@ -26,15 +27,15 @@ data class Card(val card_detail_id: String, val edition: Int, val gold: Boolean 
 
     fun getPlaceholderDrawable(): Int {
         return when (edition) {
-            8 -> R.drawable.card8
-            7 -> R.drawable.card7
-            6 -> R.drawable.card6
-            5 -> R.drawable.card5
-            4 -> R.drawable.card4
-            3 -> R.drawable.card3
-            2 -> R.drawable.card2
-            1 -> R.drawable.card1
-            else -> R.drawable.card7
+            8 -> R.drawable.card_back_rift
+            7 -> R.drawable.card_back_chaos
+            6 -> R.drawable.card_back_gladius
+            5 -> R.drawable.card_back_untamed
+            4 -> R.drawable.card_back_reward
+            3 -> R.drawable.card_back_promo
+            2 -> R.drawable.card_back_beta
+            1 -> R.drawable.card_back_alpha
+            else -> R.drawable.card_back_chaos
         }
     }
 

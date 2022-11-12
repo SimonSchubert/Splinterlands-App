@@ -1,7 +1,6 @@
 package com.example.splinterlandstest.collection
 
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -16,12 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CollectionFragmentViewModel(val player: String, val cache: Cache, val requests: Requests) : ViewModel() {
+class CollectionViewModel(val player: String, val cache: Cache, val requests: Requests) : ViewModel() {
 
     private val _state = MutableStateFlow<CollectionViewState>(CollectionViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
-
-    val collection: MutableLiveData<List<Card>> = MutableLiveData()
 
     private var unfilteredCollection = listOf<Card>()
     private var cardDetails = listOf<CardDetail>()
@@ -44,13 +41,13 @@ class CollectionFragmentViewModel(val player: String, val cache: Cache, val requ
         FilterEditionState(8, imageRes = R.drawable.ic_icon_edition_rift)
     )
     private var filterElementState = listOf(
-        FilterElementState("Red", imageRes = R.drawable.icon_element_fire_2),
-        FilterElementState("Blue", imageRes = R.drawable.icon_element_water_2),
-        FilterElementState("Green", imageRes = R.drawable.icon_element_earth_2),
-        FilterElementState("White", imageRes = R.drawable.icon_element_life_2),
-        FilterElementState("Black", imageRes = R.drawable.icon_element_death_2),
-        FilterElementState("Gold", imageRes = R.drawable.icon_element_dragon_2),
-        FilterElementState("Gray", imageRes = R.drawable.icon_element_neutral_2)
+        FilterElementState("Red", imageRes = R.drawable.element_fire),
+        FilterElementState("Blue", imageRes = R.drawable.element_water),
+        FilterElementState("Green", imageRes = R.drawable.element_earth),
+        FilterElementState("White", imageRes = R.drawable.element_life),
+        FilterElementState("Black", imageRes = R.drawable.element_death),
+        FilterElementState("Gold", imageRes = R.drawable.element_dragon),
+        FilterElementState("Gray", imageRes = R.drawable.element_neutral)
     )
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -67,7 +64,13 @@ class CollectionFragmentViewModel(val player: String, val cache: Cache, val requ
             _state.value = CollectionViewState.Loading { onRefresh() }
 
             unfilteredCollection = cache.getCollection(player)
+            if (unfilteredCollection.isEmpty()) {
+                unfilteredCollection = requests.getCollection(player)
+            }
             cardDetails = cache.getCardDetails()
+            if (cardDetails.isEmpty()) {
+                cardDetails = requests.getCardDetails()
+            }
 
             updateState()
         }
@@ -137,44 +140,11 @@ class CollectionFragmentViewModel(val player: String, val cache: Cache, val requ
             }
         )
     }
-
-
-//    fun loadCollection(player: String) {
-//        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-//            unfilteredCollection = cache.getCollection(player)
-//            updateCollection()
-//            unfilteredCollection = requests.getCollection(player)
-//            updateCollection()
-//            cardDetails.postValue(requests.getCardDetails())
-//        }
-//    }
-
-//    private fun updateCollection() {
-//        var filteredCollection = unfilteredCollection
-//        if (unfilteredCollection.isNotEmpty()) {
-//            if (filterRarities.isNotEmpty()) {
-//                val cardIds =
-//                    cardDetails.value?.filter { filterRarities.contains(it.rarity) }?.map { it.id } ?: emptyList()
-//                filteredCollection = filteredCollection.filter { cardIds.contains(it.card_detail_id) }
-//            }
-//            if (filterEditions.isNotEmpty()) {
-//                filteredCollection = filteredCollection.filter { filterEditions.contains(it.edition) }
-//            }
-//        }
-//        collection.postValue(filteredCollection)
-//    }
-
-//    fun updateFilter(rarities: List<Int>, editions: List<Int>) {
-//        filterRarities = rarities
-//        filterEditions = editions
-//        updateCollection()
-//    }
-
 }
 
 class CollectionViewModelFactory(val player: String, val cache: Cache, val requests: Requests) :
     ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return CollectionFragmentViewModel(player, cache, requests) as T
+        return CollectionViewModel(player, cache, requests) as T
     }
 }
