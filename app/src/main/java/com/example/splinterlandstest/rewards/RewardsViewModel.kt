@@ -40,7 +40,7 @@ class RewardsViewModel(val player: String, val cache: Cache, val requests: Reque
             val rewards = requests.getRecentRewards(player)
             rewards.forEach {
                 if (it is CardReward) {
-                    val card = Card(it.cardId.toString(), 3, it.isGold)
+                    val card = Card(it.cardId.toString(), 3, it.isGold, 1)
                     val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
                     if (cardDetail != null) {
                         it.url = card.getImageUrl(cardDetail)

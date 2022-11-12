@@ -55,20 +55,20 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
     }
 
     init {
-        onRefresh()
+        onRefresh(false)
     }
 
-    fun onRefresh() {
+    fun onRefresh(forceRefresh: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
             _state.value = CollectionViewState.Loading { onRefresh() }
 
             unfilteredCollection = cache.getCollection(player)
-            if (unfilteredCollection.isEmpty()) {
+            if (unfilteredCollection.isEmpty() || forceRefresh) {
                 unfilteredCollection = requests.getCollection(player)
             }
             cardDetails = cache.getCardDetails()
-            if (cardDetails.isEmpty()) {
+            if (cardDetails.isEmpty() || forceRefresh) {
                 cardDetails = requests.getCardDetails()
             }
 
