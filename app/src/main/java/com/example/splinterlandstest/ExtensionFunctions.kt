@@ -42,3 +42,8 @@ fun Picasso.loadCard(imageView: ImageView, card: Card, cardDetail: CardDetail) {
         .fit()
         .into(imageView)
 }
+
+fun String.getRulesetImageUrl(): String {
+    val namePath = this.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-")
+    return "${assetUrl}website/icons/rulesets/new/img_combat-rule_${namePath}_150.png"
+}

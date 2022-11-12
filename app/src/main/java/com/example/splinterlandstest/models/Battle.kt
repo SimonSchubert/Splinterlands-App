@@ -1,6 +1,6 @@
 package com.example.splinterlandstest.models
 
-import com.example.splinterlandstest.assetUrl
+import com.example.splinterlandstest.getRulesetImageUrl
 import com.example.splinterlandstest.simpleDateFormat
 import kotlinx.serialization.Serializable
 import java.text.NumberFormat
@@ -71,8 +71,7 @@ data class Battle(
     }
 
     fun getRulesetImageUrls(): List<String> {
-        return ruleset.split("|").map { it.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-") }
-            .map { "${assetUrl}website/icons/rulesets/new/img_combat-rule_${it}_150.png" }
+        return ruleset.split("|").map { it.getRulesetImageUrl() }
     }
 
     fun getTimeAgo(): String {

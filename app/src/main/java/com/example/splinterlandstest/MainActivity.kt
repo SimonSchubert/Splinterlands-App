@@ -16,6 +16,7 @@ import com.example.splinterlandstest.collection.CollectionFragment
 import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.example.splinterlandstest.login.LoginFragment
 import com.example.splinterlandstest.rewards.RewardsFragment
+import com.example.splinterlandstest.rulesets.RulesetsFragment
 import org.koin.android.ext.android.get
 
 
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_rewards).isVisible = viewModel.isLoggedIn()
+        menu.findItem(R.id.menu_rulesets).isVisible = viewModel.isLoggedIn()
         return true
     }
 
@@ -94,6 +96,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
+                return true
+            }
+            R.id.menu_rulesets -> {
+                setCurrentFragment(RulesetsFragment())
                 return true
             }
 
