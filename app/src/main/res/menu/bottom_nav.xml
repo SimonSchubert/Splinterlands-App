@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
             android:id="@+id/battles"
-            android:title="Battles"
+            android:title="@string/battles"
             android:icon="@drawable/battles"/>
     <item
             android:id="@+id/collection"
-            android:title="Collection"
+            android:title="@string/collection"
             android:icon="@drawable/collection"/>
     <item
             android:id="@+id/balances"
-            android:title="Balances"
+            android:title="@string/balances"
             android:icon="@drawable/balances"/>
 </menu>

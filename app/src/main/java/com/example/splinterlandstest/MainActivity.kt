@@ -5,8 +5,17 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -112,4 +121,45 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
+}
+
+@Composable
+fun Main() {
+//
+//    val navController = rememberNavController()
+//    Scaffold(
+//        bottomBar = {
+//            BottomNavigation {
+//                val navBackStackEntry by navController.currentBackStackEntryAsState()
+//                val currentDestination = navBackStackEntry?.destination
+//                items.forEach { screen ->
+//                    BottomNavigationItem(
+//                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+//                        label = { Text(stringResource(screen.resourceId)) },
+//                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+//                        onClick = {
+//                            navController.navigate(screen.route) {
+//                                // Pop up to the start destination of the graph to
+//                                // avoid building up a large stack of destinations
+//                                // on the back stack as users select items
+//                                popUpTo(navController.graph.findStartDestination().id) {
+//                                    saveState = true
+//                                }
+//                                // Avoid multiple copies of the same destination when
+//                                // reselecting the same item
+//                                launchSingleTop = true
+//                                // Restore state when reselecting a previously selected item
+//                                restoreState = true
+//                            }
+//                        }
+//                    )
+//                }
+//            }
+//        }
+//    ) { innerPadding ->
+//        NavHost(navController, startDestination = Screen.Profile.route, Modifier.padding(innerPadding)) {
+//            composable(Screen.Profile.route) { Profile(navController) }
+//            composable(Screen.FriendsList.route) { FriendsList(navController) }
+//        }
+//    }
 }

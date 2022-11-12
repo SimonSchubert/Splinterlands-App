@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -147,8 +148,8 @@ fun ReadyScreen(
     Scaffold(
         content = { paddingValues ->
             LazyVerticalGrid(
-                modifier = Modifier.fillMaxSize(),
-                columns = GridCells.Adaptive(minSize = 96.dp)
+                modifier = Modifier.fillMaxWidth(),
+                columns = GridCells.Adaptive(minSize = 112.dp)
             ) {
                 items(cards.size) { index ->
                     CardItem(cards[index])
@@ -169,12 +170,14 @@ fun ReadyScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
+                backgroundColor = Color(0XFFff9300),
                 onClick = {
                     showFilterDialog.value = true
                 }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.tune), contentDescription = null
+                    painter = painterResource(R.drawable.tune),
+                    contentDescription = "FAB"
                 )
             }
         },
@@ -269,7 +272,6 @@ fun FilterDialog(
     }
 }
 
-
 fun Modifier.filterButtonModifier(
     selected: Boolean,
     background: Color
@@ -291,13 +293,15 @@ fun Modifier.filterButtonModifier(
 @Composable
 fun CardItem(card: CardViewState) {
     Column {
-
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(card.imageUrl)
                 .build(),
             placeholder = painterResource(card.placeHolderRes),
-            contentDescription = null
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .fillMaxWidth()
         )
     }
 }

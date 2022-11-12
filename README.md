@@ -4,7 +4,7 @@ Splinterlands is a card game powered by blockchain technology. It's mostly playe
 
 The **goal** of the project is to KISS (Keep it stupid simple) and **focus on performance and security**. The client doesn't have to support every single feature like renting and buying cards for example but **play and analyze battles**.
 
-![](screen-1.png) ![](screenshot_2.png) ![](screenshot_3.png) ![](screenshot_5.png) ![](screen-4.png)
+![](screen-1.png) ![](screen-2.png) ![](screen-4.png) ![](screen-5.png) ![](screen-7.png)
 
 ### The client can already
 
