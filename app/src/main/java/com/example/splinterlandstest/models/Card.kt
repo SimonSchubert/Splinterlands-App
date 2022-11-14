@@ -2,10 +2,14 @@ package com.example.splinterlandstest.models
 
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.assetUrl
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
-data class Card(val card_detail_id: String, val edition: Int, val gold: Boolean = false, val level: Int) {
+data class Card(
+    @SerializedName("card_detail_id") val cardDetailId: String,
+    val edition: Int,
+    val gold: Boolean = false,
+    val level: Int
+) {
 
     fun getImageUrl(cardDetail: CardDetail): String {
         val editionPath = when (edition) {

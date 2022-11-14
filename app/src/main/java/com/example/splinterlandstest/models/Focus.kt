@@ -1,10 +1,15 @@
 package com.example.splinterlandstest.models
 
-data class Focus(val name: String, val min_rating: Int, val data: FocusData) {
+import com.google.gson.annotations.SerializedName
 
-    fun getImageUrl(): String {
-        return ""
-    }
-}
+data class Focus(
+    val name: String,
+    @SerializedName("min_rating") val minRating: Int,
+    val data: FocusData
+)
 
-data class FocusData(val description: String)
+data class FocusData(
+    val description: String,
+    val splinter: String? = null,
+    val abilities: List<String>? = emptyList()
+)

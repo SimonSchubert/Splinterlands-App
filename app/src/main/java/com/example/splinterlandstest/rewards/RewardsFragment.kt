@@ -171,7 +171,7 @@ fun RewardItem(reward: Reward) {
             modifier = Modifier.padding(top = 12.dp),
             textAlign = TextAlign.Center,
             color = Color.White,
-            fontSize = TextUnit(18f, TextUnitType.Sp),
+            fontSize = TextUnit(20f, TextUnitType.Sp),
             fontWeight = FontWeight.Bold
         )
     }

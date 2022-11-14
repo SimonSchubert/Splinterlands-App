@@ -34,9 +34,9 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             players.forEach { player ->
                 val questInfo = requests.getRewardsInfo(player.name)
-                player.chests = questInfo.quest_reward_info.chest_earned
-                player.chestUrl = questInfo.quest_reward_info.getChestUrl()
-                player.timeLeft = questInfo.quest_reward_info.getFormattedEndDateShort()
+                player.chests = questInfo.questRewardInfo.chestEarned
+                player.chestUrl = questInfo.questRewardInfo.getChestUrl()
+                player.timeLeft = questInfo.questRewardInfo.getFormattedEndDateShort()
                 updateSuccessState()
             }
         }

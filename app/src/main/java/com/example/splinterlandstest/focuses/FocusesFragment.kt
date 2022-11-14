@@ -9,21 +9,25 @@ import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import coil.compose.rememberAsyncImagePainter
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
@@ -134,20 +139,64 @@ fun ReadyScreen(
 
 @Composable
 fun FocusItem(focus: Focus) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
-        ListItem(
-            text = {
-                Text(
-                    text = focus.name.replace("_", " ").uppercase(),
-                    color = Color(0XFFffa500),
-                    fontSize = TextUnit(18f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold
-                )
-            })
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = focus.name.replace("_", " ").uppercase(),
+                color = Color(0XFFffa500),
+                fontSize = TextUnit(20f, TextUnitType.Sp),
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            if (focus.data.splinter?.isNotEmpty() == true) {
+
+                val image: Painter? = when (focus.data.splinter) {
+                    "Fire" -> painterResource(id = R.drawable.element_fire)
+                    "Water" -> painterResource(id = R.drawable.element_water)
+                    "Death" -> painterResource(id = R.drawable.element_death)
+                    "Dragon" -> painterResource(id = R.drawable.element_dragon)
+                    "Earth" -> painterResource(id = R.drawable.element_earth)
+                    "Life" -> painterResource(id = R.drawable.element_life)
+                    else -> null
+                }
+                if (image != null) {
+                    Image(
+                        painter = image,
+                        modifier = Modifier.size(24.dp, 24.dp),
+                        contentDescription = ""
+                    )
+                }
+            }
+
+            if (focus.data.abilities?.isNotEmpty() == true) {
+                Row {
+                    focus.data.abilities.forEach { ability ->
+                        val image: Painter = rememberAsyncImagePainter(
+                            "https://d36mxiodymuqjm.cloudfront.net/website/abilities/ability_${
+                                ability.replace(
+                                    " ",
+                                    "-"
+                                )
+                            }.png"
+                        )
+                        Image(
+                            painter = image,
+                            modifier = Modifier.size(32.dp, 32.dp),
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+        }
 
         Text(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            modifier = Modifier.padding(bottom = 16.dp),
             text = focus.data.description,
             color = Color.White
         )

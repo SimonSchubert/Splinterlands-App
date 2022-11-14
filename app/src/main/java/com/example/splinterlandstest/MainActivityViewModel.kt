@@ -30,10 +30,10 @@ class MainActivityViewModel(val cache: Cache, val requests: Requests) : ViewMode
         playerName = cache.getSelectedPlayerName()
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             cache.getSettings()?.let {
-                assetUrl = it.asset_url
+                assetUrl = it.assetUrl
             }
             val gameSettings = requests.getSettings()
-            assetUrl = gameSettings.asset_url
+            assetUrl = gameSettings.assetUrl
         }
         isInitialized = true
     }

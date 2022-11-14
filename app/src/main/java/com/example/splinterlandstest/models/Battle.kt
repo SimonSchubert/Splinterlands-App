@@ -2,56 +2,55 @@ package com.example.splinterlandstest.models
 
 import com.example.splinterlandstest.getRulesetImageUrl
 import com.example.splinterlandstest.simpleDateFormat
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.seconds
 
-@Serializable
 data class Battle(
-    val created_date: String,
+    @SerializedName("created_date") val createdDate: String,
     val winner: String,
-    val player_1: String,
-    val player_1_rating_final: Int,
-    val player_2: String,
-    val player_2_rating_final: Int,
+    @SerializedName("player_1") val player1: String,
+    @SerializedName("player_1_rating_final") val player1RatingFinal: Int,
+    @SerializedName("player_2") val player2: String,
+    @SerializedName("player_2_rating_final") val player2RatingFinal: Int,
     val ruleset: String,
     val inactive: String,
-    val mana_cap: Int,
+    @SerializedName("mana_cap") val manaCap: Int,
     val details: BattleDetails,
-    val battle_queue_id_1: String,
-    val match_type: String,
+    @SerializedName("battle_queue_id_1") val battleQueueId1: String,
+    @SerializedName("match_type") val matchType: String,
     val format: String
 ) {
     fun getOpponent(player: String): String {
-        return if (player_1.uppercase() == player.uppercase()) {
-            player_2.uppercase()
+        return if (player1.uppercase() == player.uppercase()) {
+            player2.uppercase()
         } else {
-            player_1.uppercase()
+            player1.uppercase()
         }
     }
 
     fun getOwnRating(player: String): String {
         val numberFormat = NumberFormat.getNumberInstance(Locale.US)
-        return if (player_1.uppercase() == player.uppercase()) {
-            numberFormat.format(player_1_rating_final)
+        return if (player1.uppercase() == player.uppercase()) {
+            numberFormat.format(player1RatingFinal)
         } else {
-            numberFormat.format(player_2_rating_final)
+            numberFormat.format(player2RatingFinal)
         }
     }
 
     fun getOpponentRating(player: String): String {
         val numberFormat = NumberFormat.getNumberInstance(Locale.US)
-        return if (player_1.uppercase() == player.uppercase()) {
-            numberFormat.format(player_2_rating_final)
+        return if (player1.uppercase() == player.uppercase()) {
+            numberFormat.format(player2RatingFinal)
         } else {
-            numberFormat.format(player_1_rating_final)
+            numberFormat.format(player1RatingFinal)
         }
     }
 
     fun getOwnDetail(player: String): BattleDetailsTeam? {
-        return if (player_1.uppercase() == player.uppercase()) {
+        return if (player1.uppercase() == player.uppercase()) {
             details.team1
         } else {
             details.team2
@@ -59,7 +58,7 @@ data class Battle(
     }
 
     fun getOpponentDetail(player: String): BattleDetailsTeam? {
-        return if (player_1.uppercase() == player.uppercase()) {
+        return if (player1.uppercase() == player.uppercase()) {
             details.team2
         } else {
             details.team1
@@ -75,21 +74,21 @@ data class Battle(
     }
 
     fun getTimeAgo(): String {
-        val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time ?: 0L)
+        val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(createdDate)?.time ?: 0L)
         return "${milliseconds.absoluteValue.div(1000L).seconds}".split(" ").first()
     }
 
     fun getType(): String {
-        return if (match_type == "Ranked") {
+        return if (matchType == "Ranked") {
             if (format == "modern") {
                 "Modern"
             } else {
                 "Wild"
             }
-        } else if (details.is_brawl) {
+        } else if (details.isBrawl) {
             "Brawl"
         } else {
-            match_type
+            matchType
         }
     }
 }

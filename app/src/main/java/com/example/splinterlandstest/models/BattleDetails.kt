@@ -1,10 +1,10 @@
 package com.example.splinterlandstest.models
 
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
+
 data class BattleDetails(
     val team1: BattleDetailsTeam?,
     val team2: BattleDetailsTeam?,
-    val is_brawl: Boolean = false
+    @SerializedName("is_brawl") val isBrawl: Boolean = false
 )

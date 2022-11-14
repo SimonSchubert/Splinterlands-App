@@ -106,7 +106,7 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
         val elements = filterElementState.filter { it.selected }.map { it.id }
 
         val cards = unfilteredCollection.mapNotNull { card ->
-            val cardDetail = cardDetails.firstOrNull { it.id == card.card_detail_id }
+            val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
             if (cardDetail != null &&
                 (rarities.isEmpty() || rarities.contains(cardDetail.rarity)) &&
                 (editions.isEmpty() || editions.contains(card.edition)) &&

@@ -70,8 +70,8 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
 
             val battleViewStates = battles.map {
                 BattleViewState(
-                    id = it.battle_queue_id_1,
-                    mana = it.mana_cap.toString(),
+                    id = it.battleQueueId1,
+                    mana = it.manaCap.toString(),
                     rulesetUrls = it.getRulesetImageUrls(),
                     time = it.getTimeAgo(),
                     matchType = it.getType(),
@@ -89,12 +89,12 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
                 onRefresh = { onRefresh() },
                 battles = battleViewStates,
                 playerName = playerDetails.name.uppercase(),
-                playerRating = "W: ${numberFormat.format(playerDetails.rating)}, M: ${numberFormat.format(playerDetails.modern_rating)}",
-                focusChests = rewardsInfo.quest_reward_info.chest_earned,
-                focusChestUrl = rewardsInfo.quest_reward_info.getChestUrl(),
-                focusEndTimestamp = rewardsInfo.quest_reward_info.getEndTimestamp(),
-                seasonChests = rewardsInfo.season_reward_info.chest_earned,
-                seasonChestUrl = rewardsInfo.season_reward_info.getChestUrl(),
+                playerRating = "W: ${numberFormat.format(playerDetails.rating)}, M: ${numberFormat.format(playerDetails.modernRating)}",
+                focusChests = rewardsInfo.questRewardInfo.chestEarned,
+                focusChestUrl = rewardsInfo.questRewardInfo.getChestUrl(),
+                focusEndTimestamp = rewardsInfo.questRewardInfo.getEndTimestamp(),
+                seasonChests = rewardsInfo.seasonRewardInfo.chestEarned,
+                seasonChestUrl = rewardsInfo.seasonRewardInfo.getChestUrl(),
                 seasonEndTimestamp = gameSettings.season.getEndTimestamp()
             )
         }

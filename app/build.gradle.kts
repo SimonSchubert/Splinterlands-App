@@ -45,12 +45,9 @@ android {
 dependencies {
     implementation("io.ktor:ktor-client-core:2.1.3")
     implementation("io.ktor:ktor-client-cio:2.1.3")
-    implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
     implementation("io.ktor:ktor-client-android:2.1.3")
-    implementation("io.ktor:ktor-client-serialization:2.1.3")
-    implementation("io.ktor:ktor-client-gson:2.1.3")
-    implementation("io.ktor:ktor-client-json:2.1.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.3")
+    implementation("com.google.code.gson:gson:2.10")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
@@ -64,7 +61,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.27.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
     implementation("io.coil-kt:coil-compose:2.2.2")

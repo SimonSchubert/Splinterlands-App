@@ -1,17 +1,16 @@
 package com.example.splinterlandstest.models
 
 import com.example.splinterlandstest.assetUrl
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class SeasonRewardInfo(
-    val chest_tier: Int,
-    val chest_earned: Int,
+    @SerializedName("chest_tier") val chestTier: Int,
+    @SerializedName("chest_earned") val chestEarned: Int,
     val rshares: Long
 ) {
 
     fun getChestUrl(): String {
-        val league = when (chest_tier) {
+        val league = when (chestTier) {
             1 -> "silver"
             2 -> "gold"
             3 -> "diamond"

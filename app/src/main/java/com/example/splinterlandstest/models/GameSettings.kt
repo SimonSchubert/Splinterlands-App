@@ -1,11 +1,11 @@
 package com.example.splinterlandstest.models
 
-import kotlinx.serialization.Serializable
+import com.google.gson.*
+import com.google.gson.annotations.*
 
-@Serializable
 data class GameSettings(
-    val asset_url: String = "",
+    @SerializedName("asset_url") val assetUrl: String = "",
     val season: SeasonSettings = SeasonSettings(),
     val battles: BattleSettings = BattleSettings(),
-    val daily_quests: List<Focus> = emptyList()
+    @SerializedName("daily_quests") val dailyQuests: List<Focus> = emptyList()
 )

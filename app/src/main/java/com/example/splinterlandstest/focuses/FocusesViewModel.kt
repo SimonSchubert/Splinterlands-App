@@ -30,10 +30,10 @@ class FocusesViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
             _state.value = FocusesViewState.Loading { onRefresh() }
 
-            var focuses = cache.getSettings()?.daily_quests
+            var focuses = cache.getSettings()?.dailyQuests
 
             if (focuses == null || focuses.isEmpty()) {
-                focuses = requests.getSettings().daily_quests
+                focuses = requests.getSettings().dailyQuests
             }
 
             if (focuses.isNotEmpty()) {

@@ -107,7 +107,7 @@ class Cache(val context: Context) {
         return get(
             fileName = "collection_${player}.json",
             type = CollectionResponse::class.java
-        )?.cards?.distinctBy { it.card_detail_id } ?: emptyList()
+        )?.cards?.distinctBy { it.cardDetailId } ?: emptyList()
     }
 
     fun getCardDetails(): List<CardDetail> {
@@ -136,7 +136,7 @@ class Cache(val context: Context) {
             battles.addAll(it)
         }
 
-        return battles.sortedByDescending { it.created_date }
+        return battles.sortedByDescending { it.createdDate }
     }
 
     fun getPlayerDetails(player: String): PlayerDetails? {

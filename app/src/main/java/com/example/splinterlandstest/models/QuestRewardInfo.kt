@@ -2,21 +2,20 @@ package com.example.splinterlandstest.models
 
 import com.example.splinterlandstest.assetUrl
 import com.example.splinterlandstest.simpleDateFormat
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
-@Serializable
 data class QuestRewardInfo(
-    val chest_tier: Int,
-    val chest_earned: Int,
-    val created_date: String,
+    @SerializedName("created_date") val createdDate: String,
+    @SerializedName("chest_tier") val chestTier: Int,
+    @SerializedName("chest_earned") val chestEarned: Int,
     val rshares: Long
 ) {
 
     fun getChestUrl(): String {
-        val league = when (chest_tier) {
+        val league = when (chestTier) {
             1 -> "silver"
             2 -> "gold"
             3 -> "diamond"
@@ -27,12 +26,12 @@ data class QuestRewardInfo(
     }
 
     fun getEndTimestamp(): Long {
-        return (simpleDateFormat.parse(created_date)?.time?.div(1_000)
+        return (simpleDateFormat.parse(createdDate)?.time?.div(1_000)
             ?: 0L) + 1.days.inWholeSeconds
     }
 
     fun getFormattedEndDate(): String {
-        val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(created_date)?.time
+        val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(createdDate)?.time
             ?: 0L) - 1.days.inWholeMilliseconds
         return if (milliseconds > 0) {
             "Claim reward"

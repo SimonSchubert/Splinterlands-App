@@ -23,12 +23,10 @@ import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,12 +40,8 @@ var assetUrl = ""
 class Requests(val cache: Cache) {
 
     private val client = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json()
-        }
-    }
 
-    // private val cache = Cache(MainApplication.appContext)
+    }
 
     private val endpoint = "https://api2.splinterlands.com"
 
@@ -75,7 +69,7 @@ class Requests(val cache: Cache) {
         return Gson().fromJson(
             response.bodyAsText(),
             CollectionResponse::class.java
-        ).cards.distinctBy { it.card_detail_id }
+        ).cards.distinctBy { it.cardDetailId }
     }
 
     suspend fun getCardDetails(): List<CardDetail> {
@@ -98,7 +92,7 @@ class Requests(val cache: Cache) {
 
         val battles = Gson().fromJson(responseWild.bodyAsText(), BattleHistory::class.java).battles +
                 Gson().fromJson(responseModern.bodyAsText(), BattleHistory::class.java).battles
-        return battles.sortedByDescending { it.created_date }
+        return battles.sortedByDescending { it.createdDate }
     }
 
     suspend fun getPlayerDetails(player: String): PlayerDetails {
