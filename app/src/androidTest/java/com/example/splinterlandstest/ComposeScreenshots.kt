@@ -37,7 +37,6 @@ import org.junit.runner.RunWith
 import java.io.FileOutputStream
 import java.io.IOException
 
-
 /**
  * Instrumented test, which will execute on an Android device.
  *
@@ -138,6 +137,15 @@ class ComposeScreenshots {
         composeTestRule.waitForIdle()
 
         composeTestRule.takeScreenshot("screen-7.png")
+
+        // Focuses
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
+        onView(withText("Focuses")).perform(click())
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.takeScreenshot("screen-8.png")
     }
 
     private fun waitForContent() {

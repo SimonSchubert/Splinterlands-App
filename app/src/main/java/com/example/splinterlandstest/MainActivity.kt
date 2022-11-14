@@ -5,17 +5,9 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavHost
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -23,6 +15,7 @@ import com.example.splinterlandstest.balances.BalancesFragment
 import com.example.splinterlandstest.battles.BattlesFragment
 import com.example.splinterlandstest.collection.CollectionFragment
 import com.example.splinterlandstest.databinding.ActivityMainBinding
+import com.example.splinterlandstest.focuses.FocusesFragment
 import com.example.splinterlandstest.login.LoginFragment
 import com.example.splinterlandstest.rewards.RewardsFragment
 import com.example.splinterlandstest.rulesets.RulesetsFragment
@@ -91,24 +84,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_rewards).isVisible = viewModel.isLoggedIn()
+        menu.findItem(R.id.menu_focuses).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_rulesets).isVisible = viewModel.isLoggedIn()
+        menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_logout -> {
-                viewModel.logout()
-                return true
-            }
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
                 return true
             }
+            R.id.menu_focuses -> {
+                setCurrentFragment(FocusesFragment())
+                return true
+            }
             R.id.menu_rulesets -> {
                 setCurrentFragment(RulesetsFragment())
+                return true
+            }
+            R.id.menu_logout -> {
+                viewModel.logout()
                 return true
             }
 

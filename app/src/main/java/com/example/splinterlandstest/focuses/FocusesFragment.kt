@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
 
-package com.example.splinterlandstest.rulesets
+package com.example.splinterlandstest.focuses
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -37,26 +35,25 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import coil.compose.rememberAsyncImagePainter
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
-import com.example.splinterlandstest.models.Ruleset
+import com.example.splinterlandstest.models.Focus
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
 
 
 /**
- * Rewards fragment
+ * Focuses fragment
  */
-class RulesetsFragment : Fragment() {
+class FocusesFragment : Fragment() {
 
     val cache: Cache = get()
     private val requests: Requests = get()
 
-    private val viewModel by viewModels<RulesetsViewModel> {
-        RulesetsViewModelFactory(cache, requests)
+    private val viewModel by viewModels<FocusesViewModel> {
+        FocusesViewModelFactory(cache, requests)
     }
 
     override fun onCreateView(
@@ -64,7 +61,7 @@ class RulesetsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        activity?.title = getString(R.string.rulesets)
+        activity?.title = getString(R.string.focuses)
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -81,7 +78,7 @@ class RulesetsFragment : Fragment() {
 }
 
 @Composable
-fun Content(state: RulesetsViewState) {
+fun Content(state: FocusesViewState) {
     val swipeRefreshState = rememberSwipeRefreshState(false)
 
     Box(
@@ -96,15 +93,15 @@ fun Content(state: RulesetsViewState) {
         )
         SwipeRefresh(
             state = swipeRefreshState,
-            swipeEnabled = state !is RulesetsViewState.Loading,
+            swipeEnabled = state !is FocusesViewState.Loading,
             onRefresh = {
                 state.onRefresh()
             },
         ) {
             when (state) {
-                is RulesetsViewState.Loading -> LoadingScreen()
-                is RulesetsViewState.Success -> ReadyScreen(rulesets = state.rulesets)
-                is RulesetsViewState.Error -> ErrorScreen()
+                is FocusesViewState.Loading -> LoadingScreen()
+                is FocusesViewState.Success -> ReadyScreen(focuses = state.focuses)
+                is FocusesViewState.Error -> ErrorScreen()
             }
         }
     }
@@ -123,33 +120,26 @@ fun LoadingScreen() {
 
 @Composable
 fun ReadyScreen(
-    rulesets: List<Ruleset>
+    focuses: List<Focus>
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
-        items(rulesets.size) { index ->
-            RulesetItem(rulesets[index])
+        items(focuses.size) { index ->
+            FocusItem(focuses[index])
         }
     }
 }
 
 @Composable
-fun RulesetItem(ruleset: Ruleset) {
+fun FocusItem(focus: Focus) {
     Column {
 
-        ListItem(icon = {
-            val image: Painter = rememberAsyncImagePainter(ruleset.getImageUrl())
-            Image(
-                painter = image,
-                modifier = Modifier.size(50.dp, 50.dp),
-                contentDescription = ""
-            )
-        },
+        ListItem(
             text = {
                 Text(
-                    text = ruleset.name.uppercase(),
+                    text = focus.name.replace("_", " ").uppercase(),
                     color = Color(0XFFffa500),
                     fontSize = TextUnit(18f, TextUnitType.Sp),
                     fontWeight = FontWeight.Bold
@@ -158,7 +148,7 @@ fun RulesetItem(ruleset: Ruleset) {
 
         Text(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            text = ruleset.description,
+            text = focus.data.description,
             color = Color.White
         )
     }
@@ -182,6 +172,6 @@ fun ErrorScreen() {
 @Composable
 @Preview
 fun RewardsPreview() {
-    val mockRulesets = emptyList<Ruleset>()
-    ReadyScreen(rulesets = mockRulesets)
+    val mockFocuses = emptyList<Focus>()
+    ReadyScreen(focuses = mockFocuses)
 }
