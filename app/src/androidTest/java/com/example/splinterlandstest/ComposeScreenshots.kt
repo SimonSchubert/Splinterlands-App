@@ -146,6 +146,16 @@ class ComposeScreenshots {
         composeTestRule.waitForIdle()
 
         composeTestRule.takeScreenshot("screen-8.png")
+
+
+        // Abilities
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
+        onView(withText("Abilities")).perform(click())
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.takeScreenshot("screen-9.png")
     }
 
     private fun waitForContent() {
