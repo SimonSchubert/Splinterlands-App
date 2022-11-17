@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.splinterlandstest.battles
 
 import android.content.Intent
@@ -24,7 +26,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,8 +62,6 @@ import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.models.CardFoilUrl
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.get
 import kotlin.time.Duration.Companion.seconds
@@ -100,11 +104,14 @@ class BattlesFragment : Fragment() {
 
 @Composable
 fun Content(state: BattlesViewState) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
+    val refreshing = state is BattlesViewState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh(context) })
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
     ) {
         Image(
             painterResource(id = R.drawable.bg_balance),
@@ -113,28 +120,24 @@ fun Content(state: BattlesViewState) {
             modifier = Modifier.matchParentSize()
         )
 
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = state !is BattlesViewState.Loading,
-            onRefresh = {
-                state.onRefresh(context)
-            },
-        ) {
-            when (state) {
-                is BattlesViewState.Loading -> LoadingScreen()
-                is BattlesViewState.Success -> ReadyScreen(
-                    battles = state.battles,
-                    playerName = state.playerName,
-                    playerRating = state.playerRating,
-                    focusChests = state.focusChests,
-                    focusChestUrl = state.focusChestUrl,
-                    focusEndTimestamp = state.focusEndTimestamp,
-                    seasonChests = state.seasonChests,
-                    seasonChestUrl = state.seasonChestUrl,
-                    seasonEndTimestamp = state.seasonEndTimestamp
-                )
-                is BattlesViewState.Error -> ErrorScreen()
-            }
+        when (state) {
+            is BattlesViewState.Loading -> LoadingScreen()
+            is BattlesViewState.Success -> ReadyScreen(
+                battles = state.battles,
+                playerName = state.playerName,
+                playerRating = state.playerRating,
+                focusChests = state.focusChests,
+                focusChestUrl = state.focusChestUrl,
+                focusEndTimestamp = state.focusEndTimestamp,
+                seasonChests = state.seasonChests,
+                seasonChestUrl = state.seasonChestUrl,
+                seasonEndTimestamp = state.seasonEndTimestamp
+            )
+            is BattlesViewState.Error -> ErrorScreen()
+        }
+
+        if (!refreshing) {
+            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

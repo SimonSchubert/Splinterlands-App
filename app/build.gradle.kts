@@ -61,8 +61,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.27.0")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.27.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
 
     implementation("io.insert-koin:koin-core:3.2.2")

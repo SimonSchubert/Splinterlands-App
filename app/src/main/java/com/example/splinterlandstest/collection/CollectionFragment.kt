@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.splinterlandstest.collection
 
 import android.os.Bundle
@@ -22,11 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -51,8 +57,6 @@ import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
 import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
 
 /**
@@ -85,10 +89,13 @@ class CollectionFragment : Fragment() {
 
 @Composable
 fun Content(state: CollectionViewState) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
+    val refreshing = state is CollectionViewState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -97,26 +104,22 @@ fun Content(state: CollectionViewState) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = state !is CollectionViewState.Loading,
-            onRefresh = {
-                state.onRefresh()
-            },
-        ) {
-            when (state) {
-                is CollectionViewState.Loading -> LoadingScreen()
-                is CollectionViewState.Success -> ReadyScreen(
-                    cards = state.cards,
-                    filterRarityStates = state.filterRarityStates,
-                    onClickRarity = state.onClickRarity,
-                    filterEditionStates = state.filterEditionStates,
-                    onClickEdition = state.onClickEdition,
-                    filterElementStates = state.filterElementStates,
-                    onClickElement = state.onClickElement
-                )
-                is CollectionViewState.Error -> ErrorScreen()
-            }
+        when (state) {
+            is CollectionViewState.Loading -> LoadingScreen()
+            is CollectionViewState.Success -> ReadyScreen(
+                cards = state.cards,
+                filterRarityStates = state.filterRarityStates,
+                onClickRarity = state.onClickRarity,
+                filterEditionStates = state.filterEditionStates,
+                onClickEdition = state.onClickEdition,
+                filterElementStates = state.filterElementStates,
+                onClickElement = state.onClickElement
+            )
+            is CollectionViewState.Error -> ErrorScreen()
+        }
+
+        if (!refreshing) {
+            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

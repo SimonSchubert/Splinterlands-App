@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUnitApi::class)
+@file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
 
 package com.example.splinterlandstest.balances
 
@@ -17,7 +17,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -42,8 +46,6 @@ import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.models.Balances
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
 import java.text.NumberFormat
 import java.util.*
@@ -87,11 +89,14 @@ private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
 
 @Composable
 fun Content(state: BalancesViewState) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
+    val refreshing = state is BalancesViewState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh(context) })
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -101,18 +106,14 @@ fun Content(state: BalancesViewState) {
             modifier = Modifier.matchParentSize()
         )
 
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = state !is BalancesViewState.Loading,
-            onRefresh = {
-                state.onRefresh(context)
-            },
-        ) {
-            when (state) {
-                is BalancesViewState.Loading -> LoadingScreen()
-                is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
-                is BalancesViewState.Error -> ErrorScreen()
-            }
+        when (state) {
+            is BalancesViewState.Loading -> LoadingScreen()
+            is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
+            is BalancesViewState.Error -> ErrorScreen()
+        }
+
+        if (!refreshing) {
+            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

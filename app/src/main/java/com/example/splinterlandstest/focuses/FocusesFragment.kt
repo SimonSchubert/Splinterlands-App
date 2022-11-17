@@ -22,6 +22,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -44,8 +47,6 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.models.Focus
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
 
 
@@ -84,10 +85,13 @@ class FocusesFragment : Fragment() {
 
 @Composable
 fun Content(state: FocusesViewState) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
+    val refreshing = state is FocusesViewState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -96,18 +100,14 @@ fun Content(state: FocusesViewState) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = state !is FocusesViewState.Loading,
-            onRefresh = {
-                state.onRefresh()
-            },
-        ) {
-            when (state) {
-                is FocusesViewState.Loading -> LoadingScreen()
-                is FocusesViewState.Success -> ReadyScreen(focuses = state.focuses)
-                is FocusesViewState.Error -> ErrorScreen()
-            }
+        when (state) {
+            is FocusesViewState.Loading -> LoadingScreen()
+            is FocusesViewState.Success -> ReadyScreen(focuses = state.focuses)
+            is FocusesViewState.Error -> ErrorScreen()
+        }
+
+        if (!refreshing) {
+            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

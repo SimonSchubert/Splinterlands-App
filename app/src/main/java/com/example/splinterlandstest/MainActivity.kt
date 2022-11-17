@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
+import com.example.splinterlandstest.abilities.AbilitiesFragment
 import com.example.splinterlandstest.balances.BalancesFragment
 import com.example.splinterlandstest.battles.BattlesFragment
 import com.example.splinterlandstest.collection.CollectionFragment
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         menu.findItem(R.id.menu_rewards).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_focuses).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_rulesets).isVisible = viewModel.isLoggedIn()
+        menu.findItem(R.id.menu_abilities).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
         return true
     }
@@ -103,6 +105,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_rulesets -> {
                 setCurrentFragment(RulesetsFragment())
+                return true
+            }
+            R.id.menu_abilities -> {
+                setCurrentFragment(AbilitiesFragment())
                 return true
             }
             R.id.menu_logout -> {

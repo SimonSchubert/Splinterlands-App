@@ -16,5 +16,6 @@
     <string name="rewards">Rewards</string>
     <string name="rulesets">Rulesets</string>
     <string name="focuses">Focuses</string>
+    <string name="abilities">Abilities</string>
     <string name="logout">Logout</string>
 </resources>

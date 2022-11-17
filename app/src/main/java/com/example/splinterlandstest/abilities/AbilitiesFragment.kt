@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
 
-package com.example.splinterlandstest.rulesets
+package com.example.splinterlandstest.abilities
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,7 +20,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -43,21 +42,16 @@ import androidx.fragment.app.viewModels
 import coil.compose.rememberAsyncImagePainter
 import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.R
-import com.example.splinterlandstest.Requests
-import com.example.splinterlandstest.models.Ruleset
+import com.example.splinterlandstest.models.Ability
 import org.koin.android.ext.android.get
 
 
-/**
- * Rewards fragment
- */
-class RulesetsFragment : Fragment() {
+class AbilitiesFragment : Fragment() {
 
     val cache: Cache = get()
-    private val requests: Requests = get()
 
-    private val viewModel by viewModels<RulesetsViewModel> {
-        RulesetsViewModelFactory(cache, requests)
+    private val viewModel by viewModels<AbilitiesViewModel> {
+        AbilitiesViewModelFactory(cache)
     }
 
     override fun onCreateView(
@@ -65,7 +59,7 @@ class RulesetsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        activity?.title = getString(R.string.rulesets)
+        activity?.title = getString(R.string.abilities)
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -73,18 +67,11 @@ class RulesetsFragment : Fragment() {
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.loadRewards()
-    }
 }
 
 @Composable
-fun Content(state: RulesetsViewState) {
-    val refreshing = state is RulesetsViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
+fun Content(state: AbilitiesViewState) {
+    val pullRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { state.onRefresh })
 
     Box(
         modifier = Modifier
@@ -98,15 +85,10 @@ fun Content(state: RulesetsViewState) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-
         when (state) {
-            is RulesetsViewState.Loading -> LoadingScreen()
-            is RulesetsViewState.Success -> ReadyScreen(rulesets = state.rulesets)
-            is RulesetsViewState.Error -> ErrorScreen()
-        }
-
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
+            is AbilitiesViewState.Loading -> LoadingScreen()
+            is AbilitiesViewState.Success -> ReadyScreen(abilities = state.abilities)
+            is AbilitiesViewState.Error -> ErrorScreen()
         }
     }
 }
@@ -124,44 +106,15 @@ fun LoadingScreen() {
 
 @Composable
 fun ReadyScreen(
-    rulesets: List<Ruleset>
+    abilities: List<Ability>
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
-        items(rulesets.size) { index ->
-            RulesetItem(rulesets[index])
+        items(abilities.size) { index ->
+            AbilityItem(abilities[index])
         }
-    }
-}
-
-@Composable
-fun RulesetItem(ruleset: Ruleset) {
-    Column {
-
-        ListItem(icon = {
-            val image: Painter = rememberAsyncImagePainter(ruleset.getImageUrl())
-            Image(
-                painter = image,
-                modifier = Modifier.size(50.dp, 50.dp),
-                contentDescription = ""
-            )
-        },
-            text = {
-                Text(
-                    text = ruleset.name.uppercase(),
-                    color = Color(0XFFffa500),
-                    fontSize = TextUnit(18f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold
-                )
-            })
-
-        Text(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            text = ruleset.description,
-            color = Color.White
-        )
     }
 }
 
@@ -181,8 +134,39 @@ fun ErrorScreen() {
 }
 
 @Composable
+fun AbilityItem(ability: Ability) {
+    Column {
+
+        ListItem(icon = {
+            val image: Painter = rememberAsyncImagePainter(ability.getImageUrl())
+            Image(
+                painter = image,
+                modifier = Modifier.size(50.dp, 50.dp),
+                contentDescription = ""
+            )
+        },
+            text = {
+                Text(
+                    text = ability.name.uppercase(),
+                    color = Color(0XFFffa500),
+                    fontSize = TextUnit(18f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Bold
+                )
+            })
+
+        Text(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            text = ability.desc,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
 @Preview
 fun RewardsPreview() {
-    val mockRulesets = emptyList<Ruleset>()
-    ReadyScreen(rulesets = mockRulesets)
+    val mockAbilities = listOf(
+        Ability("", "")
+    )
+    ReadyScreen(abilities = mockAbilities)
 }

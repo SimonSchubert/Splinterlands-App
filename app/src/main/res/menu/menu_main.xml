@@ -15,6 +15,10 @@
         android:title="@string/focuses" />
 
     <item
+        android:id="@+id/menu_abilities"
+        android:title="@string/abilities" />
+
+    <item
         android:id="@+id/menu_logout"
         android:title="@string/logout" />
 </menu>

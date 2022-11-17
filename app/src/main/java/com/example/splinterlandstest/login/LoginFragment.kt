@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.splinterlandstest.login
 
 import android.os.Bundle
@@ -29,6 +31,9 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -62,8 +67,6 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.android.ext.android.get
 
 /**
@@ -111,12 +114,14 @@ fun Content(
     state: LoginViewState,
     onClickPlayer: (player: String) -> Unit,
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(false)
     val context = LocalContext.current
-
+    val refreshing = state is LoginViewState.Loading
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh(context) })
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -125,24 +130,18 @@ fun Content(
             contentScale = ContentScale.Crop,
             modifier = Modifier.matchParentSize()
         )
-        SwipeRefresh(
-            state = swipeRefreshState,
-            swipeEnabled = state !is LoginViewState.Loading,
-            onRefresh = {
-                state.onRefresh(context)
-            },
-        ) {
-            when (state) {
-                is LoginViewState.Loading -> LoadingScreen()
-                is LoginViewState.Success -> ReadyScreen(
-                    players = state.players,
-                    onClickPlayer = onClickPlayer,
-                    onDeletePlayer = state.onDeletePlayer,
-                    onAddPlayer = state.onAddPlayer
-                )
-                // is LoginViewState.Error -> ErrorScreen()
-                else -> {}
-            }
+        when (state) {
+            is LoginViewState.Loading -> LoadingScreen()
+            is LoginViewState.Success -> ReadyScreen(
+                players = state.players,
+                onClickPlayer = onClickPlayer,
+                onDeletePlayer = state.onDeletePlayer,
+                onAddPlayer = state.onAddPlayer
+            )
+        }
+
+        if (!refreshing) {
+            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }
