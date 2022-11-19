@@ -20,12 +20,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -264,6 +267,8 @@ fun PlayerItem(
     onClick: (player: String) -> Unit,
     onDelete: (player: String) -> Unit
 ) {
+    val showDeleteDialog =  remember { mutableStateOf(false) }
+
     ListItem(modifier = Modifier
         .clickable { onClick(player.name) }, text = {
 
@@ -299,10 +304,43 @@ fun PlayerItem(
         }
     },
         trailing = {
-            IconButton(onClick = { onDelete(player.name) }) {
+            IconButton(onClick = { showDeleteDialog.value = true }) {
                 Icon(imageVector = Icons.Filled.Delete, contentDescription = null, tint = Color.White)
             }
         })
+
+    if (showDeleteDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog.value = false
+            },
+            title = {
+                Text("Remove account")
+            },
+            text = {
+                Text("Are you sure you want to remove ${player.name}?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete(player.name)
+                        showDeleteDialog.value = false
+                    },
+                ) {
+                    Text("Remove")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog.value = false
+                    },
+                ) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
 }
 
 @Composable

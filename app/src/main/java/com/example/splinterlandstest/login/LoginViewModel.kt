@@ -44,7 +44,7 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
     private fun updateSuccessState() {
         _state.value = LoginViewState.Success(players = players,
-            onDeletePlayer = {},
+            onDeletePlayer = { onDelete(it) },
             onAddPlayer = { onAddPlayer(it) },
             onRefresh = { onRefresh() }
         )
@@ -54,10 +54,9 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
         loadPlayerData()
     }
 
-    fun onDelete(player: String) {
-        players.find { it.name == player }?.let {
-            players.remove(it)
-        }
+    private fun onDelete(player: String) {
+        cache.deletePlayerFromList(player)
+        loadPlayerData()
     }
 
     private fun onAddPlayer(player: String) {
