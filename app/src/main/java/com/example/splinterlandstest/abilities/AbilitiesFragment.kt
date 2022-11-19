@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
@@ -27,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -39,8 +37,9 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.models.Ability
 import org.koin.android.ext.android.get
@@ -94,17 +93,6 @@ fun Content(state: AbilitiesViewState) {
 }
 
 @Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
 fun ReadyScreen(
     abilities: List<Ability>
 ) {
@@ -138,9 +126,8 @@ fun AbilityItem(ability: Ability) {
     Column {
 
         ListItem(icon = {
-            val image: Painter = rememberAsyncImagePainter(ability.getImageUrl())
-            Image(
-                painter = image,
+            AsyncImage(
+                model = ability.getImageUrl(),
                 modifier = Modifier.size(50.dp, 50.dp),
                 contentDescription = ""
             )

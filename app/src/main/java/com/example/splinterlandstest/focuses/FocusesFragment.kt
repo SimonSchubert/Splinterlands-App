@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -42,8 +41,9 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
 import com.example.splinterlandstest.models.Focus
@@ -113,17 +113,6 @@ fun Content(state: FocusesViewState) {
 }
 
 @Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
 fun ReadyScreen(
     focuses: List<Focus>
 ) {
@@ -177,16 +166,11 @@ fun FocusItem(focus: Focus) {
             if (focus.data.abilities?.isNotEmpty() == true) {
                 Row {
                     focus.data.abilities.forEach { ability ->
-                        val image: Painter = rememberAsyncImagePainter(
-                            "https://d36mxiodymuqjm.cloudfront.net/website/abilities/ability_${
-                                ability.replace(
-                                    " ",
-                                    "-"
-                                )
-                            }.png"
-                        )
-                        Image(
-                            painter = image,
+                        val url = "https://d36mxiodymuqjm.cloudfront.net/website/abilities/ability_${
+                            ability.replace(" ", "-")
+                        }.png"
+                        AsyncImage(
+                            model = url,
                             modifier = Modifier.size(32.dp, 32.dp),
                             contentDescription = ""
                         )

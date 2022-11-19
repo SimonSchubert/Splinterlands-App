@@ -23,7 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -43,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -51,8 +49,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
@@ -123,18 +121,6 @@ fun Content(state: CollectionViewState) {
         }
     }
 }
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
 
 @Composable
 fun ReadyScreen(
@@ -297,9 +283,7 @@ fun Modifier.filterButtonModifier(
 fun CardItem(card: CardViewState) {
     Column {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(card.imageUrl)
-                .build(),
+            model = card.imageUrl,
             placeholder = painterResource(card.placeHolderRes),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,

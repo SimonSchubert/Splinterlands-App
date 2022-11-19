@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -54,8 +52,9 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
@@ -139,17 +138,6 @@ fun Content(state: BattlesViewState) {
         if (!refreshing) {
             PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
         }
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
     }
 }
 
@@ -285,9 +273,8 @@ fun Battle(battle: BattleViewState) {
 
             Row {
                 battle.rulesetUrls.forEach { url ->
-                    val image: Painter = rememberAsyncImagePainter(url)
-                    Image(
-                        painter = image,
+                    AsyncImage(
+                        model = url,
                         modifier = Modifier
                             .size(24.dp)
                             .padding(start = 2.dp, end = 2.dp),
@@ -339,9 +326,8 @@ fun BattleLineUp(mainAxisAlignment: MainAxisAlignment, playerName: String, ratin
         crossAxisSpacing = 4.dp
     ) {
         cardUrls.forEach { url ->
-            val image: Painter = rememberAsyncImagePainter(url.url)
-            Image(
-                painter = image,
+            AsyncImage(
+                model = url.url,
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
@@ -364,9 +350,8 @@ fun RewardChest(chestUrl: String, chestText: String, currentTimestamp: Long, end
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        val image: Painter = rememberAsyncImagePainter(chestUrl)
-        Image(
-            painter = image,
+        AsyncImage(
+            model = chestUrl,
             modifier = Modifier.size(100.dp),
             contentDescription = ""
         )
@@ -385,12 +370,14 @@ fun RewardChest(chestUrl: String, chestText: String, currentTimestamp: Long, end
 
 @Composable
 fun ErrorScreen() {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()), // scroll for swipe refresh
         contentAlignment = Alignment.Center
     ) {
+
         Text(
             text = "Something went wrong",
             color = Color.White

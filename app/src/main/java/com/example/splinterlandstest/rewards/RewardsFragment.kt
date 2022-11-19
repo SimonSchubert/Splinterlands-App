@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -27,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
@@ -41,8 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
+import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
@@ -123,17 +122,6 @@ fun Content(state: RewardsViewState) {
 }
 
 @Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
 fun ReadyScreen(
     rewards: List<Reward>
 ) {
@@ -169,9 +157,8 @@ fun RewardItem(reward: Reward) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        val image: Painter = getPainter(reward)
-        Image(
-            painter = image,
+        AsyncImage(
+            model = getModel(reward),
             modifier = Modifier.size(100.dp, 140.dp),
             contentDescription = ""
         )
@@ -188,11 +175,11 @@ fun RewardItem(reward: Reward) {
 }
 
 @Composable
-fun getPainter(reward: Reward): Painter {
+fun getModel(reward: Reward): Any {
     return if (reward is CardReward) {
-        rememberAsyncImagePainter(reward.url)
+        reward.url
     } else {
-        val resId = when (reward) {
+        when (reward) {
             is SPSReward -> R.drawable.asset_sps
             is CreditsReward -> R.drawable.asset_credits
             is DecReward -> R.drawable.asset_dec
@@ -202,7 +189,6 @@ fun getPainter(reward: Reward): Painter {
             is PackReward -> R.drawable.asset_pack_chaos
             else -> throw Exception()
         }
-        painterResource(id = resId)
     }
 }
 
