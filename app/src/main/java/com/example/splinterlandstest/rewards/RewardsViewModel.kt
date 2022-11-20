@@ -43,7 +43,8 @@ class RewardsViewModel(val player: String, val cache: Cache, val requests: Reque
                     val card = Card(it.cardId.toString(), 3, it.isGold, 1)
                     val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
                     if (cardDetail != null) {
-                        it.url = card.getImageUrl(cardDetail)
+                        card.setStats(cardDetail)
+                        it.url = card.imageUrl
                         it.name = cardDetail.name
                     }
                 }

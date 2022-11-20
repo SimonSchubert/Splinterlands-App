@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -43,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,10 +51,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import com.example.splinterlandstest.models.CardFoilUrl
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
@@ -104,20 +102,15 @@ class BattlesFragment : Fragment() {
 @Composable
 fun Content(state: BattlesViewState) {
     val context = LocalContext.current
-    val refreshing = state is BattlesViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh(context) })
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh(context) })
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+
+        BackgroundImage(resId = R.drawable.bg_arena)
 
         when (state) {
             is BattlesViewState.Loading -> LoadingScreen()
@@ -135,9 +128,22 @@ fun Content(state: BattlesViewState) {
             is BattlesViewState.Error -> ErrorScreen()
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-        }
+        SplinterPullRefreshIndicator(pullRefreshState)
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = R.drawable.battles,
+            contentDescription = null
+        )
     }
 }
 

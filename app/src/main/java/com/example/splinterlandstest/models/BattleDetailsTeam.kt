@@ -14,7 +14,8 @@ data class BattleDetailsTeam(val player: String, val summoner: Card, val monster
     private fun getCardImageUrl(card: Card, cardDetails: List<CardDetail>): String {
         val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
         return if (cardDetail != null) {
-            card.getImageUrl(cardDetail)
+            card.setStats(cardDetail)
+            card.imageUrl
         } else {
             ""
         }

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -26,25 +24,23 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import com.example.splinterlandstest.models.CardReward
 import com.example.splinterlandstest.models.CreditsReward
 import com.example.splinterlandstest.models.DecReward
@@ -93,8 +89,8 @@ class RewardsFragment : Fragment() {
 
 @Composable
 fun Content(state: RewardsViewState) {
-    val refreshing = state is RewardsViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -102,12 +98,7 @@ fun Content(state: RewardsViewState) {
             .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+        BackgroundImage(resId = R.drawable.bg_balance)
 
         when (state) {
             is RewardsViewState.Loading -> LoadingScreen()
@@ -115,9 +106,22 @@ fun Content(state: RewardsViewState) {
             is RewardsViewState.Error -> ErrorScreen()
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-        }
+        SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = R.drawable.chest,
+            contentDescription = null
+        )
     }
 }
 
@@ -168,7 +172,7 @@ fun RewardItem(reward: Reward) {
             modifier = Modifier.padding(top = 12.dp),
             textAlign = TextAlign.Center,
             color = Color.White,
-            fontSize = TextUnit(20f, TextUnitType.Sp),
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
     }

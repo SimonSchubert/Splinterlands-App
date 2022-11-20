@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -27,22 +25,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import com.example.splinterlandstest.models.Ruleset
 import org.koin.android.ext.android.get
 
@@ -82,8 +78,8 @@ class RulesetsFragment : Fragment() {
 
 @Composable
 fun Content(state: RulesetsViewState) {
-    val refreshing = state is RulesetsViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -91,12 +87,7 @@ fun Content(state: RulesetsViewState) {
             .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+        BackgroundImage(resId = R.drawable.bg_gate)
 
         when (state) {
             is RulesetsViewState.Loading -> LoadingScreen()
@@ -104,9 +95,22 @@ fun Content(state: RulesetsViewState) {
             is RulesetsViewState.Error -> ErrorScreen()
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-        }
+        SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = R.drawable.faq,
+            contentDescription = null
+        )
     }
 }
 
@@ -139,7 +143,7 @@ fun RulesetItem(ruleset: Ruleset) {
                 Text(
                     text = ruleset.name.uppercase(),
                     color = Color(0XFFffa500),
-                    fontSize = TextUnit(18f, TextUnitType.Sp),
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             })

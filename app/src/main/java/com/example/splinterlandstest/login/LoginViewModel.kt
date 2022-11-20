@@ -7,7 +7,6 @@ import com.example.splinterlandstest.Cache
 import com.example.splinterlandstest.Requests
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +28,7 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
         players.clear()
         players.addAll(cache.getPlayerList().map { PlayerRowInfo(it) })
 
-        updateSuccessState()
+        updateSuccessState(true)
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             players.forEach { player ->
@@ -37,13 +36,15 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
                 player.chests = questInfo.questRewardInfo.chestEarned
                 player.chestUrl = questInfo.questRewardInfo.getChestUrl()
                 player.timeLeft = questInfo.questRewardInfo.getFormattedEndDateShort()
-                updateSuccessState()
+                updateSuccessState(true)
             }
+            updateSuccessState(false)
         }
     }
 
-    private fun updateSuccessState() {
+    private fun updateSuccessState(isRefreshing: Boolean) {
         _state.value = LoginViewState.Success(players = players,
+            isRefreshing = isRefreshing,
             onDeletePlayer = { onDelete(it) },
             onAddPlayer = { onAddPlayer(it) },
             onRefresh = { onRefresh() }
@@ -64,11 +65,17 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
-            delay(1000)
+            if (requests.getPlayerDetails(player).name == null) { // gson serializes missing as null
+                _state.value = LoginViewState.CouldNotFindPlayerError(
+                    player = player,
+                    onAddPlayer = { onAddPlayer(it) },
+                    onRefresh = { onRefresh() },
+                    onClickBack = { loadPlayerData() })
+            } else {
+                cache.writePlayerToList(player)
 
-            cache.writePlayerToList(player)
-
-            loadPlayerData()
+                loadPlayerData()
+            }
         }
     }
 }

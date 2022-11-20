@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class)
 
 package com.example.splinterlandstest.collection
 
@@ -12,6 +12,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,13 +25,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -50,10 +55,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import com.google.accompanist.flowlayout.FlowRow
 import org.koin.android.ext.android.get
 
@@ -87,8 +93,8 @@ class CollectionFragment : Fragment() {
 
 @Composable
 fun Content(state: CollectionViewState) {
-    val refreshing = state is CollectionViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -96,12 +102,8 @@ fun Content(state: CollectionViewState) {
             .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+        BackgroundImage(resId = R.drawable.bg_mountain)
+
         when (state) {
             is CollectionViewState.Loading -> LoadingScreen()
             is CollectionViewState.Success -> ReadyScreen(
@@ -111,14 +113,30 @@ fun Content(state: CollectionViewState) {
                 filterEditionStates = state.filterEditionStates,
                 onClickEdition = state.onClickEdition,
                 filterElementStates = state.filterElementStates,
-                onClickElement = state.onClickElement
+                onClickElement = state.onClickElement,
+                sortingStates = state.sortingElementStates,
+                selectedSorting = state.selectedSorting,
+                onClickSorting = state.onClickSorting
             )
             is CollectionViewState.Error -> ErrorScreen()
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-        }
+        SplinterPullRefreshIndicator(pullRefreshState)
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = R.drawable.collection,
+            contentDescription = null
+        )
     }
 }
 
@@ -128,9 +146,12 @@ fun ReadyScreen(
     filterRarityStates: List<FilterRarityState>,
     onClickRarity: (Int) -> Unit,
     filterEditionStates: List<FilterEditionState>,
+    onClickEdition: (Int) -> Unit,
     filterElementStates: List<FilterElementState>,
     onClickElement: (String) -> Unit,
-    onClickEdition: (Int) -> Unit
+    sortingStates: List<SortingState>,
+    onClickSorting: (CollectionViewModel.Sorting) -> Unit,
+    selectedSorting: SortingState?
 ) {
     val showFilterDialog = remember { mutableStateOf(false) }
 
@@ -152,6 +173,9 @@ fun ReadyScreen(
                     onClickEdition,
                     filterElementStates,
                     onClickElement,
+                    sortingStates,
+                    onClickSorting,
+                    selectedSorting,
                     onDismiss = {
                         showFilterDialog.value = false
                     })
@@ -182,16 +206,63 @@ fun FilterDialog(
     onClickEdition: (Int) -> Unit,
     filterElementStates: List<FilterElementState>,
     onClickElement: (String) -> Unit,
+    sortingStates: List<SortingState>,
+    onClickSorting: (CollectionViewModel.Sorting) -> Unit,
+    selectedSorting: SortingState?,
     onDismiss: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Dialog(onDismissRequest = { onDismiss() }) {
         Card(backgroundColor = Color.Black) {
-            Column(modifier = Modifier.padding(4.dp)) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(12.dp)
+            ) {
+
+                val mExpanded = remember { mutableStateOf(false) }
+
+                Box {
+                    Row(modifier = Modifier.clickable { mExpanded.value = !mExpanded.value }) {
+                        Text(
+                            text = "Sort by: ${selectedSorting?.name}",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h6
+                        )
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                    }
+
+                    DropdownMenu(expanded = mExpanded.value,
+                        onDismissRequest = { mExpanded.value = false }) {
+
+                        sortingStates.forEach { sorting ->
+                            DropdownMenuItem(onClick = {
+                                mExpanded.value = false
+                                onClickSorting(sorting.id)
+                            }) {
+                                Text(
+                                    text = sorting.name,
+                                    color = if (sorting.selected) {
+                                        Color(0XFFff9300)
+                                    } else {
+                                        Color.Black
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(6.dp))
 
                 Text(
                     text = "Rarity",
                     color = Color.White,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h6
                 )
                 FlowRow(
                     mainAxisSpacing = 4.dp,
@@ -206,10 +277,12 @@ fun FilterDialog(
                     }
                 }
 
+                Spacer(Modifier.height(6.dp))
+
                 Text(
                     text = "Editions",
                     color = Color.White,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h6
                 )
                 FlowRow(
                     mainAxisSpacing = 4.dp,
@@ -231,10 +304,12 @@ fun FilterDialog(
                     }
                 }
 
+                Spacer(Modifier.height(6.dp))
+
                 Text(
                     text = "Elements",
                     color = Color.White,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h6
                 )
                 FlowRow(
                     mainAxisSpacing = 4.dp,
@@ -255,7 +330,6 @@ fun FilterDialog(
                         }
                     }
                 }
-
             }
         }
     }

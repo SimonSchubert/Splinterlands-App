@@ -22,17 +22,17 @@ class FocusesViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
     }
 
     fun loadRewards() {
-        onRefresh()
+        onRefresh(false)
     }
 
-    private fun onRefresh() {
+    private fun onRefresh(forceRefresh: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
             _state.value = FocusesViewState.Loading { onRefresh() }
 
             var focuses = cache.getSettings()?.dailyQuests
 
-            if (focuses == null || focuses.isEmpty()) {
+            if (focuses.isNullOrEmpty() || forceRefresh) {
                 focuses = requests.getSettings().dailyQuests
             }
 

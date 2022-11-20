@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
@@ -33,7 +34,6 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -46,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -65,10 +64,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.MainActivityViewModel
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.LoadingScreen
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import org.koin.android.ext.android.get
 
 /**
@@ -101,7 +102,6 @@ class LoginFragment : Fragment() {
                 )
             }
         }
-
     }
 
     override fun onResume() {
@@ -117,8 +117,16 @@ fun Content(
     onClickPlayer: (player: String) -> Unit,
 ) {
     val context = LocalContext.current
-    val refreshing = state is LoginViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh(context) })
+
+    var refreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = {
+        refreshing = true
+        state.onRefresh(context)
+    })
+
+    if (refreshing && state is LoginViewState.Success) {
+        refreshing = state.isRefreshing
+    }
 
     Box(
         modifier = Modifier
@@ -126,12 +134,9 @@ fun Content(
             .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_login),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+
+        BackgroundImage(resId = R.drawable.bg_login)
+
         when (state) {
             is LoginViewState.Loading -> LoadingScreen()
             is LoginViewState.Success -> ReadyScreen(
@@ -140,10 +145,53 @@ fun Content(
                 onDeletePlayer = state.onDeletePlayer,
                 onAddPlayer = state.onAddPlayer
             )
+            is LoginViewState.CouldNotFindPlayerError -> CouldNotFindPlayerErrorScreen(
+                player = state.player,
+                onAddPlayer = state.onAddPlayer,
+                onClickBack = state.onClickBack
+            )
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
+        SplinterPullRefreshIndicator(pullRefreshState)
+    }
+}
+
+@Composable
+fun CouldNotFindPlayerErrorScreen(
+    player: String,
+    onAddPlayer: (player: String) -> Unit,
+    onClickBack: () -> Unit
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier.verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.width(400.dp),
+            painter = painterResource(id = R.drawable.splinterlands_logo),
+            contentDescription = ""
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Text(
+            text = "Ops, we couldn't find \"$player\"",
+            fontSize = 20.sp,
+            color = Color.White
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        AddAccountCard(onAddPlayer = onAddPlayer, prefilledPlayer = player)
+
+        Spacer(Modifier.height(12.dp))
+
+        Button(onClick = {
+            onClickBack()
+        }) {
+            Text("Nevermind")
         }
     }
 }
@@ -163,7 +211,8 @@ fun ReadyScreen(
     ) {
 
         Image(
-            painterResource(id = R.drawable.splinterlands_logo),
+            modifier = Modifier.width(400.dp),
+            painter = painterResource(id = R.drawable.splinterlands_logo),
             contentDescription = ""
         )
 
@@ -176,49 +225,54 @@ fun ReadyScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        Card(
-            modifier = Modifier.padding(16.dp),
-            backgroundColor = Color.Black.copy(alpha = 0.8f)
-        ) {
+        AddAccountCard(onAddPlayer, "")
+    }
+}
 
-            Column {
+@Composable
+fun AddAccountCard(onAddPlayer: (player: String) -> Unit, prefilledPlayer: String) {
+    Card(
+        modifier = Modifier.padding(16.dp),
+        backgroundColor = Color.Black.copy(alpha = 0.8f)
+    ) {
 
-                Text(
-                    text = "ADD ACCOUNT",
-                    modifier = Modifier.padding(start = 16.dp, top = 12.dp),
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
+        Column {
+
+            Text(
+                text = "ADD ACCOUNT",
+                modifier = Modifier.padding(start = 16.dp, top = 12.dp),
+                fontSize = 18.sp,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .align(alignment = Alignment.CenterHorizontally)
+            ) {
+                var text by remember { mutableStateOf(TextFieldValue(prefilledPlayer)) }
+                TextField(
+                    value = text,
+                    textStyle = TextStyle.Default.copy(color = Color.White),
+                    singleLine = true,
+                    onValueChange = {
+                        text = it
+                    },
+                    placeholder = {
+                        Text(
+                            "Player",
+                            color = Color.White.copy(alpha = 0.4f)
+                        )
+                    }
                 )
 
-                Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .background(Color.Black.copy(alpha = 0.7f))
-                        .align(alignment = Alignment.CenterHorizontally)
-                ) {
-                    var text by remember { mutableStateOf(TextFieldValue("")) }
-                    TextField(
-                        value = text,
-                        textStyle = TextStyle.Default.copy(color = Color.White),
-                        singleLine = true,
-                        onValueChange = {
-                            text = it
-                        },
-                        placeholder = {
-                            Text(
-                                "Player",
-                                color = Color.White.copy(alpha = 0.4f)
-                            )
-                        }
-                    )
-
-                    IconButton(onClick = {
-                        onAddPlayer(text.text)
-                        text = TextFieldValue("")
-                    }) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = null, tint = Color.White)
-                    }
+                IconButton(onClick = {
+                    onAddPlayer(text.text)
+                    text = TextFieldValue("")
+                }) {
+                    Icon(imageVector = Icons.Filled.Add, contentDescription = null, tint = Color.White)
                 }
             }
         }
@@ -267,7 +321,7 @@ fun PlayerItem(
     onClick: (player: String) -> Unit,
     onDelete: (player: String) -> Unit
 ) {
-    val showDeleteDialog =  remember { mutableStateOf(false) }
+    val showDeleteDialog = remember { mutableStateOf(false) }
 
     ListItem(modifier = Modifier
         .clickable { onClick(player.name) }, text = {

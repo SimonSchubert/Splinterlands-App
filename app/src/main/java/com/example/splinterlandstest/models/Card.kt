@@ -8,10 +8,29 @@ data class Card(
     @SerializedName("card_detail_id") val cardDetailId: String,
     val edition: Int,
     val gold: Boolean = false,
-    val level: Int
+    val level: Int,
+    var mana: Int = 0,
+    var health: Int = 0,
+    var speed: Int = 0,
+    var magic: Int = 0,
+    var melee: Int = 0,
+    var range: Int = 0,
+    var name: String = "",
+    var imageUrl: String = ""
 ) {
 
-    fun getImageUrl(cardDetail: CardDetail): String {
+    fun setStats(cardDetail: CardDetail) {
+        imageUrl = getImageUrl(cardDetail)
+        name = cardDetail.name
+        mana = cardDetail.stats.mana?.getOrNull(level - 1) ?: 0
+        health = cardDetail.stats.health?.getOrNull(level - 1) ?: 0
+        speed = cardDetail.stats.speed?.getOrNull(level - 1) ?: 0
+        magic = cardDetail.stats.magic?.getOrNull(level - 1) ?: 0
+        melee = cardDetail.stats.attack?.getOrNull(level - 1) ?: 0
+        range = cardDetail.stats.ranged?.getOrNull(level - 1) ?: 0
+    }
+
+    private fun getImageUrl(cardDetail: CardDetail): String {
         val editionPath = when (edition) {
             8 -> "rift"
             7 -> "chaos"

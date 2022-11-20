@@ -50,6 +50,32 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
         FilterElementState("Gray", imageRes = R.drawable.element_neutral)
     )
 
+    enum class Sorting {
+        ID,
+        NAME,
+        MANA,
+        SPEED,
+        HEALTH,
+        LEVEL,
+        MAGIC,
+        RANGE,
+        MELEE
+    }
+
+    private var sortingStates = listOf(
+        SortingState(Sorting.ID, selected = true),
+        // SortingState(Sorting.NAME),
+        SortingState(Sorting.MANA),
+        SortingState(Sorting.SPEED),
+        SortingState(Sorting.HEALTH),
+        SortingState(Sorting.LEVEL),
+        SortingState(Sorting.MAGIC),
+        SortingState(Sorting.RANGE),
+        SortingState(Sorting.MELEE)
+    )
+
+    private var currentSorting: Sorting = Sorting.ID
+
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
@@ -71,9 +97,17 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
             if (cardDetails.isEmpty() || forceRefresh) {
                 cardDetails = requests.getCardDetails()
             }
-
             updateState()
         }
+    }
+
+    private fun onClickSorting(sorting: Sorting) {
+        currentSorting = sorting
+        sortingStates.forEach {
+            it.selected = it.id == currentSorting
+        }
+
+        updateState()
     }
 
     private fun onClickRarity(id: Int) {
@@ -112,15 +146,29 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
                 (editions.isEmpty() || editions.contains(card.edition)) &&
                 (elements.isEmpty() || elements.contains(cardDetail.color))
             ) {
-                val imageUrl = card.getImageUrl(cardDetail)
-                CardViewState(
-                    imageUrl = imageUrl,
-                    placeHolderRes = card.getPlaceholderDrawable(),
-                    quantity = 1
-                )
+                card.setStats(cardDetail)
+                card
             } else {
                 null
             }
+        }.sortedByDescending { card ->
+            when (currentSorting) {
+                Sorting.MANA -> card.mana
+                Sorting.SPEED -> card.speed
+                Sorting.HEALTH -> card.health
+                Sorting.LEVEL -> card.level
+                Sorting.MAGIC -> card.magic
+                Sorting.RANGE -> card.range
+                Sorting.MELEE -> card.melee
+                Sorting.NAME -> 0
+                Sorting.ID -> card.cardDetailId.toIntOrNull()
+            }
+        }.map { card ->
+            CardViewState(
+                imageUrl = card.imageUrl,
+                placeHolderRes = card.getPlaceholderDrawable(),
+                quantity = 1
+            )
         }
 
         _state.value = CollectionViewState.Success(
@@ -137,6 +185,11 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
             filterElementStates = filterElementState,
             onClickElement = {
                 onClickElement(it)
+            },
+            sortingElementStates = sortingStates,
+            selectedSorting = sortingStates.firstOrNull { it.id == currentSorting },
+            onClickSorting = {
+                onClickSorting(it)
             }
         )
     }

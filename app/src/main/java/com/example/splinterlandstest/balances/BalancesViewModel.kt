@@ -23,6 +23,7 @@ class BalancesViewModel(val player: String, val cache: Cache, val requests: Requ
 
     fun loadRewards() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _state.value = BalancesViewState.Loading { onRefresh() }
             _state.value = BalancesViewState.Success(
                 onRefresh = { onRefresh() },
                 balances = cache.getBalances(player)

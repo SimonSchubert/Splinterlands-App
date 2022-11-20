@@ -3,12 +3,13 @@ package com.example.splinterlandstest.battles
 import android.content.Context
 import com.example.splinterlandstest.models.CardFoilUrl
 
-sealed class BattlesViewState {
+sealed class BattlesViewState(open val isRefreshing: Boolean) {
     abstract val onRefresh: (context: Context) -> Unit
 
-    data class Loading(override val onRefresh: (context: Context) -> Unit) : BattlesViewState()
+    data class Loading(override val onRefresh: (context: Context) -> Unit) : BattlesViewState(true)
     data class Success(
         override val onRefresh: (context: Context) -> Unit,
+        override val isRefreshing: Boolean,
         val battles: List<BattleViewState>,
         val playerName: String,
         val playerRating: String,
@@ -19,9 +20,9 @@ sealed class BattlesViewState {
         val seasonChestUrl: String,
         val seasonEndTimestamp: Long
     ) :
-        BattlesViewState()
+        BattlesViewState(isRefreshing)
 
-    data class Error(override val onRefresh: (context: Context) -> Unit) : BattlesViewState()
+    data class Error(override val onRefresh: (context: Context) -> Unit) : BattlesViewState(false)
 }
 
 data class BattleViewState(

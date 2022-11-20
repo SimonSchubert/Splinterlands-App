@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:id="@+id/battles"
-            android:title="@string/battles"
-            android:icon="@drawable/battles"/>
+        android:id="@+id/battles"
+        android:icon="@drawable/battles"
+        android:title="@string/battles" />
     <item
-            android:id="@+id/collection"
-            android:title="@string/collection"
-            android:icon="@drawable/collection"/>
+        android:id="@+id/collection"
+        android:icon="@drawable/collection"
+        android:title="@string/collection" />
     <item
-            android:id="@+id/balances"
-            android:title="@string/balances"
-            android:icon="@drawable/balances"/>
+        android:id="@+id/balances"
+        android:icon="@drawable/balances"
+        android:title="@string/balances" />
 </menu>

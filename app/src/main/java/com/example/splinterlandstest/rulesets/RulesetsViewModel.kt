@@ -22,17 +22,17 @@ class RulesetsViewModel(val cache: Cache, val requests: Requests) : ViewModel() 
     }
 
     fun loadRewards() {
-        onRefresh()
+        onRefresh(false)
     }
 
-    private fun onRefresh() {
+    private fun onRefresh(forceRefresh: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
 
             _state.value = RulesetsViewState.Loading { onRefresh() }
 
             var rulesets = cache.getSettings()?.battles?.rulesets
 
-            if (rulesets == null || rulesets.isEmpty()) {
+            if (rulesets.isNullOrEmpty() || forceRefresh) {
                 rulesets = requests.getSettings().battles.rulesets
             }
 

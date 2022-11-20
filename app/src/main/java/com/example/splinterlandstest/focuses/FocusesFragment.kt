@@ -21,7 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
@@ -30,22 +29,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.Cache
-import com.example.splinterlandstest.LoadingScreen
 import com.example.splinterlandstest.R
 import com.example.splinterlandstest.Requests
+import com.example.splinterlandstest.composables.BackgroundImage
+import com.example.splinterlandstest.composables.SplinterPullRefreshIndicator
 import com.example.splinterlandstest.models.Focus
 import org.koin.android.ext.android.get
 
@@ -85,8 +83,8 @@ class FocusesFragment : Fragment() {
 
 @Composable
 fun Content(state: FocusesViewState) {
-    val refreshing = state is FocusesViewState.Loading
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = { state.onRefresh() })
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -94,21 +92,30 @@ fun Content(state: FocusesViewState) {
             .pullRefresh(pullRefreshState),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painterResource(id = R.drawable.bg_balance),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
-        )
+        BackgroundImage(resId = R.drawable.bg_gate)
+
         when (state) {
             is FocusesViewState.Loading -> LoadingScreen()
             is FocusesViewState.Success -> ReadyScreen(focuses = state.focuses)
             is FocusesViewState.Error -> ErrorScreen()
         }
 
-        if (!refreshing) {
-            PullRefreshIndicator(refreshing, pullRefreshState, Modifier.align(Alignment.TopCenter))
-        }
+        SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = R.drawable.faq,
+            contentDescription = null
+        )
     }
 }
 
@@ -137,7 +144,7 @@ fun FocusItem(focus: Focus) {
                 modifier = Modifier.padding(vertical = 8.dp),
                 text = focus.name.replace("_", " ").uppercase(),
                 color = Color(0XFFffa500),
-                fontSize = TextUnit(20f, TextUnitType.Sp),
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
 

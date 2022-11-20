@@ -27,6 +27,7 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
     fun loadBattles(player: String) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             updateReadyState(
+                isRefreshing = true,
                 rewardsInfo = cache.getRewardsInfo(player),
                 playerDetails = cache.getPlayerDetails(player),
                 gameSettings = cache.getSettings(),
@@ -35,6 +36,7 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
             )
 
             updateReadyState(
+                isRefreshing = false,
                 rewardsInfo = requests.getRewardsInfo(player),
                 playerDetails = requests.getPlayerDetails(player),
                 gameSettings = requests.getSettings(),
@@ -50,6 +52,7 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
             _state.value = BattlesViewState.Loading { onRefresh() }
 
             updateReadyState(
+                isRefreshing = false,
                 rewardsInfo = requests.getRewardsInfo(player),
                 playerDetails = requests.getPlayerDetails(player),
                 gameSettings = requests.getSettings(),
@@ -60,6 +63,7 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
     }
 
     private fun updateReadyState(
+        isRefreshing: Boolean,
         rewardsInfo: RewardsInfo?,
         playerDetails: PlayerDetails?,
         gameSettings: GameSettings?,
@@ -87,6 +91,7 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
 
             _state.value = BattlesViewState.Success(
                 onRefresh = { onRefresh() },
+                isRefreshing = isRefreshing,
                 battles = battleViewStates,
                 playerName = playerDetails.name.uppercase(),
                 playerRating = "W: ${numberFormat.format(playerDetails.rating)}, M: ${numberFormat.format(playerDetails.modernRating)}",
