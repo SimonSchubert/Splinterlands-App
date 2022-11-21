@@ -7,7 +7,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.splinterlandstest"
+        applicationId = "com.splintergod.app"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
