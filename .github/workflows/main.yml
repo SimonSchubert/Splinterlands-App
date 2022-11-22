@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: apk
-          path: android/build/outputs/apk/release/android-release-unsigned-signed.apk
+          path: app/build/outputs/apk/release/android-release-unsigned-signed.apk
 
   release:
     name: Release APK
