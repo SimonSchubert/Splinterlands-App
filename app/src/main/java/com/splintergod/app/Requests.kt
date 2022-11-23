@@ -1,5 +1,7 @@
 package com.splintergod.app
 
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.splintergod.app.models.Balances
 import com.splintergod.app.models.Battle
 import com.splintergod.app.models.BattleHistory
@@ -18,8 +20,6 @@ import com.splintergod.app.models.PlayerDetails
 import com.splintergod.app.models.Reward
 import com.splintergod.app.models.RewardsInfo
 import com.splintergod.app.models.SPSReward
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*

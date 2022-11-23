@@ -2,11 +2,11 @@ package com.splintergod.app.collection
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.splintergod.app.Cache
 import com.example.splinterlandstest.R
+import com.splintergod.app.Cache
 import com.splintergod.app.Requests
+import com.splintergod.app.Session
 import com.splintergod.app.models.Card
 import com.splintergod.app.models.CardDetail
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CollectionViewModel(val player: String, val cache: Cache, val requests: Requests) : ViewModel() {
+class CollectionViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
     private val _state = MutableStateFlow<CollectionViewState>(CollectionViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
@@ -89,9 +89,9 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
 
             _state.value = CollectionViewState.Loading { onRefresh() }
 
-            unfilteredCollection = cache.getCollection(player)
+            unfilteredCollection = cache.getCollection(session.player)
             if (unfilteredCollection.isEmpty() || forceRefresh) {
-                unfilteredCollection = requests.getCollection(player)
+                unfilteredCollection = requests.getCollection(session.player)
             }
             cardDetails = cache.getCardDetails()
             if (cardDetails.isEmpty() || forceRefresh) {
@@ -192,12 +192,5 @@ class CollectionViewModel(val player: String, val cache: Cache, val requests: Re
                 onClickSorting(it)
             }
         )
-    }
-}
-
-class CollectionViewModelFactory(val player: String, val cache: Cache, val requests: Requests) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return CollectionViewModel(player, cache, requests) as T
     }
 }

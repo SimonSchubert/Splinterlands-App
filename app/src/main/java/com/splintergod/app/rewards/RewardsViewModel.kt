@@ -1,10 +1,10 @@
 package com.splintergod.app.rewards
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
+import com.splintergod.app.Session
 import com.splintergod.app.models.Card
 import com.splintergod.app.models.CardReward
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class RewardsViewModel(val player: String, val cache: Cache, val requests: Requests) : ViewModel() {
+class RewardsViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
     private val _state = MutableStateFlow<RewardsViewState>(RewardsViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
@@ -37,7 +37,7 @@ class RewardsViewModel(val player: String, val cache: Cache, val requests: Reque
                 cardDetails = requests.getCardDetails()
             }
 
-            val rewards = requests.getRecentRewards(player)
+            val rewards = requests.getRecentRewards(session.player)
             rewards.forEach {
                 if (it is CardReward) {
                     val card = Card(it.cardId.toString(), 3, it.isGold, 1)
@@ -58,12 +58,5 @@ class RewardsViewModel(val player: String, val cache: Cache, val requests: Reque
                 )
             }
         }
-    }
-}
-
-class RewardsViewModelFactory(val player: String, val cache: Cache, val requests: Requests) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return RewardsViewModel(player, cache, requests) as T
     }
 }

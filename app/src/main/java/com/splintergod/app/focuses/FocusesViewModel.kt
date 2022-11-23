@@ -1,7 +1,6 @@
 package com.splintergod.app.focuses
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
@@ -45,12 +44,5 @@ class FocusesViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
                 _state.value = FocusesViewState.Error { onRefresh() }
             }
         }
-    }
-}
-
-class FocusesViewModelFactory(val cache: Cache, val requests: Requests) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return FocusesViewModel(cache, requests) as T
     }
 }

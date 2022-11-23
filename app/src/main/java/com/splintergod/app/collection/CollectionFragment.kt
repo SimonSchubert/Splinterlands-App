@@ -51,30 +51,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
-import com.splintergod.app.MainActivityViewModel
 import com.example.splinterlandstest.R
-import com.splintergod.app.Requests
+import com.google.accompanist.flowlayout.FlowRow
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import com.google.accompanist.flowlayout.FlowRow
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * Collection fragment
  */
 class CollectionFragment : Fragment() {
 
-    val cache: Cache = get()
-    val requests: Requests = get()
-
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
-    private val viewModel by viewModels<CollectionViewModel> {
-        CollectionViewModelFactory(activityViewModel.playerName, cache, requests)
-    }
+    private val viewModel: CollectionViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,7 +50,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -64,29 +61,21 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.R
-import com.splintergod.app.Cache
 import com.splintergod.app.MainActivityViewModel
-import com.splintergod.app.Requests
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * Collection fragment
  */
 class LoginFragment : Fragment() {
 
-    val cache: Cache = get()
-    private val requests: Requests = get()
-
     private val activityViewModel: MainActivityViewModel by activityViewModels()
-    private val viewModel by viewModels<LoginViewModel> {
-        LoginFragmentViewModelFactory(cache, requests)
-    }
+    private val viewModel: LoginViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -196,7 +185,8 @@ fun CouldNotFindPlayerErrorScreen(
 
         AddAccountCard(
             onAddPlayer = onAddPlayer,
-            prefilledPlayer = player)
+            prefilledPlayer = player
+        )
 
         Spacer(Modifier.height(12.dp))
 

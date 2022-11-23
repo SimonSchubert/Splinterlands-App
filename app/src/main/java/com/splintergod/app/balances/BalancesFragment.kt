@@ -32,17 +32,12 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
-import com.splintergod.app.MainActivityViewModel
 import com.example.splinterlandstest.R
-import com.splintergod.app.Requests
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Balances
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.NumberFormat
 import java.util.*
 
@@ -52,13 +47,7 @@ import java.util.*
  */
 class BalancesFragment : Fragment() {
 
-    val cache: Cache = get()
-    private val requests: Requests = get()
-
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
-    private val viewModel by viewModels<BalancesViewModel> {
-        BalancesViewModelFactory(activityViewModel.playerName, cache, requests)
-    }
+    private val viewModel: BalancesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

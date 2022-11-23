@@ -32,13 +32,8 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
-import com.splintergod.app.MainActivityViewModel
 import com.example.splinterlandstest.R
-import com.splintergod.app.Requests
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.CardReward
@@ -50,7 +45,7 @@ import com.splintergod.app.models.MeritsReward
 import com.splintergod.app.models.PackReward
 import com.splintergod.app.models.Reward
 import com.splintergod.app.models.SPSReward
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 /**
@@ -58,13 +53,7 @@ import org.koin.android.ext.android.get
  */
 class RewardsFragment : Fragment() {
 
-    val cache: Cache = get()
-    private val requests: Requests = get()
-
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
-    private val viewModel by viewModels<RewardsViewModel> {
-        RewardsViewModelFactory(activityViewModel.playerName, cache, requests)
-    }
+    private val viewModel: RewardsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

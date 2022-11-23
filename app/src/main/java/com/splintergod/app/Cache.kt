@@ -1,6 +1,8 @@
 package com.splintergod.app
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.splintergod.app.models.Ability
 import com.splintergod.app.models.Balances
 import com.splintergod.app.models.Battle
@@ -11,8 +13,6 @@ import com.splintergod.app.models.CollectionResponse
 import com.splintergod.app.models.GameSettings
 import com.splintergod.app.models.PlayerDetails
 import com.splintergod.app.models.RewardsInfo
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import java.io.File
 import java.lang.reflect.Type

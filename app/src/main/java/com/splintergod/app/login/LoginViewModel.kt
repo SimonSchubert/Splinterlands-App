@@ -1,7 +1,6 @@
 package com.splintergod.app.login
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
@@ -77,12 +76,5 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
                 loadPlayerData()
             }
         }
-    }
-}
-
-class LoginFragmentViewModelFactory(val cache: Cache, val requests: Requests) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoginViewModel(cache, requests) as T
     }
 }

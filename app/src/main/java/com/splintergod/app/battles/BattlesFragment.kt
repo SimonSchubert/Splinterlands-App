@@ -48,20 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
-import com.splintergod.app.MainActivityViewModel
 import com.example.splinterlandstest.R
-import com.splintergod.app.Requests
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.CardFoilUrl
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.delay
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -70,14 +65,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 class BattlesFragment : Fragment() {
 
-    val cache: Cache = get()
-    val requests: Requests = get()
-
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
-
-    private val viewModel by viewModels<BattlesViewModel> {
-        BattlesViewModelFactory(activityViewModel.playerName, cache, requests)
-    }
+    private val viewModel: BattlesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,7 +84,7 @@ class BattlesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        viewModel.loadBattles(activityViewModel.playerName)
+        viewModel.loadBattles()
     }
 }
 
@@ -160,8 +148,10 @@ fun ReadyScreen(
     seasonChestUrl: String,
     seasonEndTimestamp: Long
 ) {
-    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = Modifier.fillMaxWidth()) {
+    LazyColumn(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
 
         item(key = "player") {
             Spacer(modifier = Modifier.height(12.dp))

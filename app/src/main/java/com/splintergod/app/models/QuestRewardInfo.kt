@@ -1,8 +1,8 @@
 package com.splintergod.app.models
 
+import com.google.gson.annotations.SerializedName
 import com.splintergod.app.assetUrl
 import com.splintergod.app.simpleDateFormat
-import com.google.gson.annotations.SerializedName
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds

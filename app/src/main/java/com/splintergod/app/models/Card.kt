@@ -1,8 +1,8 @@
 package com.splintergod.app.models
 
 import com.example.splinterlandstest.R
-import com.splintergod.app.assetUrl
 import com.google.gson.annotations.SerializedName
+import com.splintergod.app.assetUrl
 
 data class Card(
     @SerializedName("card_detail_id") val cardDetailId: String,

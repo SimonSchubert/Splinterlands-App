@@ -3,7 +3,6 @@ package com.splintergod.app
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.core.view.isVisible
@@ -12,16 +11,16 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.splinterlandstest.R
+import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.splintergod.app.abilities.AbilitiesFragment
 import com.splintergod.app.balances.BalancesFragment
 import com.splintergod.app.battles.BattlesFragment
 import com.splintergod.app.collection.CollectionFragment
-import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.splintergod.app.focuses.FocusesFragment
 import com.splintergod.app.login.LoginFragment
 import com.splintergod.app.rewards.RewardsFragment
 import com.splintergod.app.rulesets.RulesetsFragment
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,12 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    val cache: Cache = get()
-    val requests: Requests = get()
-
-    private val viewModel: MainActivityViewModel by viewModels {
-        MainActivityViewModelFactory(cache, requests)
-    }
+    private val viewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

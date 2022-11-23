@@ -32,23 +32,17 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
 import com.example.splinterlandstest.R
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.models.Ability
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class AbilitiesFragment : Fragment() {
 
-    val cache: Cache = get()
-
-    private val viewModel by viewModels<AbilitiesViewModel> {
-        AbilitiesViewModelFactory(cache)
-    }
+    private val viewModel: AbilitiesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -1,7 +1,7 @@
 package com.splintergod.app.models
 
-import com.splintergod.app.assetUrl
 import com.google.gson.annotations.SerializedName
+import com.splintergod.app.assetUrl
 
 data class SeasonRewardInfo(
     @SerializedName("chest_tier") val chestTier: Int,

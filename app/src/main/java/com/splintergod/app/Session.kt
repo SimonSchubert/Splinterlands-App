@@ -1,5 +1,20 @@
 package com.splintergod.app
 
-class Session {
-    var currentPlayer: String = ""
+class Session(val cache: Cache) {
+
+    var player: String = ""
+
+    init {
+        player = cache.getSelectedPlayerName()
+    }
+
+    fun setCurrentPlayer(playerName: String) {
+        player = playerName
+        cache.writeSelectedPlayerName(playerName)
+    }
+
+    fun logout() {
+        player = ""
+        cache.writeSelectedPlayerName("")
+    }
 }

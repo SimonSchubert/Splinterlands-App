@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class)
 
 package com.splintergod.app.focuses
 
@@ -33,19 +33,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import coil.compose.AsyncImage
-import com.splintergod.app.Cache
 import com.example.splinterlandstest.R
-import com.splintergod.app.Requests
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Focus
-import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 /**
@@ -53,12 +49,7 @@ import org.koin.android.ext.android.get
  */
 class FocusesFragment : Fragment() {
 
-    val cache: Cache = get()
-    private val requests: Requests = get()
-
-    private val viewModel by viewModels<FocusesViewModel> {
-        FocusesViewModelFactory(cache, requests)
-    }
+    private val viewModel: FocusesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

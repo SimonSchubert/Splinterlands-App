@@ -1,10 +1,10 @@
 package com.splintergod.app.battles
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
+import com.splintergod.app.Session
 import com.splintergod.app.models.Battle
 import com.splintergod.app.models.CardDetail
 import com.splintergod.app.models.GameSettings
@@ -18,29 +18,29 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.*
 
-class BattlesViewModel(val player: String, val cache: Cache, val requests: Requests) : ViewModel() {
+class BattlesViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
     private val _state = MutableStateFlow<BattlesViewState>(BattlesViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
     private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
 
-    fun loadBattles(player: String) {
+    fun loadBattles() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             updateReadyState(
                 isRefreshing = true,
-                rewardsInfo = cache.getRewardsInfo(player),
-                playerDetails = cache.getPlayerDetails(player),
+                rewardsInfo = cache.getRewardsInfo(session.player),
+                playerDetails = cache.getPlayerDetails(session.player),
                 gameSettings = cache.getSettings(),
-                battles = cache.getBattleHistory(player),
+                battles = cache.getBattleHistory(session.player),
                 cardDetails = cache.getCardDetails()
             )
 
             updateReadyState(
                 isRefreshing = false,
-                rewardsInfo = requests.getRewardsInfo(player),
-                playerDetails = requests.getPlayerDetails(player),
+                rewardsInfo = requests.getRewardsInfo(session.player),
+                playerDetails = requests.getPlayerDetails(session.player),
                 gameSettings = requests.getSettings(),
-                battles = requests.getBattleHistory(player),
+                battles = requests.getBattleHistory(session.player),
                 cardDetails = requests.getCardDetails()
             )
         }
@@ -53,10 +53,10 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
 
             updateReadyState(
                 isRefreshing = false,
-                rewardsInfo = requests.getRewardsInfo(player),
-                playerDetails = requests.getPlayerDetails(player),
+                rewardsInfo = requests.getRewardsInfo(session.player),
+                playerDetails = requests.getPlayerDetails(session.player),
                 gameSettings = requests.getSettings(),
-                battles = requests.getBattleHistory(player),
+                battles = requests.getBattleHistory(session.player),
                 cardDetails = requests.getCardDetails()
             )
         }
@@ -79,13 +79,13 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
                     rulesetUrls = it.getRulesetImageUrls(),
                     time = it.getTimeAgo(),
                     matchType = it.getType(),
-                    player1Name = player.uppercase(),
-                    player1Rating = it.getOwnRating(player),
-                    player1CardUrls = it.getOwnDetail(player)?.getCardUrls(cardDetails) ?: emptyList(),
-                    player2Name = it.getOpponent(player),
-                    player2Rating = it.getOpponentRating(player),
-                    player2CardUrls = it.getOpponentDetail(player)?.getCardUrls(cardDetails) ?: emptyList(),
-                    isWin = it.isWin(player)
+                    player1Name = session.player.uppercase(),
+                    player1Rating = it.getOwnRating(session.player),
+                    player1CardUrls = it.getOwnDetail(session.player)?.getCardUrls(cardDetails) ?: emptyList(),
+                    player2Name = it.getOpponent(session.player),
+                    player2Rating = it.getOpponentRating(session.player),
+                    player2CardUrls = it.getOpponentDetail(session.player)?.getCardUrls(cardDetails) ?: emptyList(),
+                    isWin = it.isWin(session.player)
                 )
             }
 
@@ -107,12 +107,6 @@ class BattlesViewModel(val player: String, val cache: Cache, val requests: Reque
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-    }
-}
-
-class BattlesViewModelFactory(val player: String, val cache: Cache, val requests: Requests) :
-    ViewModelProvider.NewInstanceFactory() {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return BattlesViewModel(player, cache, requests) as T
+        _state.value = BattlesViewState.Error { onRefresh() }
     }
 }
