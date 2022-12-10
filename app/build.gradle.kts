@@ -10,8 +10,8 @@ android {
         applicationId = "com.splintergod.app"
         minSdk = 24
         targetSdk = 33
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 3
+        versionName = "0.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -43,9 +43,9 @@ android {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-core:2.1.3")
-    implementation("io.ktor:ktor-client-cio:2.1.3")
-    implementation("io.ktor:ktor-client-android:2.1.3")
+    implementation("io.ktor:ktor-client-core:2.2.1")
+    implementation("io.ktor:ktor-client-cio:2.2.1")
+    implementation("io.ktor:ktor-client-android:2.2.1")
     implementation("com.google.code.gson:gson:2.10")
 
 
@@ -56,12 +56,12 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("androidx.compose.material:material:1.3.1")
-    implementation("androidx.compose.animation:animation:1.3.1")
-    implementation("androidx.compose.ui:ui-tooling:1.3.1")
+    implementation("androidx.compose.animation:animation:1.3.2")
+    implementation("androidx.compose.ui:ui-tooling:1.3.2")
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.27.1")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
     implementation("io.coil-kt:coil:2.2.2")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("io.coil-kt:coil-gif:2.2.2")
@@ -70,12 +70,12 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.2.2")
     implementation("io.insert-koin:koin-android:3.3.0")
 
-    androidTestImplementation("io.ktor:ktor-client-mock:2.1.3")
+    androidTestImplementation("io.ktor:ktor-client-mock:2.2.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.4")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.1")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.3.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.2")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.3.2")
 }
