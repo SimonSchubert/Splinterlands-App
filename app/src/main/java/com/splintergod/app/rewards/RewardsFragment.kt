@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -35,6 +33,8 @@ import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.R
 import com.splintergod.app.composables.BackgroundImage
+import com.splintergod.app.composables.ErrorScreen
+import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.CardReward
 import com.splintergod.app.models.CreditsReward
@@ -90,27 +90,12 @@ fun Content(state: RewardsViewState) {
         BackgroundImage(resId = R.drawable.bg_balance)
 
         when (state) {
-            is RewardsViewState.Loading -> LoadingScreen()
+            is RewardsViewState.Loading -> LoadingScreen(R.drawable.chest)
             is RewardsViewState.Success -> ReadyScreen(rewards = state.rewards)
             is RewardsViewState.Error -> ErrorScreen()
         }
 
         SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.size(100.dp),
-            model = R.drawable.chest,
-            contentDescription = null
-        )
     }
 }
 
@@ -125,21 +110,6 @@ fun ReadyScreen(
         items(rewards.size) { balance ->
             RewardItem(rewards[balance])
         }
-    }
-}
-
-@Composable
-fun ErrorScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Something went wrong",
-            color = Color.White
-        )
     }
 }
 

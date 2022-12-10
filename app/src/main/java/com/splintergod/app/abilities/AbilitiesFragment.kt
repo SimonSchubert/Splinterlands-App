@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class)
 
 package com.splintergod.app.abilities
 
@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
@@ -28,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
@@ -72,7 +69,7 @@ fun Content(state: AbilitiesViewState) {
         BackgroundImage(resId = R.drawable.bg_gate)
 
         when (state) {
-            is AbilitiesViewState.Loading -> LoadingScreen()
+            is AbilitiesViewState.Loading -> LoadingScreen(R.drawable.loading)
             is AbilitiesViewState.Success -> ReadyScreen(abilities = state.abilities)
             is AbilitiesViewState.Error -> ErrorScreen()
         }
@@ -97,8 +94,7 @@ fun ReadyScreen(
 fun ErrorScreen() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(

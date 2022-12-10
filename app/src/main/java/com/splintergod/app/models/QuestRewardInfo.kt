@@ -30,7 +30,7 @@ data class QuestRewardInfo(
             ?: 0L) + 1.days.inWholeSeconds
     }
 
-    fun getFormattedEndDate(): String {
+    private fun getFormattedEndDate(): String {
         val milliseconds = System.currentTimeMillis() - (simpleDateFormat.parse(createdDate)?.time
             ?: 0L) - 1.days.inWholeMilliseconds
         return if (milliseconds > 0) {

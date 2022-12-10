@@ -24,24 +24,48 @@ class BattlesViewModel(val session: Session, val cache: Cache, val requests: Req
     val state = _state.asStateFlow()
     private val numberFormat = NumberFormat.getNumberInstance(Locale.US)
 
+    private var rewardsInfo: RewardsInfo? = null
+    private var playerDetails: PlayerDetails? = null
+    private var gameSettings: GameSettings? = null
+    private var battles: List<Battle> = emptyList()
+    private var cardDetails: List<CardDetail> = emptyList()
+
     fun loadBattles() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            updateReadyState(
-                isRefreshing = true,
-                rewardsInfo = cache.getRewardsInfo(session.player),
-                playerDetails = cache.getPlayerDetails(session.player),
-                gameSettings = cache.getSettings(),
-                battles = cache.getBattleHistory(session.player),
-                cardDetails = cache.getCardDetails()
-            )
+
+            rewardsInfo = cache.getRewardsInfo(session.player)
+            playerDetails = cache.getPlayerDetails(session.player)
+            gameSettings = cache.getSettings()
+            battles = cache.getBattleHistory(session.player)
+            cardDetails = cache.getCardDetails()
 
             updateReadyState(
-                isRefreshing = false,
-                rewardsInfo = requests.getRewardsInfo(session.player),
-                playerDetails = requests.getPlayerDetails(session.player),
-                gameSettings = requests.getSettings(),
-                battles = requests.getBattleHistory(session.player),
-                cardDetails = requests.getCardDetails()
+                isRefreshing = true
+            )
+
+            battles = requests.getBattleHistory(session.player)
+
+            updateReadyState(
+                isRefreshing = true
+            )
+
+            rewardsInfo = requests.getRewardsInfo(session.player)
+
+            updateReadyState(
+                isRefreshing = true
+            )
+
+            playerDetails = requests.getPlayerDetails(session.player)
+
+            updateReadyState(
+                isRefreshing = true
+            )
+
+            gameSettings = requests.getSettings()
+            cardDetails = requests.getCardDetails()
+
+            updateReadyState(
+                isRefreshing = false
             )
         }
     }
@@ -51,26 +75,25 @@ class BattlesViewModel(val session: Session, val cache: Cache, val requests: Req
 
             _state.value = BattlesViewState.Loading { onRefresh() }
 
+            rewardsInfo = requests.getRewardsInfo(session.player)
+            playerDetails = requests.getPlayerDetails(session.player)
+            gameSettings = requests.getSettings()
+            battles = requests.getBattleHistory(session.player)
+            cardDetails = requests.getCardDetails()
+
             updateReadyState(
                 isRefreshing = false,
-                rewardsInfo = requests.getRewardsInfo(session.player),
-                playerDetails = requests.getPlayerDetails(session.player),
-                gameSettings = requests.getSettings(),
-                battles = requests.getBattleHistory(session.player),
-                cardDetails = requests.getCardDetails()
             )
         }
     }
 
     private fun updateReadyState(
-        isRefreshing: Boolean,
-        rewardsInfo: RewardsInfo?,
-        playerDetails: PlayerDetails?,
-        gameSettings: GameSettings?,
-        battles: List<Battle>,
-        cardDetails: List<CardDetail>
+        isRefreshing: Boolean
     ) {
-        if (rewardsInfo != null && playerDetails != null && gameSettings != null) {
+        val currentRewardsInfo = rewardsInfo
+        val currentPlayerDetails = playerDetails
+        val currentGameSettings = gameSettings
+        if (currentRewardsInfo != null && currentPlayerDetails != null && currentGameSettings != null) {
 
             val battleViewStates = battles.map {
                 BattleViewState(
@@ -93,14 +116,14 @@ class BattlesViewModel(val session: Session, val cache: Cache, val requests: Req
                 onRefresh = { onRefresh() },
                 isRefreshing = isRefreshing,
                 battles = battleViewStates,
-                playerName = playerDetails.name.uppercase(),
-                playerRating = "W: ${numberFormat.format(playerDetails.rating)}, M: ${numberFormat.format(playerDetails.modernRating)}",
-                focusChests = rewardsInfo.questRewardInfo.chestEarned,
-                focusChestUrl = rewardsInfo.questRewardInfo.getChestUrl(),
-                focusEndTimestamp = rewardsInfo.questRewardInfo.getEndTimestamp(),
-                seasonChests = rewardsInfo.seasonRewardInfo.chestEarned,
-                seasonChestUrl = rewardsInfo.seasonRewardInfo.getChestUrl(),
-                seasonEndTimestamp = gameSettings.season.getEndTimestamp()
+                playerName = currentPlayerDetails.name.uppercase(),
+                playerRating = "W: ${numberFormat.format(currentPlayerDetails.rating)}, M: ${numberFormat.format(currentPlayerDetails.modernRating)}",
+                focusChests = currentRewardsInfo.questRewardInfo.chestEarned,
+                focusChestUrl = currentRewardsInfo.questRewardInfo.getChestUrl(),
+                focusEndTimestamp = currentRewardsInfo.questRewardInfo.getEndTimestamp(),
+                seasonChests = currentRewardsInfo.seasonRewardInfo.chestEarned,
+                seasonChestUrl = currentRewardsInfo.seasonRewardInfo.getChestUrl(),
+                seasonEndTimestamp = currentGameSettings.season.getEndTimestamp()
             )
         }
     }

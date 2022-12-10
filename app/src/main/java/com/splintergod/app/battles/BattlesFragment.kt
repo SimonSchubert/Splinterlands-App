@@ -22,9 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -53,6 +51,8 @@ import com.example.splinterlandstest.R
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.splintergod.app.composables.BackgroundImage
+import com.splintergod.app.composables.ErrorScreen
+import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.CardFoilUrl
 import kotlinx.coroutines.delay
@@ -102,7 +102,7 @@ fun Content(state: BattlesViewState) {
         BackgroundImage(resId = R.drawable.bg_arena)
 
         when (state) {
-            is BattlesViewState.Loading -> LoadingScreen()
+            is BattlesViewState.Loading -> LoadingScreen(R.drawable.battles)
             is BattlesViewState.Success -> ReadyScreen(
                 battles = state.battles,
                 playerName = state.playerName,
@@ -118,21 +118,6 @@ fun Content(state: BattlesViewState) {
         }
 
         SplinterPullRefreshIndicator(pullRefreshState)
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.size(100.dp),
-            model = R.drawable.battles,
-            contentDescription = null
-        )
     }
 }
 
@@ -359,25 +344,14 @@ fun RewardChest(chestUrl: String, chestText: String, currentTimestamp: Long, end
             color = Color.White
         )
 
+        val seconds = (endTimestamp - currentTimestamp).seconds
+        val text = if (seconds.isPositive()) {
+            "$seconds"
+        } else {
+            "Claim reward"
+        }
         Text(
-            text = "${(endTimestamp - currentTimestamp).seconds}",
-            color = Color.White
-        )
-    }
-}
-
-@Composable
-fun ErrorScreen() {
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
-        contentAlignment = Alignment.Center
-    ) {
-
-        Text(
-            text = "Something went wrong",
+            text = text,
             color = Color.White
         )
     }

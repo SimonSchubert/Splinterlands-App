@@ -64,4 +64,12 @@ data class Card(
             else -> R.drawable.card_back_chaos
         }
     }
+
+    fun getFoilId(): String {
+        return if(gold) {
+            "Gold"
+        } else {
+            "Regular"
+        }
+    }
 }

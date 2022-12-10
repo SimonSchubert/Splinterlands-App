@@ -130,7 +130,7 @@ fun Content(
         BackgroundImage(resId = R.drawable.bg_login)
 
         when (state) {
-            is LoginViewState.Loading -> LoadingScreen()
+            is LoginViewState.Loading -> LoadingScreen(R.drawable.loading)
             is LoginViewState.Success -> ReadyScreen(
                 players = state.players,
                 onClickPlayer = onClickPlayer,

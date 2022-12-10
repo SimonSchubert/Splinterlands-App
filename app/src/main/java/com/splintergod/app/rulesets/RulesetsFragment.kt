@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUnitApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class)
 
 package com.splintergod.app.rulesets
 
@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
@@ -28,13 +26,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.example.splinterlandstest.R
 import com.splintergod.app.composables.BackgroundImage
+import com.splintergod.app.composables.ErrorScreen
+import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Ruleset
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -82,27 +81,12 @@ fun Content(state: RulesetsViewState) {
         BackgroundImage(resId = R.drawable.bg_gate)
 
         when (state) {
-            is RulesetsViewState.Loading -> LoadingScreen()
+            is RulesetsViewState.Loading -> LoadingScreen(R.drawable.faq)
             is RulesetsViewState.Success -> ReadyScreen(rulesets = state.rulesets)
             is RulesetsViewState.Error -> ErrorScreen()
         }
 
         SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
-    }
-}
-
-@Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.size(100.dp),
-            model = R.drawable.faq,
-            contentDescription = null
-        )
     }
 }
 
@@ -143,21 +127,6 @@ fun RulesetItem(ruleset: Ruleset) {
         Text(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
             text = ruleset.description,
-            color = Color.White
-        )
-    }
-}
-
-@Composable
-fun ErrorScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Something went wrong",
             color = Color.White
         )
     }
