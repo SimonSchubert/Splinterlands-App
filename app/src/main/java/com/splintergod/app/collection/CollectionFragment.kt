@@ -55,6 +55,8 @@ import coil.compose.AsyncImage
 import com.example.splinterlandstest.R
 import com.google.accompanist.flowlayout.FlowRow
 import com.splintergod.app.composables.BackgroundImage
+import com.splintergod.app.composables.ErrorScreen
+import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -94,7 +96,7 @@ fun Content(state: CollectionViewState) {
         BackgroundImage(resId = R.drawable.bg_mountain)
 
         when (state) {
-            is CollectionViewState.Loading -> LoadingScreen()
+            is CollectionViewState.Loading -> LoadingScreen(R.drawable.collection)
             is CollectionViewState.Success -> ReadyScreen(
                 cards = state.cards,
                 filterRarityStates = state.filterRarityStates,
@@ -103,6 +105,8 @@ fun Content(state: CollectionViewState) {
                 onClickEdition = state.onClickEdition,
                 filterElementStates = state.filterElementStates,
                 onClickElement = state.onClickElement,
+                filterFoilStates = state.filterFoilStates,
+                onClickFoil = state.onClickFoil,
                 sortingStates = state.sortingElementStates,
                 selectedSorting = state.selectedSorting,
                 onClickSorting = state.onClickSorting
@@ -115,21 +119,6 @@ fun Content(state: CollectionViewState) {
 }
 
 @Composable
-fun LoadingScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AsyncImage(
-            modifier = Modifier.size(100.dp),
-            model = R.drawable.collection,
-            contentDescription = null
-        )
-    }
-}
-
-@Composable
 fun ReadyScreen(
     cards: List<CardViewState>,
     filterRarityStates: List<FilterRarityState>,
@@ -138,6 +127,8 @@ fun ReadyScreen(
     onClickEdition: (Int) -> Unit,
     filterElementStates: List<FilterElementState>,
     onClickElement: (String) -> Unit,
+    filterFoilStates: List<FilterFoilState>,
+    onClickFoil: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
     selectedSorting: SortingState?
@@ -147,7 +138,9 @@ fun ReadyScreen(
     Scaffold(
         content = { paddingValues ->
             LazyVerticalGrid(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxWidth(),
                 columns = GridCells.Adaptive(minSize = 112.dp)
             ) {
                 items(cards.size) { index ->
@@ -162,6 +155,8 @@ fun ReadyScreen(
                     onClickEdition,
                     filterElementStates,
                     onClickElement,
+                    filterFoilStates,
+                    onClickFoil,
                     sortingStates,
                     onClickSorting,
                     selectedSorting,
@@ -195,6 +190,8 @@ fun FilterDialog(
     onClickEdition: (Int) -> Unit,
     filterElementStates: List<FilterElementState>,
     onClickElement: (String) -> Unit,
+    filterFoilStates: List<FilterFoilState>,
+    onClickFoil: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
     selectedSorting: SortingState?,
@@ -319,6 +316,33 @@ fun FilterDialog(
                         }
                     }
                 }
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(
+                    text = "Foil",
+                    color = Color.White,
+                    style = MaterialTheme.typography.h6
+                )
+                FlowRow(
+                    mainAxisSpacing = 4.dp,
+                    crossAxisSpacing = 4.dp
+                ) {
+                    filterFoilStates.forEach { foilState ->
+                        Box(
+                            modifier = Modifier
+                                .filterButtonModifier(foilState.selected, Color.Black)
+                                .clickable { onClickFoil(foilState.id) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = foilState.imageRes),
+                                modifier = Modifier.height(30.dp),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -352,21 +376,6 @@ fun CardItem(card: CardViewState) {
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun ErrorScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()), // scroll for swipe refresh
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Something went wrong",
-            color = Color.White
         )
     }
 }

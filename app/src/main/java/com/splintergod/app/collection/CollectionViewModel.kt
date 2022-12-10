@@ -49,6 +49,10 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
         FilterElementState("Gold", imageRes = R.drawable.element_dragon),
         FilterElementState("Gray", imageRes = R.drawable.element_neutral)
     )
+    private var filterFoilState = listOf(
+        FilterFoilState("Regular", imageRes = R.drawable.foil_standard),
+        FilterFoilState("Gold", imageRes = R.drawable.foil_gold)
+    )
 
     enum class Sorting {
         ID,
@@ -110,6 +114,14 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
         updateState()
     }
 
+    private fun onClickFoil(foil: String) {
+        filterFoilState.firstOrNull { it.id == foil }?.let {
+            it.selected = it.selected.not()
+        }
+
+        updateState()
+    }
+
     private fun onClickRarity(id: Int) {
         filterRaritiesStates.firstOrNull { it.id == id }?.let {
             it.selected = it.selected.not()
@@ -138,13 +150,15 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
         val rarities = filterRaritiesStates.filter { it.selected }.map { it.id }
         val editions = filterEditionState.filter { it.selected }.map { it.id }
         val elements = filterElementState.filter { it.selected }.map { it.id }
+        val foils = filterFoilState.filter { it.selected }.map { it.id }
 
         val cards = unfilteredCollection.mapNotNull { card ->
             val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
             if (cardDetail != null &&
                 (rarities.isEmpty() || rarities.contains(cardDetail.rarity)) &&
                 (editions.isEmpty() || editions.contains(card.edition)) &&
-                (elements.isEmpty() || elements.contains(cardDetail.color))
+                (elements.isEmpty() || elements.contains(cardDetail.color)) &&
+                (foils.isEmpty() || foils.contains(card.getFoilId()))
             ) {
                 card.setStats(cardDetail)
                 card
@@ -185,6 +199,10 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             filterElementStates = filterElementState,
             onClickElement = {
                 onClickElement(it)
+            },
+            filterFoilStates = filterFoilState,
+            onClickFoil = {
+                onClickFoil(it)
             },
             sortingElementStates = sortingStates,
             selectedSorting = sortingStates.firstOrNull { it.id == currentSorting },
