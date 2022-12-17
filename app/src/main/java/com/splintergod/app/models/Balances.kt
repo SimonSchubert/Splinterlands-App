@@ -1,6 +1,7 @@
 package com.splintergod.app.models
 
-import com.example.splinterlandstest.R
+import com.splintergod.app.R
+
 
 data class Balances(val player: String, var token: String, var balance: Float) {
     fun getDrawableResource(): Int {

@@ -3,8 +3,8 @@ package com.splintergod.app.collection
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.splinterlandstest.R
 import com.splintergod.app.Cache
+import com.splintergod.app.R
 import com.splintergod.app.Requests
 import com.splintergod.app.Session
 import com.splintergod.app.models.Card

@@ -1,9 +1,12 @@
-package com.example.splinterlandstest
+package com.splintergod.app
 
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -15,14 +18,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.runner.screenshot.Screenshot
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
@@ -35,7 +35,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.FileOutputStream
-import java.io.IOException
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -55,7 +54,7 @@ class ComposeScreenshots {
         val context: Context = ApplicationProvider.getApplicationContext()
 
         // Clear files folder
-        InstrumentationRegistry.getInstrumentation().targetContext.filesDir.listFiles()?.forEach {
+        getInstrumentation().targetContext.filesDir.listFiles()?.forEach {
             it.deleteRecursively()
         }
 
@@ -75,7 +74,7 @@ class ComposeScreenshots {
     fun takePhoneScreenshots() {
 
         // Login
-        waitForContent()
+        composeTestRule.waitForContent()
 
         composeTestRule.takeScreenshot("screen-4.png")
 
@@ -83,7 +82,7 @@ class ComposeScreenshots {
         // Battles
         composeTestRule.onNodeWithText("hellslash", ignoreCase = true).performClick()
 
-        waitForContent()
+        composeTestRule.waitForContent()
 
         composeTestRule.takeScreenshot("screen-1.png")
 
@@ -94,7 +93,7 @@ class ComposeScreenshots {
         runBlocking {
             delay(5000L)
         }
-        waitForContent()
+        composeTestRule.waitForContent()
 
         composeTestRule.takeScreenshot("screen-2.png")
 
@@ -102,7 +101,6 @@ class ComposeScreenshots {
         // Collection filter
         composeTestRule.onNodeWithContentDescription("FAB").performClick()
 
-        composeTestRule.waitForIdle()
 
         composeTestRule.takeScreenshot("screen-3.png")
 
@@ -111,21 +109,14 @@ class ComposeScreenshots {
         // Balances
         onView(withId(R.id.balances)).perform(click())
 
-        composeTestRule.waitForIdle()
-
         composeTestRule.takeScreenshot("screen-5.png")
 
         // Rewards
         openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
-        runBlocking {
-            delay(3_000L)
-        }
-        waitForContent()
-
         onView(withText("Rewards")).perform(click())
 
-        composeTestRule.waitForIdle()
+        composeTestRule.waitForContent()
 
         composeTestRule.takeScreenshot("screen-6.png")
 
@@ -134,8 +125,6 @@ class ComposeScreenshots {
 
         onView(withText("Rulesets")).perform(click())
 
-        composeTestRule.waitForIdle()
-
         composeTestRule.takeScreenshot("screen-7.png")
 
         // Focuses
@@ -143,36 +132,31 @@ class ComposeScreenshots {
 
         onView(withText("Focuses")).perform(click())
 
-        composeTestRule.waitForIdle()
-
         composeTestRule.takeScreenshot("screen-8.png")
-
 
         // Abilities
         openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
         onView(withText("Abilities")).perform(click())
 
-        composeTestRule.waitForIdle()
+        composeTestRule.waitForContent()
 
         composeTestRule.takeScreenshot("screen-9.png")
     }
 
-    private fun waitForContent() {
-        // TODO: mock api responses
-        runBlocking {
-            repeat(10) {
-                delay(500L)
-                composeTestRule.waitForIdle()
+    private fun ComposeTestRule.waitForContent() {
+//        // TODO: mock api responses
+        try {
+            waitUntil(5000) {
+                onAllNodes(hasContentDescription("LOADING")).fetchSemanticsNodes().isEmpty()
             }
-        }
+        } catch (ignore: ComposeTimeoutException) {}
     }
 
     private fun ComposeTestRule.takeScreenshot(file: String) {
         // TODO: Find better way to wait for animations to finish
-        runBlocking {
-            delay(1_000L)
-        }
+
+        waitForContent()
 
         onAllNodes(isRoot())[0]
             .captureToImage()
@@ -185,5 +169,22 @@ class ComposeScreenshots {
         FileOutputStream("$path/$file").use { out ->
             compress(Bitmap.CompressFormat.PNG, 100, out)
         }
+    }
+}
+
+
+
+fun ComposeTestRule.waitUntilDoesNotExist(
+    matcher: SemanticsMatcher,
+    timeoutMillis: Long = 10_000
+) = waitUntilNodeCount(matcher, 0, timeoutMillis)
+
+fun ComposeTestRule.waitUntilNodeCount(
+    matcher: SemanticsMatcher,
+    count: Int,
+    timeoutMillis: Long = 10_000
+) {
+    waitUntil(timeoutMillis) {
+        onAllNodes(matcher).fetchSemanticsNodes().size == count
     }
 }

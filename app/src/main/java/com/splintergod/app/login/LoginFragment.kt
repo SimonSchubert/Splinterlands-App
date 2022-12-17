@@ -62,8 +62,8 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import coil.compose.AsyncImage
-import com.example.splinterlandstest.R
 import com.splintergod.app.MainActivityViewModel
+import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator

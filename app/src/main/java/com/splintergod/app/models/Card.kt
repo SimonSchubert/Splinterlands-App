@@ -1,7 +1,7 @@
 package com.splintergod.app.models
 
-import com.example.splinterlandstest.R
 import com.google.gson.annotations.SerializedName
+import com.splintergod.app.R
 import com.splintergod.app.assetUrl
 
 data class Card(
@@ -66,7 +66,7 @@ data class Card(
     }
 
     fun getFoilId(): String {
-        return if(gold) {
+        return if (gold) {
             "Gold"
         } else {
             "Regular"

@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
-import com.example.splinterlandstest.R
 import com.google.accompanist.flowlayout.FlowRow
+import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen

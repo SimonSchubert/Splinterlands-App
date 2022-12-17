@@ -1,6 +1,5 @@
 package com.splintergod.app
 
-import com.example.splinterlandstest.R
 import com.splintergod.app.models.Balances
 import org.json.JSONArray
 import org.json.JSONObject

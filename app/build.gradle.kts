@@ -39,7 +39,7 @@ android {
     lint {
         abortOnError = false
     }
-    namespace = "com.example.splinterlandstest"
+    namespace = "com.splintergod.app"
 }
 
 dependencies {
@@ -67,8 +67,8 @@ dependencies {
     implementation("io.coil-kt:coil-gif:2.2.2")
 
 
-    implementation("io.insert-koin:koin-core:3.2.2")
-    implementation("io.insert-koin:koin-android:3.3.0")
+    implementation("io.insert-koin:koin-core:3.3.0")
+    implementation("io.insert-koin:koin-android:3.3.1")
 
     androidTestImplementation("io.ktor:ktor-client-mock:2.2.1")
 

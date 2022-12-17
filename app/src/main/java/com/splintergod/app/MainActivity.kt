@@ -10,12 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import com.example.splinterlandstest.R
-import com.example.splinterlandstest.databinding.ActivityMainBinding
 import com.splintergod.app.abilities.AbilitiesFragment
 import com.splintergod.app.balances.BalancesFragment
 import com.splintergod.app.battles.BattlesFragment
 import com.splintergod.app.collection.CollectionFragment
+import com.splintergod.app.databinding.ActivityMainBinding
 import com.splintergod.app.focuses.FocusesFragment
 import com.splintergod.app.login.LoginFragment
 import com.splintergod.app.rewards.RewardsFragment
