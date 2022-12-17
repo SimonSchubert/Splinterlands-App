@@ -1,6 +1,5 @@
 package com.splintergod.app
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -9,20 +8,20 @@ import kotlinx.coroutines.launch
 
 class MainActivityViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
-    val loginStatus: MutableLiveData<Boolean> = MutableLiveData()
-
     var isInitialized = false
+    var onLoginCallback = {}
 
     fun setPlayer(playerName: String) {
         session.setCurrentPlayer(playerName)
-        loginStatus.value = true
+        onLoginCallback()
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
 
-    fun init() {
+    fun init(onLogin: () -> (Unit)) {
+        onLoginCallback = onLogin
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             cache.getSettings()?.let {
                 assetUrl = it.assetUrl
@@ -34,11 +33,10 @@ class MainActivityViewModel(val session: Session, val cache: Cache, val requests
     }
 
     fun isLoggedIn(): Boolean {
-        return loginStatus.value == true
+        return session.player.isNotEmpty()
     }
 
     fun logout() {
         session.logout()
-        loginStatus.value = false
     }
 }

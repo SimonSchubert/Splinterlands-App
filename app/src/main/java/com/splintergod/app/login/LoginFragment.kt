@@ -100,6 +100,7 @@ class LoginFragment : Fragment() {
         super.onResume()
 
         viewModel.loadPlayerData()
+        // activityViewModel.logout()
     }
 }
 

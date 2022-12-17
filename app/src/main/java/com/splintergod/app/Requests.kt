@@ -18,6 +18,7 @@ import com.splintergod.app.models.MeritsReward
 import com.splintergod.app.models.PackReward
 import com.splintergod.app.models.PlayerDetails
 import com.splintergod.app.models.Reward
+import com.splintergod.app.models.RewardGroup
 import com.splintergod.app.models.RewardsInfo
 import com.splintergod.app.models.SPSReward
 import io.ktor.client.*
@@ -151,7 +152,7 @@ class Requests(val cache: Cache) {
         return ""
     }
 
-    suspend fun getRecentRewards(player: String): List<Reward> {
+    suspend fun getRecentRewards(player: String): RewardGroup? {
         val transactionId = getLatestClaimRewardTransactionId(player)
         if (transactionId.isNotBlank()) {
             val request: HttpResponse =
@@ -162,6 +163,9 @@ class Requests(val cache: Cache) {
             if (json.optString("error", "") == "") {
                 val rewards = mutableListOf<Reward>()
                 val resultJson = JSONObject(json.getJSONObject("trx_info").getString("result"))
+
+                val date = json.getJSONObject("trx_info").getString("created_date")
+
                 resultJson.getJSONArray("rewards").toObjectList().forEach {
                     when (it.getString("type")) {
                         "potion" -> {
@@ -199,10 +203,10 @@ class Requests(val cache: Cache) {
                         }
                     }
                 }
-                return rewards.toList()
+                return RewardGroup(date, rewards.toList())
             }
         }
-        return emptyList()
+        return null
     }
 
 }

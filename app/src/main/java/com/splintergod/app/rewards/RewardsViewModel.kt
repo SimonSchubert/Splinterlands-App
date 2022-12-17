@@ -7,6 +7,7 @@ import com.splintergod.app.Requests
 import com.splintergod.app.Session
 import com.splintergod.app.models.Card
 import com.splintergod.app.models.CardReward
+import com.splintergod.app.models.RewardGroup
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,26 +38,51 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
                 cardDetails = requests.getCardDetails()
             }
 
-            val rewards = requests.getRecentRewards(session.player)
-            rewards.forEach {
-                if (it is CardReward) {
-                    val card = Card(it.cardId.toString(), 3, it.isGold, 1)
-                    val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
-                    if (cardDetail != null) {
-                        card.setStats(cardDetail)
-                        it.url = card.imageUrl
-                        it.name = cardDetail.name
+            val players = if (session.player.isNotEmpty()) {
+                listOf(session.player)
+            } else {
+                cache.getPlayerList()
+            }
+
+            val rewardGroups = mutableListOf<RewardGroup>()
+
+            players.forEach { player ->
+                val rewardGroup = requests.getRecentRewards(player)
+                if (rewardGroup != null) {
+
+                    rewardGroup.rewards.forEach {
+                        if (it is CardReward) {
+                            val card = Card(it.cardId.toString(), 3, it.isGold, 1)
+                            val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
+                            if (cardDetail != null) {
+                                card.setStats(cardDetail)
+                                it.url = card.imageUrl
+                                it.name = cardDetail.name
+                            }
+                        }
                     }
+                    rewardGroup.player = player
+                    rewardGroups.add(rewardGroup)
+                    rewardGroups.sortBy { it.getSecondsAgo() }
+
+                    _state.value = RewardsViewState.Success(
+                        onRefresh = { onRefresh() },
+                        isRefreshing = true,
+                        rewardsGroups = rewardGroups.toList()
+                    )
                 }
             }
-            if (rewards.isEmpty()) {
+
+            _state.value = RewardsViewState.Success(
+                onRefresh = { onRefresh() },
+                isRefreshing = false,
+                rewardsGroups = rewardGroups.toList()
+            )
+
+            if (rewardGroups.isEmpty()) {
                 _state.value = RewardsViewState.Error { onRefresh() }
-            } else {
-                _state.value = RewardsViewState.Success(
-                    onRefresh = { onRefresh() },
-                    rewards = rewards
-                )
             }
+
         }
     }
 }

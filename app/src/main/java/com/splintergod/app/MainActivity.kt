@@ -7,9 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
+import androidx.fragment.app.FragmentManager
 import com.splintergod.app.abilities.AbilitiesFragment
 import com.splintergod.app.balances.BalancesFragment
 import com.splintergod.app.battles.BattlesFragment
@@ -24,7 +22,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: MainActivityViewModel by viewModel()
@@ -37,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.battles -> setCurrentFragment(BattlesFragment())
@@ -48,47 +44,59 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null || !viewModel.isInitialized) {
-            viewModel.init()
+            viewModel.init {
+                binding.bottomNavigation.isVisible = true
+                binding.bottomNavigation.selectedItemId = R.id.battles
+            }
             if (viewModel.isLoggedIn()) {
                 setCurrentFragment(BattlesFragment())
             } else {
-                binding.bottomNavigation.isVisible = false
                 setCurrentFragment(LoginFragment())
-                invalidateOptionsMenu()
             }
         }
 
-        viewModel.loginStatus.observe(this) {
-            if (it) {
-                binding.bottomNavigation.isVisible = true
-                binding.bottomNavigation.selectedItemId = R.id.battles
-                invalidateOptionsMenu()
-            } else {
-                binding.bottomNavigation.isVisible = false
-                setCurrentFragment(LoginFragment())
-                invalidateOptionsMenu()
-            }
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.include)
+            val homeAsUpEnabled =
+                fragment !is LoginFragment && fragment !is BattlesFragment && fragment !is CollectionFragment && fragment !is BalancesFragment
+            supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
         }
     }
 
-    private fun setCurrentFragment(fragment: Fragment) =
+    private fun setCurrentFragment(fragment: Fragment) {
+        if (fragment is LoginFragment ||
+            fragment is BattlesFragment ||
+            fragment is CollectionFragment ||
+            fragment is BalancesFragment
+        ) {
+            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
+        supportFragmentManager.popBackStack(fragment.javaClass.simpleName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.include, fragment)
+            replace(R.id.include, fragment, fragment.javaClass.simpleName)
+            addToBackStack(fragment.javaClass.simpleName)
             commit()
         }
+        if (fragment is LoginFragment) {
+            binding.bottomNavigation.isVisible = false
+        } else if (fragment is BattlesFragment) {
+            binding.bottomNavigation.isVisible = true
+        }
+        invalidateOptionsMenu()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        menu.findItem(R.id.menu_rewards).isVisible = viewModel.isLoggedIn()
-        menu.findItem(R.id.menu_focuses).isVisible = viewModel.isLoggedIn()
-        menu.findItem(R.id.menu_rulesets).isVisible = viewModel.isLoggedIn()
-        menu.findItem(R.id.menu_abilities).isVisible = viewModel.isLoggedIn()
         menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            android.R.id.home -> {
+                supportFragmentManager.popBackStack()
+                return true
+            }
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
                 return true
@@ -107,6 +115,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_logout -> {
                 viewModel.logout()
+                setCurrentFragment(LoginFragment())
                 return true
             }
 
@@ -114,12 +123,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1) {
+            supportFragmentManager.popBackStack()
+        } else {
+            finish()
+        }
     }
 }
+
 
 @Composable
 fun Main() {
