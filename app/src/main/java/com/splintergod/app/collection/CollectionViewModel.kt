@@ -24,38 +24,38 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
     private var cardDetails = listOf<CardDetail>()
 
     private var filterRaritiesStates = listOf(
-        FilterRarityState(1, color = Color(0XFFbfd1da)),
-        FilterRarityState(2, color = Color(0XFF7ac2ff)),
-        FilterRarityState(3, color = Color(0XFFca6eeb)),
-        FilterRarityState(4, color = Color(0XFFf3c059))
+        FilterState.Rarity(1, color = Color(0XFFbfd1da)),
+        FilterState.Rarity(2, color = Color(0XFF7ac2ff)),
+        FilterState.Rarity(3, color = Color(0XFFca6eeb)),
+        FilterState.Rarity(4, color = Color(0XFFf3c059))
     )
     private var filterEditionState = listOf(
-        FilterEditionState(0, imageRes = R.drawable.ic_icon_edition_alpha),
-        FilterEditionState(1, imageRes = R.drawable.ic_icon_edition_beta),
-        FilterEditionState(2, imageRes = R.drawable.ic_icon_edition_promo),
-        FilterEditionState(3, imageRes = R.drawable.ic_icon_edition_reward),
-        FilterEditionState(4, imageRes = R.drawable.ic_icon_edition_untamed),
-        FilterEditionState(5, imageRes = R.drawable.ic_icon_edition_dice),
-        FilterEditionState(6, imageRes = R.drawable.ic_icon_edition_gladius),
-        FilterEditionState(7, imageRes = R.drawable.ic_icon_edition_chaos),
-        FilterEditionState(8, imageRes = R.drawable.ic_icon_edition_rift)
+        FilterState.Edition(0, imageRes = R.drawable.ic_icon_edition_alpha),
+        FilterState.Edition(1, imageRes = R.drawable.ic_icon_edition_beta),
+        FilterState.Edition(2, imageRes = R.drawable.ic_icon_edition_promo),
+        FilterState.Edition(3, imageRes = R.drawable.ic_icon_edition_reward),
+        FilterState.Edition(4, imageRes = R.drawable.ic_icon_edition_untamed),
+        FilterState.Edition(5, imageRes = R.drawable.ic_icon_edition_dice),
+        FilterState.Edition(6, imageRes = R.drawable.ic_icon_edition_gladius),
+        FilterState.Edition(7, imageRes = R.drawable.ic_icon_edition_chaos),
+        FilterState.Edition(8, imageRes = R.drawable.ic_icon_edition_rift)
     )
     private var filterElementState = listOf(
-        FilterElementState("Red", imageRes = R.drawable.element_fire),
-        FilterElementState("Blue", imageRes = R.drawable.element_water),
-        FilterElementState("Green", imageRes = R.drawable.element_earth),
-        FilterElementState("White", imageRes = R.drawable.element_life),
-        FilterElementState("Black", imageRes = R.drawable.element_death),
-        FilterElementState("Gold", imageRes = R.drawable.element_dragon),
-        FilterElementState("Gray", imageRes = R.drawable.element_neutral)
+        FilterState.Basic("Red", imageRes = R.drawable.element_fire),
+        FilterState.Basic("Blue", imageRes = R.drawable.element_water),
+        FilterState.Basic("Green", imageRes = R.drawable.element_earth),
+        FilterState.Basic("White", imageRes = R.drawable.element_life),
+        FilterState.Basic("Black", imageRes = R.drawable.element_death),
+        FilterState.Basic("Gold", imageRes = R.drawable.element_dragon),
+        FilterState.Basic("Gray", imageRes = R.drawable.element_neutral)
     )
     private var filterFoilState = listOf(
-        FilterFoilState("Regular", imageRes = R.drawable.foil_standard),
-        FilterFoilState("Gold", imageRes = R.drawable.foil_gold)
+        FilterState.Basic("Regular", imageRes = R.drawable.foil_standard),
+        FilterState.Basic("Gold", imageRes = R.drawable.foil_gold)
     )
     private var filterRoleState = listOf(
-        FilterRoleState("Monster", imageRes = R.drawable.role_monster),
-        FilterRoleState("Summoner", imageRes = R.drawable.role_summoner)
+        FilterState.Basic("Monster", imageRes = R.drawable.role_monster),
+        FilterState.Basic("Summoner", imageRes = R.drawable.role_summoner)
     )
 
     enum class Sorting {
@@ -118,49 +118,17 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
         updateState()
     }
 
-    private fun onClickFoil(foil: String) {
-        filterFoilState.firstOrNull { it.id == foil }?.let {
-            it.selected = it.selected.not()
-        }
-
-        updateState()
-    }
-
-    private fun onClickRole(foil: String) {
-        filterRoleState.firstOrNull { it.id == foil }?.let {
-            it.selected = it.selected.not()
-        }
-
-        updateState()
-    }
-
-    private fun onClickRarity(id: Int) {
-        filterRaritiesStates.firstOrNull { it.id == id }?.let {
-            it.selected = it.selected.not()
-        }
-
-        updateState()
-    }
-
-    private fun onClickEdition(id: Int) {
-        filterEditionState.firstOrNull { it.id == id }?.let {
-            it.selected = it.selected.not()
-        }
-
-        updateState()
-    }
-
-    private fun onClickElement(id: String) {
-        filterElementState.firstOrNull { it.id == id }?.let {
-            it.selected = it.selected.not()
+    private fun onClickFilter(filterStates: List<FilterState>, id: String) {
+        filterStates.firstOrNull { it.id == id }?.let {
+            it.selected = !it.selected
         }
 
         updateState()
     }
 
     private fun updateState() {
-        val rarities = filterRaritiesStates.filter { it.selected }.map { it.id }
-        val editions = filterEditionState.filter { it.selected }.map { it.id }
+        val rarities = filterRaritiesStates.filter { it.selected }.map { it.rarity }
+        val editions = filterEditionState.filter { it.selected }.map { it.edition }
         val elements = filterElementState.filter { it.selected }.map { it.id }
         val foils = filterFoilState.filter { it.selected }.map { it.id }
         val roles = filterRoleState.filter { it.selected }.map { it.id }
@@ -204,23 +172,23 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             cards = cards,
             filterRarityStates = filterRaritiesStates,
             onClickRarity = {
-                onClickRarity(it)
+                onClickFilter(filterRaritiesStates, it)
             },
             filterEditionStates = filterEditionState,
             onClickEdition = {
-                onClickEdition(it)
+                onClickFilter(filterEditionState, it)
             },
             filterElementStates = filterElementState,
             onClickElement = {
-                onClickElement(it)
+                onClickFilter(filterElementState, it)
             },
             filterFoilStates = filterFoilState,
             onClickFoil = {
-                onClickFoil(it)
+                onClickFilter(filterFoilState, it)
             },
             filterRoleStates = filterRoleState,
             onClickRole = {
-                onClickRole(it)
+                onClickFilter(filterRoleState, it)
             },
             sortingElementStates = sortingStates,
             selectedSorting = sortingStates.firstOrNull { it.id == currentSorting },

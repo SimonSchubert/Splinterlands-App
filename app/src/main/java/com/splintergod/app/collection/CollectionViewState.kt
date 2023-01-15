@@ -10,15 +10,15 @@ sealed class CollectionViewState(open val isRefreshing: Boolean) {
     data class Success(
         override val onRefresh: () -> Unit,
         val cards: List<CardViewState>,
-        val filterRarityStates: List<FilterRarityState>,
-        val onClickRarity: (Int) -> Unit,
-        val filterEditionStates: List<FilterEditionState>,
-        val onClickEdition: (Int) -> Unit,
-        val filterElementStates: List<FilterElementState>,
+        val filterRarityStates: List<FilterState.Rarity>,
+        val onClickRarity: (String) -> Unit,
+        val filterEditionStates: List<FilterState.Edition>,
+        val onClickEdition: (String) -> Unit,
+        val filterElementStates: List<FilterState.Basic>,
         val onClickElement: (String) -> Unit,
-        val filterFoilStates: List<FilterFoilState>,
+        val filterFoilStates: List<FilterState.Basic>,
         val onClickFoil: (String) -> Unit,
-        val filterRoleStates: List<FilterRoleState>,
+        val filterRoleStates: List<FilterState.Basic>,
         val onClickRole: (String) -> Unit,
         val sortingElementStates: List<SortingState>,
         val selectedSorting: SortingState?,
@@ -28,12 +28,13 @@ sealed class CollectionViewState(open val isRefreshing: Boolean) {
     data class Error(override val onRefresh: () -> Unit) : CollectionViewState(false)
 }
 
+sealed class FilterState(open val id: String, open var selected: Boolean = false) {
+    data class Basic(override var id: String, @DrawableRes val imageRes: Int) : FilterState(id)
+    data class Rarity(val rarity: Int, val color: Color) : FilterState(rarity.toString())
+    data class Edition(val edition: Int, @DrawableRes val imageRes: Int) : FilterState(edition.toString())
+}
+
 data class CardViewState(val imageUrl: String, @DrawableRes val placeHolderRes: Int, val quantity: Int)
-data class FilterRarityState(val id: Int, var selected: Boolean = false, val color: Color)
-data class FilterEditionState(val id: Int, var selected: Boolean = false, @DrawableRes val imageRes: Int)
-data class FilterElementState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
-data class FilterFoilState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
-data class FilterRoleState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
 data class SortingState(val id: CollectionViewModel.Sorting, var name: String = "", var selected: Boolean = false) {
     init {
         name = id.name.lowercase().replaceFirstChar { it.uppercase() }

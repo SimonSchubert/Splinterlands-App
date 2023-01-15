@@ -124,15 +124,15 @@ fun Content(state: CollectionViewState) {
 @Composable
 fun ReadyScreen(
     cards: List<CardViewState>,
-    filterRarityStates: List<FilterRarityState>,
-    onClickRarity: (Int) -> Unit,
-    filterEditionStates: List<FilterEditionState>,
-    onClickEdition: (Int) -> Unit,
-    filterElementStates: List<FilterElementState>,
+    filterRarityStates: List<FilterState.Rarity>,
+    onClickRarity: (String) -> Unit,
+    filterEditionStates: List<FilterState.Edition>,
+    onClickEdition: (String) -> Unit,
+    filterElementStates: List<FilterState.Basic>,
     onClickElement: (String) -> Unit,
-    filterFoilStates: List<FilterFoilState>,
+    filterFoilStates: List<FilterState.Basic>,
     onClickFoil: (String) -> Unit,
-    filterRoleStates: List<FilterRoleState>,
+    filterRoleStates: List<FilterState.Basic>,
     onClickRole: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
@@ -191,15 +191,15 @@ fun ReadyScreen(
 
 @Composable
 fun FilterDialog(
-    filterRarityStates: List<FilterRarityState>,
-    onClickRarity: (Int) -> Unit,
-    filterEditionStates: List<FilterEditionState>,
-    onClickEdition: (Int) -> Unit,
-    filterElementStates: List<FilterElementState>,
+    filterRarityStates: List<FilterState.Rarity>,
+    onClickRarity: (String) -> Unit,
+    filterEditionStates: List<FilterState.Edition>,
+    onClickEdition: (String) -> Unit,
+    filterElementStates: List<FilterState.Basic>,
     onClickElement: (String) -> Unit,
-    filterFoilStates: List<FilterFoilState>,
+    filterFoilStates: List<FilterState.Basic>,
     onClickFoil: (String) -> Unit,
-    filterRoleStates: List<FilterRoleState>,
+    filterRoleStates: List<FilterState.Basic>,
     onClickRole: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
@@ -215,9 +215,10 @@ fun FilterDialog(
                     .padding(12.dp)
             ) {
 
-                val mExpanded = remember { mutableStateOf(false) }
 
                 Box {
+                    val mExpanded = remember { mutableStateOf(false) }
+
                     Row(modifier = Modifier.clickable { mExpanded.value = !mExpanded.value }) {
                         Text(
                             text = "Sort by: ${selectedSorting?.name}",
@@ -254,140 +255,100 @@ fun FilterDialog(
 
                 Spacer(Modifier.height(6.dp))
 
-                Text(
-                    text = "Rarity",
-                    color = Color.White,
-                    style = MaterialTheme.typography.h6
-                )
-                FlowRow(
-                    mainAxisSpacing = 4.dp,
-                    crossAxisSpacing = 4.dp
-                ) {
-                    filterRarityStates.forEach { rarityState ->
-                        Box(
-                            modifier = Modifier
-                                .filterButtonModifier(rarityState.selected, rarityState.color)
-                                .clickable { onClickRarity(rarityState.id) }
-                        )
-                    }
-                }
+                FilterGroup("Rarity",
+                    content = {
+                        filterRarityStates.forEach { rarityState ->
+                            Box(
+                                modifier = Modifier
+                                    .filterButtonModifier(rarityState.selected, rarityState.color)
+                                    .clickable { onClickRarity(rarityState.id) }
+                            )
+                        }
+                    })
 
                 Spacer(Modifier.height(6.dp))
 
-                Text(
-                    text = "Editions",
-                    color = Color.White,
-                    style = MaterialTheme.typography.h6
-                )
-                FlowRow(
-                    mainAxisSpacing = 4.dp,
-                    crossAxisSpacing = 4.dp
-                ) {
-                    filterEditionStates.forEach { editionState ->
-                        Box(
-                            modifier = Modifier
-                                .filterButtonModifier(editionState.selected, Color.Black)
-                                .clickable { onClickEdition(editionState.id) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = editionState.imageRes),
-                                modifier = Modifier.height(30.dp),
-                                contentDescription = null
-                            )
+                FilterGroup("Editions",
+                    content = {
+                        filterEditionStates.forEach { editionState ->
+                            Box(
+                                modifier = Modifier
+                                    .filterButtonModifier(editionState.selected, Color.Black)
+                                    .clickable { onClickEdition(editionState.id) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = editionState.imageRes),
+                                    modifier = Modifier.height(30.dp),
+                                    contentDescription = null
+                                )
+                            }
                         }
-                    }
-                }
+                    })
 
                 Spacer(Modifier.height(6.dp))
 
-                Text(
-                    text = "Elements",
-                    color = Color.White,
-                    style = MaterialTheme.typography.h6
-                )
-                FlowRow(
-                    mainAxisSpacing = 4.dp,
-                    crossAxisSpacing = 4.dp
-                ) {
-                    filterElementStates.forEach { elementState ->
-                        Box(
-                            modifier = Modifier
-                                .filterButtonModifier(elementState.selected, Color.Black)
-                                .clickable { onClickElement(elementState.id) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = elementState.imageRes),
-                                modifier = Modifier.height(30.dp),
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
+                BasicFilterGroup("Elements", filterElementStates, onClickElement)
 
                 Spacer(Modifier.height(6.dp))
 
                 Row {
 
                     Column {
-                        Text(
-                            text = "Foil",
-                            color = Color.White,
-                            style = MaterialTheme.typography.h6
-                        )
-                        FlowRow(
-                            mainAxisSpacing = 4.dp,
-                            crossAxisSpacing = 4.dp
-                        ) {
-                            filterFoilStates.forEach { foilState ->
-                                Box(
-                                    modifier = Modifier
-                                        .filterButtonModifier(foilState.selected, Color.Black)
-                                        .clickable { onClickFoil(foilState.id) },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = foilState.imageRes),
-                                        modifier = Modifier.height(30.dp),
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
+                        BasicFilterGroup("Foil", filterFoilStates, onClickFoil)
                     }
 
                     Spacer(Modifier.width(12.dp))
 
                     Column {
-                        Text(
-                            text = "Role",
-                            color = Color.White,
-                            style = MaterialTheme.typography.h6
-                        )
-                        FlowRow(
-                            mainAxisSpacing = 4.dp,
-                            crossAxisSpacing = 4.dp
-                        ) {
-                            filterRoleStates.forEach { roleState ->
-                                Box(
-                                    modifier = Modifier
-                                        .filterButtonModifier(roleState.selected, Color.Black)
-                                        .clickable { onClickRole(roleState.id) },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = roleState.imageRes),
-                                        modifier = Modifier.height(30.dp),
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
+                        BasicFilterGroup("Role", filterRoleStates, onClickRole)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BasicFilterGroup(
+    title: String,
+    filterStates: List<FilterState.Basic>,
+    onClick: (String) -> Unit
+) {
+    FilterGroup(title,
+        content = {
+            filterStates.forEach { roleState ->
+                Box(
+                    modifier = Modifier
+                        .filterButtonModifier(roleState.selected, Color.Black)
+                        .clickable { onClick(roleState.id) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = roleState.imageRes),
+                        modifier = Modifier.height(30.dp),
+                        contentDescription = null
+                    )
+                }
+            }
+        })
+}
+
+@Composable
+fun FilterGroup(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Text(
+        text = title,
+        color = Color.White,
+        style = MaterialTheme.typography.h6
+    )
+    FlowRow(
+        mainAxisSpacing = 4.dp,
+        crossAxisSpacing = 4.dp
+    ) {
+        content()
     }
 }
 
