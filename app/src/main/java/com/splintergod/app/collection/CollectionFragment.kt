@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -107,6 +108,8 @@ fun Content(state: CollectionViewState) {
                 onClickElement = state.onClickElement,
                 filterFoilStates = state.filterFoilStates,
                 onClickFoil = state.onClickFoil,
+                filterRoleStates = state.filterRoleStates,
+                onClickRole = state.onClickRole,
                 sortingStates = state.sortingElementStates,
                 selectedSorting = state.selectedSorting,
                 onClickSorting = state.onClickSorting
@@ -129,6 +132,8 @@ fun ReadyScreen(
     onClickElement: (String) -> Unit,
     filterFoilStates: List<FilterFoilState>,
     onClickFoil: (String) -> Unit,
+    filterRoleStates: List<FilterRoleState>,
+    onClickRole: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
     selectedSorting: SortingState?
@@ -157,6 +162,8 @@ fun ReadyScreen(
                     onClickElement,
                     filterFoilStates,
                     onClickFoil,
+                    filterRoleStates,
+                    onClickRole,
                     sortingStates,
                     onClickSorting,
                     selectedSorting,
@@ -192,6 +199,8 @@ fun FilterDialog(
     onClickElement: (String) -> Unit,
     filterFoilStates: List<FilterFoilState>,
     onClickFoil: (String) -> Unit,
+    filterRoleStates: List<FilterRoleState>,
+    onClickRole: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
     selectedSorting: SortingState?,
@@ -319,27 +328,61 @@ fun FilterDialog(
 
                 Spacer(Modifier.height(6.dp))
 
-                Text(
-                    text = "Foil",
-                    color = Color.White,
-                    style = MaterialTheme.typography.h6
-                )
-                FlowRow(
-                    mainAxisSpacing = 4.dp,
-                    crossAxisSpacing = 4.dp
-                ) {
-                    filterFoilStates.forEach { foilState ->
-                        Box(
-                            modifier = Modifier
-                                .filterButtonModifier(foilState.selected, Color.Black)
-                                .clickable { onClickFoil(foilState.id) },
-                            contentAlignment = Alignment.Center
+                Row {
+
+                    Column {
+                        Text(
+                            text = "Foil",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h6
+                        )
+                        FlowRow(
+                            mainAxisSpacing = 4.dp,
+                            crossAxisSpacing = 4.dp
                         ) {
-                            Image(
-                                painter = painterResource(id = foilState.imageRes),
-                                modifier = Modifier.height(30.dp),
-                                contentDescription = null
-                            )
+                            filterFoilStates.forEach { foilState ->
+                                Box(
+                                    modifier = Modifier
+                                        .filterButtonModifier(foilState.selected, Color.Black)
+                                        .clickable { onClickFoil(foilState.id) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = foilState.imageRes),
+                                        modifier = Modifier.height(30.dp),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.width(12.dp))
+
+                    Column {
+                        Text(
+                            text = "Role",
+                            color = Color.White,
+                            style = MaterialTheme.typography.h6
+                        )
+                        FlowRow(
+                            mainAxisSpacing = 4.dp,
+                            crossAxisSpacing = 4.dp
+                        ) {
+                            filterRoleStates.forEach { roleState ->
+                                Box(
+                                    modifier = Modifier
+                                        .filterButtonModifier(roleState.selected, Color.Black)
+                                        .clickable { onClickRole(roleState.id) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = roleState.imageRes),
+                                        modifier = Modifier.height(30.dp),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
                         }
                     }
                 }

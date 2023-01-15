@@ -18,6 +18,8 @@ sealed class CollectionViewState(open val isRefreshing: Boolean) {
         val onClickElement: (String) -> Unit,
         val filterFoilStates: List<FilterFoilState>,
         val onClickFoil: (String) -> Unit,
+        val filterRoleStates: List<FilterRoleState>,
+        val onClickRole: (String) -> Unit,
         val sortingElementStates: List<SortingState>,
         val selectedSorting: SortingState?,
         val onClickSorting: (CollectionViewModel.Sorting) -> Unit
@@ -31,6 +33,7 @@ data class FilterRarityState(val id: Int, var selected: Boolean = false, val col
 data class FilterEditionState(val id: Int, var selected: Boolean = false, @DrawableRes val imageRes: Int)
 data class FilterElementState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
 data class FilterFoilState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
+data class FilterRoleState(val id: String, var selected: Boolean = false, @DrawableRes val imageRes: Int)
 data class SortingState(val id: CollectionViewModel.Sorting, var name: String = "", var selected: Boolean = false) {
     init {
         name = id.name.lowercase().replaceFirstChar { it.uppercase() }

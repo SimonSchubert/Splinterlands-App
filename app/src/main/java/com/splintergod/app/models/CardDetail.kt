@@ -6,6 +6,7 @@ data class CardDetail(
     val tier: Int? = -1,
     val rarity: Int,
     val color: String,
+    val type: String,
     val stats: CardDetailStats
 )
 
