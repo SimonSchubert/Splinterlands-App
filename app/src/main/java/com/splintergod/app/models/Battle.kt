@@ -1,7 +1,7 @@
 package com.splintergod.app.models
 
 import com.google.gson.annotations.SerializedName
-import com.splintergod.app.getRulesetImageUrl
+import com.splintergod.app.toRulesetImageUrl
 import com.splintergod.app.simpleDateFormat
 import java.text.NumberFormat
 import java.util.*
@@ -70,7 +70,7 @@ data class Battle(
     }
 
     fun getRulesetImageUrls(): List<String> {
-        return ruleset.split("|").map { it.getRulesetImageUrl() }
+        return ruleset.split("|").map { it.toRulesetImageUrl() }
     }
 
     fun getTimeAgo(): String {

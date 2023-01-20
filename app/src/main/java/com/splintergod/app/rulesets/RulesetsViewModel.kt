@@ -29,10 +29,10 @@ class RulesetsViewModel(val cache: Cache, val requests: Requests) : ViewModel() 
 
             _state.value = RulesetsViewState.Loading { onRefresh() }
 
-            var rulesets = cache.getSettings()?.battles?.rulesets
+            var rulesets = cache.getSettings()?.battles?.rulesets?.filter { it.active }
 
             if (rulesets.isNullOrEmpty() || forceRefresh) {
-                rulesets = requests.getSettings().battles.rulesets
+                rulesets = requests.getSettings().battles.rulesets.filter { it.active }
             }
 
             if (rulesets.isNotEmpty()) {

@@ -31,7 +31,7 @@ fun JSONArray.toObjectList(): List<JSONObject> {
     return list
 }
 
-fun String.getRulesetImageUrl(): String {
-    val namePath = this.lowercase().replace("&", "").replace("  ", " ").replace(" ", "-")
+fun String.toRulesetImageUrl(): String {
+    val namePath = this.lowercase().replace("&", "").replace("’", "-").replace("  ", " ").replace(" ", "-")
     return "${assetUrl}website/icons/rulesets/new/img_combat-rule_${namePath}_150.png"
 }

@@ -208,7 +208,7 @@ fun FilterDialog(
 ) {
     val scrollState = rememberScrollState()
     Dialog(onDismissRequest = { onDismiss() }) {
-        Card(backgroundColor = Color.Black) {
+        Card(backgroundColor = Color.Black.copy(alpha = 0.7f)) {
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
