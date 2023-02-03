@@ -177,9 +177,13 @@ class Requests(val cache: Cache) {
                         }
 
                         "reward_card" -> {
-                            val cardDetailId = it.getJSONObject("card").getInt("card_detail_id")
-                            val isGold = it.getJSONObject("card").getBoolean("gold")
-                            rewards.add(CardReward(cardDetailId, isGold))
+                            val cardJson = it.getJSONObject("card")
+                            val cardDetailId = cardJson.getInt("card_detail_id")
+                            val isGold = cardJson.getBoolean("gold")
+                            val edition = cardJson.optInt("edition", 3)
+                            repeat(it.optInt("quantity", 1)) {
+                                rewards.add(CardReward(cardDetailId, isGold, edition))
+                            }
                         }
 
                         "credits" -> {

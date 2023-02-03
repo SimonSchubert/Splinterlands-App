@@ -22,16 +22,18 @@ data class Card(
     fun setStats(cardDetail: CardDetail) {
         imageUrl = getImageUrl(cardDetail)
         name = cardDetail.name
-        mana = cardDetail.stats.mana?.getOrNull(level - 1) ?: 0
-        health = cardDetail.stats.health?.getOrNull(level - 1) ?: 0
-        speed = cardDetail.stats.speed?.getOrNull(level - 1) ?: 0
-        magic = cardDetail.stats.magic?.getOrNull(level - 1) ?: 0
-        melee = cardDetail.stats.attack?.getOrNull(level - 1) ?: 0
-        range = cardDetail.stats.ranged?.getOrNull(level - 1) ?: 0
+        val statsIndex = level - 1
+        mana = cardDetail.stats.mana?.getOrNull(statsIndex) ?: 0
+        health = cardDetail.stats.health?.getOrNull(statsIndex) ?: 0
+        speed = cardDetail.stats.speed?.getOrNull(statsIndex) ?: 0
+        magic = cardDetail.stats.magic?.getOrNull(statsIndex) ?: 0
+        melee = cardDetail.stats.attack?.getOrNull(statsIndex) ?: 0
+        range = cardDetail.stats.ranged?.getOrNull(statsIndex) ?: 0
     }
 
     private fun getImageUrl(cardDetail: CardDetail): String {
         val editionPath = when (edition) {
+            10 -> "soulbound"
             8 -> "rift"
             7 -> "chaos"
             6 -> "gladius"

@@ -52,7 +52,7 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
 
                     rewardGroup.rewards.forEach {
                         if (it is CardReward) {
-                            val card = Card(it.cardId.toString(), 3, it.isGold, 1)
+                            val card = Card(it.cardId.toString(), it.edition, it.isGold, 1)
                             val cardDetail = cardDetails.firstOrNull { it.id == card.cardDetailId }
                             if (cardDetail != null) {
                                 card.setStats(cardDetail)
