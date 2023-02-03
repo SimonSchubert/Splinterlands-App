@@ -10,8 +10,8 @@ android {
         applicationId = "com.splintergod.app"
         minSdk = 24
         targetSdk = 33
-        versionCode = 6
-        versionName = "0.0.6"
+        versionCode = 7
+        versionName = "0.0.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -43,15 +43,15 @@ android {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-core:2.2.2")
-    implementation("io.ktor:ktor-client-cio:2.2.2")
-    implementation("io.ktor:ktor-client-android:2.2.2")
+    implementation("io.ktor:ktor-client-core:2.2.3")
+    implementation("io.ktor:ktor-client-cio:2.2.3")
+    implementation("io.ktor:ktor-client-android:2.2.3")
     implementation("com.google.code.gson:gson:2.10.1")
 
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.0")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation("androidx.activity:activity-compose:1.6.1")
@@ -70,7 +70,7 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.3.2")
     implementation("io.insert-koin:koin-android:3.3.2")
 
-    androidTestImplementation("io.ktor:ktor-client-mock:2.2.2")
+    androidTestImplementation("io.ktor:ktor-client-mock:2.2.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
