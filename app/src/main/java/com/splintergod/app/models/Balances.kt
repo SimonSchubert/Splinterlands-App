@@ -7,6 +7,7 @@ data class Balances(val player: String, var token: String, var balance: Float) {
     fun getDrawableResource(): Int {
         return when (token) {
             "DEC" -> R.drawable.asset_dec
+            "DEC-B" -> R.drawable.asset_dec_b
             "CREDITS" -> R.drawable.asset_credits
             "SPS" -> R.drawable.asset_sps
             "MERITS" -> R.drawable.asset_merits
@@ -22,7 +23,7 @@ data class Balances(val player: String, var token: String, var balance: Float) {
             "NIGHTMARE" -> R.drawable.asset_pack_nightmare
             "RIFT" -> R.drawable.asset_pack_rift
             "PLOT" -> R.drawable.asset_land_plot
-            "VOUCHER" -> R.drawable.asset_voucher
+            "VOUCHER-TOTAL" -> R.drawable.asset_voucher
             "LICENSE" -> R.drawable.asset_node_license
             "TOTEMC" -> R.drawable.asset_totem_common
             "TOTEMR" -> R.drawable.asset_totem_rare
