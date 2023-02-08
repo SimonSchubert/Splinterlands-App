@@ -11,6 +11,7 @@ import coil.memory.MemoryCache
 import com.splintergod.app.abilities.AbilitiesViewModel
 import com.splintergod.app.balances.BalancesViewModel
 import com.splintergod.app.battles.BattlesViewModel
+import com.splintergod.app.carddetail.CardDetailViewModel
 import com.splintergod.app.collection.CollectionViewModel
 import com.splintergod.app.focuses.FocusesViewModel
 import com.splintergod.app.login.LoginViewModel
@@ -53,6 +54,7 @@ class MainApplication : Application(), ImageLoaderFactory {
         viewModel { BattlesViewModel(get(), get(), get()) }
         viewModel { BalancesViewModel(get(), get(), get()) }
         viewModel { CollectionViewModel(get(), get(), get()) }
+        viewModel { CardDetailViewModel(get(), get(), get()) }
     }
 
     override fun newImageLoader(): ImageLoader {

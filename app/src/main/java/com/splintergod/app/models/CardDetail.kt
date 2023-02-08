@@ -7,7 +7,8 @@ data class CardDetail(
     val rarity: Int,
     val color: String,
     val type: String,
-    val stats: CardDetailStats
+    val stats: CardDetailStats,
+    val editions: String
 )
 
 data class CardDetailStats(

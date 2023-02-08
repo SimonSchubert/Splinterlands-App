@@ -3,6 +3,7 @@ package com.splintergod.app
 class Session(val cache: Cache) {
 
     var player: String = ""
+    var currentCardDetailId: String = ""
 
     init {
         player = cache.getSelectedPlayerName()

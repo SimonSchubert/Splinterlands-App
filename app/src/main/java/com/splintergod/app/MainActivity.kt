@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setCurrentFragment(fragment: Fragment) {
+    fun setCurrentFragment(fragment: Fragment) {
         if (fragment is LoginFragment ||
             fragment is BattlesFragment ||
             fragment is CollectionFragment ||

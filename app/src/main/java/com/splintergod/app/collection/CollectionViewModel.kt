@@ -163,7 +163,8 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             CardViewState(
                 imageUrl = card.imageUrl,
                 placeHolderRes = card.getPlaceholderDrawable(),
-                quantity = 1
+                quantity = 1,
+                cardId = card.cardDetailId
             )
         }
 

@@ -54,11 +54,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
 import com.google.accompanist.flowlayout.FlowRow
+import com.splintergod.app.MainActivity
 import com.splintergod.app.R
+import com.splintergod.app.carddetail.CardDetailFragment
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
+import com.splintergod.app.rewards.RewardsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -77,14 +80,17 @@ class CollectionFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                Content(viewModel.state.collectAsState().value)
+                Content(viewModel.state.collectAsState().value) {
+                    viewModel.session.currentCardDetailId = it
+                    (requireActivity() as MainActivity).setCurrentFragment(CardDetailFragment())
+                }
             }
         }
     }
 }
 
 @Composable
-fun Content(state: CollectionViewState) {
+fun Content(state: CollectionViewState, onClickCard: (id: String) -> Unit) {
 
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
@@ -112,7 +118,8 @@ fun Content(state: CollectionViewState) {
                 onClickRole = state.onClickRole,
                 sortingStates = state.sortingElementStates,
                 selectedSorting = state.selectedSorting,
-                onClickSorting = state.onClickSorting
+                onClickSorting = state.onClickSorting,
+                onClickCard = onClickCard
             )
             is CollectionViewState.Error -> ErrorScreen()
         }
@@ -136,7 +143,8 @@ fun ReadyScreen(
     onClickRole: (String) -> Unit,
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
-    selectedSorting: SortingState?
+    selectedSorting: SortingState?,
+    onClickCard: (id: String) -> Unit
 ) {
     val showFilterDialog = remember { mutableStateOf(false) }
 
@@ -149,7 +157,7 @@ fun ReadyScreen(
                 columns = GridCells.Adaptive(minSize = 112.dp)
             ) {
                 items(cards.size) { index ->
-                    CardItem(cards[index])
+                    CardItem(cards[index], onClickCard)
                 }
             }
             if (showFilterDialog.value) {
@@ -371,8 +379,10 @@ fun Modifier.filterButtonModifier(
 }
 
 @Composable
-fun CardItem(card: CardViewState) {
-    Column {
+fun CardItem(card: CardViewState, onClickCard: (id: String) -> Unit) {
+    Column(Modifier.clickable {
+        onClickCard(card.cardId)
+    }) {
         AsyncImage(
             model = card.imageUrl,
             placeholder = painterResource(card.placeHolderRes),
