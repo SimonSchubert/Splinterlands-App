@@ -18,5 +18,6 @@ data class CardDetailStats(
     var attack: List<Int>?,
     var ranged: List<Int>?,
     var magic: List<Int>?,
-    var armor: List<Int>?
+    var armor: List<Int>?,
+    var abilities: List<List<String>>?
 )

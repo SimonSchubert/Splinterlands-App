@@ -1,6 +1,6 @@
 package com.splintergod.app.carddetail
 
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
@@ -19,7 +19,7 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
     private val _state = MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
 
-    var cardName = mutableStateOf("")
+    var cardName = MutableLiveData("")
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
@@ -46,14 +46,17 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                     else -> R.drawable.asset_dec
                 }
 
-                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, 1)
+                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, session.currentCardDetailLevel)
                 card.setStats(cardDetail)
+
+                cardName.postValue(card.name)
 
                 _state.value = CardDetailViewState.Success(
                     onRefresh = { onRefresh() },
                     colorIcon = colorIcon,
                     card = card,
-                    cardDetail = cardDetail
+                    cardDetail = cardDetail,
+                    abilities = cache.getAbilities()
                 )
             } else {
                 _state.value = CardDetailViewState.Error(

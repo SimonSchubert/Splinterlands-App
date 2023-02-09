@@ -4,6 +4,7 @@ class Session(val cache: Cache) {
 
     var player: String = ""
     var currentCardDetailId: String = ""
+    var currentCardDetailLevel: Int = 0
 
     init {
         player = cache.getSelectedPlayerName()

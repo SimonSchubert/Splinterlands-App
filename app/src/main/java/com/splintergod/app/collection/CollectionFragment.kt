@@ -61,7 +61,6 @@ import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import com.splintergod.app.rewards.RewardsFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -81,7 +80,8 @@ class CollectionFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 Content(viewModel.state.collectAsState().value) {
-                    viewModel.session.currentCardDetailId = it
+                    viewModel.session.currentCardDetailId = it.cardId
+                    viewModel.session.currentCardDetailLevel = it.level
                     (requireActivity() as MainActivity).setCurrentFragment(CardDetailFragment())
                 }
             }
@@ -90,7 +90,7 @@ class CollectionFragment : Fragment() {
 }
 
 @Composable
-fun Content(state: CollectionViewState, onClickCard: (id: String) -> Unit) {
+fun Content(state: CollectionViewState, onClickCard: (id: CardViewState) -> Unit) {
 
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
@@ -144,7 +144,7 @@ fun ReadyScreen(
     sortingStates: List<SortingState>,
     onClickSorting: (CollectionViewModel.Sorting) -> Unit,
     selectedSorting: SortingState?,
-    onClickCard: (id: String) -> Unit
+    onClickCard: (id: CardViewState) -> Unit
 ) {
     val showFilterDialog = remember { mutableStateOf(false) }
 
@@ -379,9 +379,9 @@ fun Modifier.filterButtonModifier(
 }
 
 @Composable
-fun CardItem(card: CardViewState, onClickCard: (id: String) -> Unit) {
+fun CardItem(card: CardViewState, onClickCard: (id: CardViewState) -> Unit) {
     Column(Modifier.clickable {
-        onClickCard(card.cardId)
+        onClickCard(card)
     }) {
         AsyncImage(
             model = card.imageUrl,

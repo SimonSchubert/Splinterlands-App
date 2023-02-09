@@ -1,8 +1,8 @@
 package com.splintergod.app.models
 
 import com.google.gson.annotations.SerializedName
-import com.splintergod.app.toRulesetImageUrl
 import com.splintergod.app.simpleDateFormat
+import com.splintergod.app.toRulesetImageUrl
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.absoluteValue

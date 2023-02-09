@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +27,10 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,7 +51,6 @@ import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Balances
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.NumberFormat
 import java.util.*
 
 
@@ -60,7 +66,9 @@ class CardDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        activity?.title = viewModel.cardName.value
+        viewModel.cardName.observe(viewLifecycleOwner) {
+            activity?.title = it
+        }
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -106,149 +114,171 @@ fun Content(state: CardDetailViewState) {
 fun ReadyScreen(state: CardDetailViewState.Success) {
     Column(Modifier.verticalScroll(rememberScrollState())) {
 
-        Row {
+        Spacer(Modifier.height(20.dp))
+
+        var selectedLevel by remember {
+            mutableStateOf(state.card.level)
+        }
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
             AsyncImage(
-                model = state.card.imageUrl,
+                model = state.card.getImageUrl(state.cardDetail, selectedLevel),
                 placeholder = painterResource(state.card.getPlaceholderDrawable()),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .width(200.dp)
             )
-
-            Image(
-                painterResource(id = state.colorIcon),
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.height(48.dp)
-            )
         }
 
         Spacer(Modifier.height(30.dp))
 
-        Column(Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        repeat(state.cardDetail.stats.health?.size ?: 0) { index ->
+            val allAbilitiesCount = state.cardDetail.stats.abilities?.flatten()?.count() ?: 0
 
-            if(index == 0) {
+            repeat(state.cardDetail.stats.health?.size ?: 0) { index ->
 
-                Row {
+                if (index == 0) {
+                    StatsHeaderRow(state, allAbilitiesCount)
+                }
 
+                val backgroundColor = if(selectedLevel == index + 1) {
+                    Color.Black.copy(alpha = 0.3f)
+                } else {
+                    Color.Transparent
+                }
+                Row(
+                    Modifier.clickable {
+                        selectedLevel = index + 1
+                    }.background(backgroundColor),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         modifier = Modifier.width(40.dp),
                         color = Color.Yellow,
                         fontSize = 22.sp,
-                        text = "LVL"
+                        text = (index + 1).toString(),
+                        textAlign = TextAlign.Center
                     )
 
                     Spacer(Modifier.width(10.dp))
 
-
-                    if(state.cardDetail.stats.magic?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_magic),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
-                        )
-                    }
-                    if(state.cardDetail.stats.attack?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_melee),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
-                        )
-                    }
-                    if(state.cardDetail.stats.ranged?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_ranged),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
+                    if (state.cardDetail.stats.magic?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.magic?.get(index).toString()
                         )
                     }
 
-                    if(state.cardDetail.stats.speed?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_speed),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
-                        )
-                    }
-                    if(state.cardDetail.stats.armor?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_defense),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
+                    if (state.cardDetail.stats.attack?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.attack?.get(index).toString()
                         )
                     }
 
-                    if(state.cardDetail.stats.health?.any { it > 0 } == true) {
-                        Image(
-                            painterResource(id = R.drawable.stats_health),
-                            contentDescription = "",
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(3.dp).width(34.dp)
+                    if (state.cardDetail.stats.ranged?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.ranged?.get(index).toString()
                         )
+                    }
+
+                    if (state.cardDetail.stats.speed?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.speed?.get(index).toString()
+                        )
+                    }
+
+                    if (state.cardDetail.stats.armor?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.armor?.get(index).toString()
+                        )
+                    }
+
+                    if (state.cardDetail.stats.health?.any { it > 0 } == true) {
+                        StatsText(
+                            text = state.cardDetail.stats.health?.get(index).toString()
+                        )
+                    }
+
+                    val rowAbilities = state.cardDetail.stats.abilities?.take(index + 1)?.flatten()
+
+                    repeat(allAbilitiesCount) { index ->
+
+                        val abilityImageUrl = state.abilities.firstOrNull { it.name == rowAbilities?.getOrNull(index) }
+
+                        if (abilityImageUrl != null) {
+                            AsyncImage(
+                                model = abilityImageUrl.getImageUrl(),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier
+                                    .padding(3.dp)
+                                    .width(34.dp)
+                            )
+                        } else {
+                            Spacer(Modifier.width(40.dp))
+                        }
                     }
                 }
             }
-
-            Row {
-                Text(
-                    modifier = Modifier.width(40.dp),
-                    color = Color.Yellow,
-                    fontSize = 22.sp,
-                    text = (index + 1).toString(),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(Modifier.width(10.dp))
-
-                if(state.cardDetail.stats.magic?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.magic?.get(index).toString()
-                    )
-                }
-
-                if(state.cardDetail.stats.attack?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.attack?.get(index).toString()
-                    )
-                }
-
-                if(state.cardDetail.stats.ranged?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.ranged?.get(index).toString()
-                    )
-                }
-
-                if(state.cardDetail.stats.speed?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.speed?.get(index).toString()
-                    )
-                }
-
-                if(state.cardDetail.stats.armor?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.armor?.get(index).toString()
-                    )
-                }
-
-                if(state.cardDetail.stats.health?.any { it > 0 } == true) {
-                    StatsText(
-                        text = state.cardDetail.stats.health?.get(index).toString()
-                    )
-                }
-            }
         }
-        }
-
     }
+}
+
+@Composable
+fun StatsHeaderRow(state: CardDetailViewState.Success, allAbilities: Int) {
+
+    Row {
+
+        Text(
+            modifier = Modifier.width(40.dp),
+            color = Color.Yellow,
+            fontSize = 22.sp,
+            text = "LVL"
+        )
+
+        Spacer(Modifier.width(10.dp))
+
+        if (state.cardDetail.stats.magic?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_magic)
+        }
+        if (state.cardDetail.stats.attack?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_melee)
+        }
+        if (state.cardDetail.stats.ranged?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_ranged)
+        }
+        if (state.cardDetail.stats.speed?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_speed)
+        }
+        if (state.cardDetail.stats.armor?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_defense)
+        }
+        if (state.cardDetail.stats.health?.any { it > 0 } == true) {
+            StatsImage(id = R.drawable.stats_health)
+        }
+        repeat(allAbilities) {
+            Spacer(Modifier.width(40.dp))
+        }
+    }
+}
+
+@Composable
+fun StatsImage(id: Int) {
+    Image(
+        painterResource(id = id),
+        contentDescription = "",
+        contentScale = ContentScale.FillWidth,
+        modifier = Modifier
+            .padding(3.dp)
+            .width(34.dp)
+    )
 }
 
 @Composable

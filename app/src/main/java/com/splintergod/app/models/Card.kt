@@ -20,7 +20,7 @@ data class Card(
 ) {
 
     fun setStats(cardDetail: CardDetail) {
-        imageUrl = getImageUrl(cardDetail)
+        imageUrl = getImageUrl(cardDetail, level)
         name = cardDetail.name
         val statsIndex = level - 1
         mana = cardDetail.stats.mana?.getOrNull(statsIndex) ?: 0
@@ -31,7 +31,7 @@ data class Card(
         range = cardDetail.stats.ranged?.getOrNull(statsIndex) ?: 0
     }
 
-    private fun getImageUrl(cardDetail: CardDetail): String {
+    fun getImageUrl(cardDetail: CardDetail, level: Int): String {
         val editionPath = when (edition) {
             10 -> "soulbound"
             8 -> "rift"

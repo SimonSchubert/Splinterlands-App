@@ -90,10 +90,14 @@ class Requests(val cache: Cache) {
                 "attack",
                 "ranged",
                 "magic",
-                "armor"
+                "armor",
+                "abilities"
             )
             fields.forEach {
                 item.put(it, item.optJSONArray(it))
+            }
+            if (item.optJSONArray("abilities")?.optJSONArray(0) == null) {
+                item.put("abilities", null)
             }
         }
 
