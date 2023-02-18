@@ -108,7 +108,7 @@ class Cache(val context: Context) {
         return get(
             fileName = "collection_${player}.json",
             type = CollectionResponse::class.java
-        )?.cards?.distinctBy { it.cardDetailId } ?: emptyList()
+        )?.cards?.groupCards() ?: emptyList()
     }
 
     fun getCardDetails(): List<CardDetail> {
@@ -159,14 +159,6 @@ class Cache(val context: Context) {
             fileName = "game_settings.json",
             type = GameSettings::class.java
         )
-    }
-
-    fun JSONArray.toStringList(): List<String> {
-        val list = mutableListOf<String>()
-        for (i in 0 until this.length()) {
-            list.add(this.optString(i, ""))
-        }
-        return list.filter { it.isNotBlank() }
     }
 
     fun getAbilities(): List<Ability> {

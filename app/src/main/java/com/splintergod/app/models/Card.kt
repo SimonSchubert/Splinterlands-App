@@ -16,7 +16,9 @@ data class Card(
     var melee: Int = 0,
     var range: Int = 0,
     var name: String = "",
-    var imageUrl: String = ""
+    var imageUrl: String = "",
+    var goldLevels: List<Int> = emptyList(),
+    var regularLevels: List<Int> = emptyList()
 ) {
 
     fun setStats(cardDetail: CardDetail) {

@@ -72,7 +72,7 @@ class Requests(val cache: Cache) {
         return gson.fromJson(
             response.bodyAsText(),
             CollectionResponse::class.java
-        ).cards.distinctBy { it.cardDetailId }
+        ).cards.groupCards()
     }
 
     suspend fun getCardDetails(): List<CardDetail> {

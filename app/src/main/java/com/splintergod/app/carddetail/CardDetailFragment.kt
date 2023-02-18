@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -143,28 +144,49 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
 
             val allAbilitiesCount = state.cardDetail.stats.abilities?.flatten()?.count() ?: 0
 
-            repeat(state.cardDetail.stats.health?.size ?: 0) { index ->
+            repeat(state.cardDetail.stats.health?.size ?: 0) { rowIndex ->
 
-                if (index == 0) {
+                if (rowIndex == 0) {
                     StatsHeaderRow(state, allAbilitiesCount)
                 }
 
-                val backgroundColor = if(selectedLevel == index + 1) {
+                val backgroundColor = if(selectedLevel == rowIndex + 1) {
                     Color.Black.copy(alpha = 0.3f)
                 } else {
                     Color.Transparent
                 }
                 Row(
                     Modifier.clickable {
-                        selectedLevel = index + 1
+                        selectedLevel = rowIndex + 1
                     }.background(backgroundColor),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    val ownedCount = state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
+                    if(ownedCount > 0) {
+                        Box(
+                            contentAlignment = Alignment.TopCenter) {
+                            Image(
+                                painterResource(id = R.drawable.quantity_banner),
+                                contentDescription = "",
+                                modifier = Modifier.width(30.dp)
+                            )
+                            Text(
+                                modifier = Modifier.offset(y = 2.dp),
+                                text = ownedCount.toString(),
+                                textAlign = TextAlign.Center,
+                                color = Color.White
+                            )
+                        }
+                    } else {
+                        Spacer(Modifier.width(30.dp))
+                    }
+
                     Text(
                         modifier = Modifier.width(40.dp),
                         color = Color.Yellow,
                         fontSize = 22.sp,
-                        text = (index + 1).toString(),
+                        text = (rowIndex + 1).toString(),
                         textAlign = TextAlign.Center
                     )
 
@@ -172,41 +194,41 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
 
                     if (state.cardDetail.stats.magic?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.magic?.get(index).toString()
+                            text = state.cardDetail.stats.magic?.get(rowIndex).toString()
                         )
                     }
 
                     if (state.cardDetail.stats.attack?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.attack?.get(index).toString()
+                            text = state.cardDetail.stats.attack?.get(rowIndex).toString()
                         )
                     }
 
                     if (state.cardDetail.stats.ranged?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.ranged?.get(index).toString()
+                            text = state.cardDetail.stats.ranged?.get(rowIndex).toString()
                         )
                     }
 
                     if (state.cardDetail.stats.speed?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.speed?.get(index).toString()
+                            text = state.cardDetail.stats.speed?.get(rowIndex).toString()
                         )
                     }
 
                     if (state.cardDetail.stats.armor?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.armor?.get(index).toString()
+                            text = state.cardDetail.stats.armor?.get(rowIndex).toString()
                         )
                     }
 
                     if (state.cardDetail.stats.health?.any { it > 0 } == true) {
                         StatsText(
-                            text = state.cardDetail.stats.health?.get(index).toString()
+                            text = state.cardDetail.stats.health?.get(rowIndex).toString()
                         )
                     }
 
-                    val rowAbilities = state.cardDetail.stats.abilities?.take(index + 1)?.flatten()
+                    val rowAbilities = state.cardDetail.stats.abilities?.take(rowIndex + 1)?.flatten()
 
                     repeat(allAbilitiesCount) { index ->
 
@@ -235,6 +257,8 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
 fun StatsHeaderRow(state: CardDetailViewState.Success, allAbilities: Int) {
 
     Row {
+
+        Spacer(Modifier.width(30.dp))
 
         Text(
             modifier = Modifier.width(40.dp),

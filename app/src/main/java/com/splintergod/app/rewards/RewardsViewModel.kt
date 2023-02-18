@@ -24,7 +24,7 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
         _state.value = RewardsViewState.Error { onRefresh() }
     }
 
-    fun loadRewards() {
+    init {
         onRefresh()
     }
 

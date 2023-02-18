@@ -34,8 +34,18 @@ sealed class FilterState(open val id: String, open var selected: Boolean = false
     data class Edition(val edition: Int, @DrawableRes val imageRes: Int) : FilterState(edition.toString())
 }
 
-data class CardViewState(val imageUrl: String, @DrawableRes val placeHolderRes: Int, val quantity: Int, val cardId: String, val level: Int)
-data class SortingState(val id: CollectionViewModel.Sorting, var name: String = "", var selected: Boolean = false) {
+data class CardViewState(
+    val imageUrl: String,
+    @DrawableRes val placeHolderRes: Int,
+    val quantity: Int,
+    val cardId: String,
+    val level: Int,
+    val edition: Int)
+
+data class SortingState(
+    val id: CollectionViewModel.Sorting,
+    var name: String = "",
+    var selected: Boolean = false) {
     init {
         name = id.name.lowercase().replaceFirstChar { it.uppercase() }
     }

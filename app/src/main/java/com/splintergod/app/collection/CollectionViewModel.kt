@@ -101,6 +101,7 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             if (unfilteredCollection.isEmpty() || forceRefresh) {
                 unfilteredCollection = requests.getCollection(session.player)
             }
+
             cardDetails = cache.getCardDetails()
             if (cardDetails.isEmpty() || forceRefresh) {
                 cardDetails = requests.getCardDetails()
@@ -163,9 +164,10 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             CardViewState(
                 imageUrl = card.imageUrl,
                 placeHolderRes = card.getPlaceholderDrawable(),
-                quantity = 1,
+                quantity = card.regularLevels.size + card.goldLevels.size,
                 cardId = card.cardDetailId,
-                level = card.level
+                level = card.level,
+                edition = card.edition
             )
         }
 

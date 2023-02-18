@@ -60,9 +60,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.time.Duration.Companion.seconds
 
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
 class BattlesFragment : Fragment() {
 
     private val viewModel: BattlesViewModel by viewModel()
@@ -233,7 +230,7 @@ fun Battle(battle: BattleViewState) {
         }
 
         Column(
-            modifier = Modifier.width(64.dp),
+            modifier = Modifier.width(74.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 

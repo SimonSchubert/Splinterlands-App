@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
+import com.splintergod.app.MainActivity
 import com.splintergod.app.R
+import com.splintergod.app.carddetail.CardDetailFragment
+import com.splintergod.app.collection.CardViewState
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
@@ -68,20 +72,18 @@ class RewardsFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                Content(viewModel.state.collectAsState().value)
+                Content(viewModel.state.collectAsState().value) {
+                    viewModel.session.currentCardDetailId = it.cardId.toString()
+                    viewModel.session.currentCardDetailLevel = 1
+                    (requireActivity() as MainActivity).setCurrentFragment(CardDetailFragment())
+                }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.loadRewards()
     }
 }
 
 @Composable
-fun Content(state: RewardsViewState) {
+fun Content(state: RewardsViewState, onClickCard: (id: CardReward) -> Unit) {
 
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
@@ -95,7 +97,7 @@ fun Content(state: RewardsViewState) {
 
         when (state) {
             is RewardsViewState.Loading -> LoadingScreen(R.drawable.chest)
-            is RewardsViewState.Success -> ReadyScreen(rewardGroups = state.rewardsGroups)
+            is RewardsViewState.Success -> ReadyScreen(rewardGroups = state.rewardsGroups, onClickCard)
             is RewardsViewState.Error -> ErrorScreen()
         }
 
@@ -105,7 +107,7 @@ fun Content(state: RewardsViewState) {
 
 @Composable
 fun ReadyScreen(
-    rewardGroups: List<RewardGroup>
+    rewardGroups: List<RewardGroup>, onClickCard: (id: CardReward) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -124,14 +126,14 @@ fun ReadyScreen(
                 )
             }
             items(rewardGroup.rewards.size) { balance ->
-                RewardItem(rewardGroup.rewards[balance])
+                RewardItem(rewardGroup.rewards[balance], onClickCard)
             }
         }
     }
 }
 
 @Composable
-fun RewardItem(reward: Reward) {
+fun RewardItem(reward: Reward, onClickCard: (id: CardReward) -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -141,6 +143,9 @@ fun RewardItem(reward: Reward) {
                 Modifier
                     .padding(2.dp)
                     .fillMaxWidth()
+                    .clickable {
+                        onClickCard(reward)
+                    }
             } else {
                 Modifier
                     .padding(16.dp)
@@ -193,5 +198,5 @@ fun RewardsPreview() {
             )
         )
     )
-    ReadyScreen(rewardGroups = mockRewards)
+    ReadyScreen(rewardGroups = mockRewards) {}
 }

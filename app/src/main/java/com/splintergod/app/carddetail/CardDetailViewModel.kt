@@ -49,6 +49,12 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                 val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, session.currentCardDetailLevel)
                 card.setStats(cardDetail)
 
+                val cards = cache.getCollection(session.player)
+                cards.firstOrNull { it.cardDetailId == cardDetail.id }?.let {
+                    card.goldLevels = it.goldLevels
+                    card.regularLevels = it.regularLevels
+                }
+
                 cardName.postValue(card.name)
 
                 _state.value = CardDetailViewState.Success(

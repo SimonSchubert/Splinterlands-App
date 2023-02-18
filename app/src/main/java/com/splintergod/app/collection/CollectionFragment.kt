@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.fragment.app.Fragment
@@ -380,7 +382,7 @@ fun Modifier.filterButtonModifier(
 
 @Composable
 fun CardItem(card: CardViewState, onClickCard: (id: CardViewState) -> Unit) {
-    Column(Modifier.clickable {
+    Box(Modifier.clickable {
         onClickCard(card)
     }) {
         AsyncImage(
@@ -391,5 +393,31 @@ fun CardItem(card: CardViewState, onClickCard: (id: CardViewState) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
         )
+        if (card.quantity > 1) {
+            val bannerYOffset = if(card.cardId.toInt() > 300) {
+                5.dp
+            } else {
+                1.dp
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset( x = (-10).dp, y = bannerYOffset),
+                contentAlignment = Alignment.TopCenter
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.quantity_banner),
+                    modifier = Modifier.width(30.dp),
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.offset(y = 2.dp),
+                    text = card.quantity.toString(),
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
