@@ -6,32 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -150,22 +131,26 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                     StatsHeaderRow(state, allAbilitiesCount)
                 }
 
-                val backgroundColor = if(selectedLevel == rowIndex + 1) {
+                val backgroundColor = if (selectedLevel == rowIndex + 1) {
                     Color.Black.copy(alpha = 0.3f)
                 } else {
                     Color.Transparent
                 }
                 Row(
-                    Modifier.clickable {
-                        selectedLevel = rowIndex + 1
-                    }.background(backgroundColor),
+                    Modifier
+                        .clickable {
+                            selectedLevel = rowIndex + 1
+                        }
+                        .background(backgroundColor),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    val ownedCount = state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
-                    if(ownedCount > 0) {
+                    val ownedCount =
+                        state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
+                    if (ownedCount > 0) {
                         Box(
-                            contentAlignment = Alignment.TopCenter) {
+                            contentAlignment = Alignment.TopCenter
+                        ) {
                             Image(
                                 painterResource(id = R.drawable.quantity_banner),
                                 contentDescription = "",

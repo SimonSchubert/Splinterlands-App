@@ -2,25 +2,7 @@ package com.splintergod.app
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.splintergod.app.models.Balances
-import com.splintergod.app.models.Battle
-import com.splintergod.app.models.BattleHistory
-import com.splintergod.app.models.Card
-import com.splintergod.app.models.CardDetail
-import com.splintergod.app.models.CardReward
-import com.splintergod.app.models.CollectionResponse
-import com.splintergod.app.models.CreditsReward
-import com.splintergod.app.models.DecReward
-import com.splintergod.app.models.GameSettings
-import com.splintergod.app.models.GoldPotionReward
-import com.splintergod.app.models.LegendaryPotionReward
-import com.splintergod.app.models.MeritsReward
-import com.splintergod.app.models.PackReward
-import com.splintergod.app.models.PlayerDetails
-import com.splintergod.app.models.Reward
-import com.splintergod.app.models.RewardGroup
-import com.splintergod.app.models.RewardsInfo
-import com.splintergod.app.models.SPSReward
+import com.splintergod.app.models.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*

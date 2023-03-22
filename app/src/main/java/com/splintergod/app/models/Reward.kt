@@ -71,7 +71,13 @@ data class RewardDate(val date: String) : Reward() {
     }
 }
 
-data class CardReward(val cardId: Int, val isGold: Boolean, val edition: Int, var name: String = "", var url: String = "") :
+data class CardReward(
+    val cardId: Int,
+    val isGold: Boolean,
+    val edition: Int,
+    var name: String = "",
+    var url: String = ""
+) :
     Reward() {
     override fun getTitle(): String {
         return name

@@ -21,7 +21,12 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
         throwable.printStackTrace()
     }
 
-    data class PlayerRowInfo(val name: String, var chests: Int = 2, var timeLeft: String = "", var chestUrl: String = "")
+    data class PlayerRowInfo(
+        val name: String,
+        var chests: Int = 2,
+        var timeLeft: String = "",
+        var chestUrl: String = ""
+    )
 
     fun loadPlayerData() {
         players.clear()

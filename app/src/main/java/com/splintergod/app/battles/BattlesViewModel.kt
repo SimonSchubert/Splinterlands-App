@@ -5,11 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
 import com.splintergod.app.Session
-import com.splintergod.app.models.Battle
-import com.splintergod.app.models.CardDetail
-import com.splintergod.app.models.GameSettings
-import com.splintergod.app.models.PlayerDetails
-import com.splintergod.app.models.RewardsInfo
+import com.splintergod.app.models.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,7 +113,12 @@ class BattlesViewModel(val session: Session, val cache: Cache, val requests: Req
                 isRefreshing = isRefreshing,
                 battles = battleViewStates,
                 playerName = currentPlayerDetails.name.uppercase(),
-                playerRating = "W: ${numberFormat.format(currentPlayerDetails.rating)}, M: ${numberFormat.format(currentPlayerDetails.modernRating)}",
+                playerRating = "W: ${numberFormat.format(currentPlayerDetails.rating)} / M: ${
+                    numberFormat.format(
+                        currentPlayerDetails.modernRating
+                    )
+                }",
+                energy = currentPlayerDetails.getCurrentCaptureRate(currentGameSettings),
                 focusChests = currentRewardsInfo.questRewardInfo.chestEarned,
                 focusChestUrl = currentRewardsInfo.questRewardInfo.getChestUrl(),
                 focusEndTimestamp = currentRewardsInfo.questRewardInfo.getEndTimestamp(),

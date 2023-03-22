@@ -46,7 +46,12 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                     else -> R.drawable.asset_dec
                 }
 
-                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, session.currentCardDetailLevel)
+                val card = Card(
+                    cardDetail.id,
+                    cardDetail.editions.split(",").first().toInt(),
+                    false,
+                    session.currentCardDetailLevel
+                )
                 card.setStats(cardDetail)
 
                 val cards = cache.getCollection(session.player)

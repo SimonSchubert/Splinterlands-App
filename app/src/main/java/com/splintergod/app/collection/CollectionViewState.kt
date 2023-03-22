@@ -40,12 +40,14 @@ data class CardViewState(
     val quantity: Int,
     val cardId: String,
     val level: Int,
-    val edition: Int)
+    val edition: Int
+)
 
 data class SortingState(
     val id: CollectionViewModel.Sorting,
     var name: String = "",
-    var selected: Boolean = false) {
+    var selected: Boolean = false
+) {
     init {
         name = id.name.lowercase().replaceFirstChar { it.uppercase() }
     }

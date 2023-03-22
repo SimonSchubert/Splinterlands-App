@@ -8,18 +8,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -88,7 +81,8 @@ class BattlesFragment : Fragment() {
 @Composable
 fun Content(state: BattlesViewState) {
     val context = LocalContext.current
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh(context) })
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh(context) })
 
     Box(
         modifier = Modifier
@@ -104,6 +98,7 @@ fun Content(state: BattlesViewState) {
                 battles = state.battles,
                 playerName = state.playerName,
                 playerRating = state.playerRating,
+                energy = state.energy,
                 focusChests = state.focusChests,
                 focusChestUrl = state.focusChestUrl,
                 focusEndTimestamp = state.focusEndTimestamp,
@@ -111,6 +106,7 @@ fun Content(state: BattlesViewState) {
                 seasonChestUrl = state.seasonChestUrl,
                 seasonEndTimestamp = state.seasonEndTimestamp
             )
+
             is BattlesViewState.Error -> ErrorScreen()
         }
 
@@ -123,6 +119,7 @@ fun ReadyScreen(
     battles: List<BattleViewState>,
     playerName: String,
     playerRating: String,
+    energy: Int,
     focusChests: Int,
     focusChestUrl: String,
     focusEndTimestamp: Long,
@@ -146,10 +143,24 @@ fun ReadyScreen(
                 color = Color.White
             )
 
-            Text(
-                text = playerRating,
-                color = Color.White
-            )
+            Row {
+                Text(
+                    text = playerRating,
+                    color = Color.White
+                )
+                Image(
+                    painterResource(id = R.drawable.icon_energy),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(20.dp)
+                        .padding(start = 4.dp, end = 2.dp)
+                )
+                Text(
+                    text = "${energy}/50",
+                    color = Color.White
+                )
+            }
         }
 
         item(key = "chests") {
@@ -213,7 +224,8 @@ fun Battle(battle: BattleViewState) {
     Row(modifier = Modifier
         .padding(top = 12.dp)
         .clickable {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://splinterlands.com/?p=battle&id=${battle.id}"))
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://splinterlands.com/?p=battle&id=${battle.id}"))
             startActivity(context, browserIntent, null)
         }) {
 
@@ -288,7 +300,12 @@ fun Battle(battle: BattleViewState) {
 }
 
 @Composable
-fun BattleLineUp(mainAxisAlignment: MainAxisAlignment, playerName: String, rating: String, cardUrls: List<CardFoilUrl>) {
+fun BattleLineUp(
+    mainAxisAlignment: MainAxisAlignment,
+    playerName: String,
+    rating: String,
+    cardUrls: List<CardFoilUrl>
+) {
     Text(
         text = playerName,
         fontSize = 16.sp,

@@ -13,6 +13,7 @@ sealed class BattlesViewState(open val isRefreshing: Boolean) {
         val battles: List<BattleViewState>,
         val playerName: String,
         val playerRating: String,
+        val energy: Int,
         val focusChests: Int,
         val focusChestUrl: String,
         val focusEndTimestamp: Long,

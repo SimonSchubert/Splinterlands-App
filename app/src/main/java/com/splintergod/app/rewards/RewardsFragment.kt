@@ -8,12 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -38,21 +33,11 @@ import coil.compose.AsyncImage
 import com.splintergod.app.MainActivity
 import com.splintergod.app.R
 import com.splintergod.app.carddetail.CardDetailFragment
-import com.splintergod.app.collection.CardViewState
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import com.splintergod.app.models.CardReward
-import com.splintergod.app.models.CreditsReward
-import com.splintergod.app.models.DecReward
-import com.splintergod.app.models.GoldPotionReward
-import com.splintergod.app.models.LegendaryPotionReward
-import com.splintergod.app.models.MeritsReward
-import com.splintergod.app.models.PackReward
-import com.splintergod.app.models.Reward
-import com.splintergod.app.models.RewardGroup
-import com.splintergod.app.models.SPSReward
+import com.splintergod.app.models.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
