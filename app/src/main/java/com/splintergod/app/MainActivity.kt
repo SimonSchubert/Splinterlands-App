@@ -97,27 +97,22 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.popBackStack()
                 return true
             }
-
             R.id.menu_rewards -> {
                 setCurrentFragment(RewardsFragment())
                 return true
             }
-
             R.id.menu_focuses -> {
                 setCurrentFragment(FocusesFragment())
                 return true
             }
-
             R.id.menu_rulesets -> {
                 setCurrentFragment(RulesetsFragment())
                 return true
             }
-
             R.id.menu_abilities -> {
                 setCurrentFragment(AbilitiesFragment())
                 return true
             }
-
             R.id.menu_logout -> {
                 viewModel.logout()
                 setCurrentFragment(LoginFragment())
