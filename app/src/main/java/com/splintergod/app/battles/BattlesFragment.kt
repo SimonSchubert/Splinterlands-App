@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 
 package com.splintergod.app.battles
 
@@ -40,8 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import coil.compose.AsyncImage
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
@@ -234,7 +232,7 @@ fun Battle(battle: BattleViewState) {
             horizontalAlignment = Alignment.End
         ) {
             BattleLineUp(
-                mainAxisAlignment = MainAxisAlignment.End,
+                horizontalArrangement = Arrangement.End,
                 battle.player1Name,
                 battle.player1Rating,
                 battle.player1CardUrls
@@ -289,7 +287,7 @@ fun Battle(battle: BattleViewState) {
 
         Column(modifier = Modifier.weight(1f)) {
             BattleLineUp(
-                mainAxisAlignment = MainAxisAlignment.Start,
+                horizontalArrangement = Arrangement.Start,
                 battle.player2Name,
                 battle.player2Rating,
                 battle.player2CardUrls
@@ -301,7 +299,7 @@ fun Battle(battle: BattleViewState) {
 
 @Composable
 fun BattleLineUp(
-    mainAxisAlignment: MainAxisAlignment,
+    horizontalArrangement: Arrangement.Horizontal,
     playerName: String,
     rating: String,
     cardUrls: List<CardFoilUrl>
@@ -318,15 +316,14 @@ fun BattleLineUp(
     )
 
     FlowRow(
-        mainAxisAlignment = mainAxisAlignment,
-        mainAxisSpacing = 4.dp,
-        crossAxisSpacing = 4.dp
+        horizontalArrangement = horizontalArrangement
     ) {
         cardUrls.forEach { url ->
             AsyncImage(
                 model = url.url,
                 modifier = Modifier
                     .size(30.dp)
+                    .padding(2.dp)
                     .clip(CircleShape)
                     .border(
                         2.dp, if (url.isGold) {

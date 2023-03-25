@@ -10,8 +10,8 @@ android {
         applicationId = "com.splintergod.app"
         minSdk = 24
         targetSdk = 33
-        versionCode = 11
-        versionName = "0.0.11"
+        versionCode = 12
+        versionName = "0.0.12"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -26,8 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
     buildFeatures {
         viewBinding = true
@@ -61,14 +64,13 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
     implementation("io.coil-kt:coil:2.2.2")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation("io.coil-kt:coil-gif:2.2.2")
 
 
-    implementation("io.insert-koin:koin-core:3.3.3")
-    implementation("io.insert-koin:koin-android:3.3.3")
+    implementation("io.insert-koin:koin-core:3.4.0")
+    implementation("io.insert-koin:koin-android:3.4.0")
 
     androidTestImplementation("io.ktor:ktor-client-mock:2.2.4")
 

@@ -3,16 +3,9 @@ package com.splintergod.app
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.ComposeTimeoutException
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -60,7 +53,7 @@ class ComposeScreenshots {
 
         // Add players
         val cache = Cache(context)
-        cache.writePlayerToList("taug")
+        cache.writePlayerToList("goldmatters")
         cache.writePlayerToList("arschibald")
         cache.writePlayerToList("cryptoreaper")
         cache.writePlayerToList("calynn")
@@ -80,7 +73,7 @@ class ComposeScreenshots {
 
 
         // Battles
-        composeTestRule.onNodeWithText("hellslash", ignoreCase = true).performClick()
+        composeTestRule.onNodeWithText("goldmatters", ignoreCase = true).performClick()
 
         composeTestRule.waitForContent()
 
@@ -169,22 +162,5 @@ class ComposeScreenshots {
         FileOutputStream("$path/$file").use { out ->
             compress(Bitmap.CompressFormat.PNG, 100, out)
         }
-    }
-}
-
-
-
-fun ComposeTestRule.waitUntilDoesNotExist(
-    matcher: SemanticsMatcher,
-    timeoutMillis: Long = 10_000
-) = waitUntilNodeCount(matcher, 0, timeoutMillis)
-
-fun ComposeTestRule.waitUntilNodeCount(
-    matcher: SemanticsMatcher,
-    count: Int,
-    timeoutMillis: Long = 10_000
-) {
-    waitUntil(timeoutMillis) {
-        onAllNodes(matcher).fetchSemanticsNodes().size == count
     }
 }
