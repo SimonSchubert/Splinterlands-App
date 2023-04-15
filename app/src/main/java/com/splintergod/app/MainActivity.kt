@@ -3,6 +3,7 @@ package com.splintergod.app
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.core.view.isVisible
@@ -61,7 +62,18 @@ class MainActivity : AppCompatActivity() {
                 fragment !is LoginFragment && fragment !is BattlesFragment && fragment !is CollectionFragment && fragment !is BalancesFragment
             supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (supportFragmentManager.backStackEntryCount > 1) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
+
 
     fun setCurrentFragment(fragment: Fragment) {
         if (fragment is LoginFragment ||
@@ -120,14 +132,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStack()
-        } else {
-            finish()
         }
     }
 }
