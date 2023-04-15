@@ -150,22 +150,25 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                     StatsHeaderRow(state, allAbilitiesCount)
                 }
 
-                val backgroundColor = if(selectedLevel == rowIndex + 1) {
+                val backgroundColor = if (selectedLevel == rowIndex + 1) {
                     Color.Black.copy(alpha = 0.3f)
                 } else {
                     Color.Transparent
                 }
                 Row(
-                    Modifier.clickable {
-                        selectedLevel = rowIndex + 1
-                    }.background(backgroundColor),
+                    Modifier
+                        .clickable {
+                            selectedLevel = rowIndex + 1
+                        }
+                        .background(backgroundColor),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     val ownedCount = state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
-                    if(ownedCount > 0) {
+                    if (ownedCount > 0) {
                         Box(
-                            contentAlignment = Alignment.TopCenter) {
+                            contentAlignment = Alignment.TopCenter
+                        ) {
                             Image(
                                 painterResource(id = R.drawable.quantity_banner),
                                 contentDescription = "",

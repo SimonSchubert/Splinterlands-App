@@ -5,14 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
 import com.splintergod.app.Session
-import com.splintergod.app.models.*
+import com.splintergod.app.models.Battle
+import com.splintergod.app.models.CardDetail
+import com.splintergod.app.models.GameSettings
+import com.splintergod.app.models.PlayerDetails
+import com.splintergod.app.models.RewardsInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 
 class BattlesViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
