@@ -1,5 +1,4 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import java.util.Locale
 
 plugins {
     id("com.github.ben-manes.versions") version "0.46.0"
