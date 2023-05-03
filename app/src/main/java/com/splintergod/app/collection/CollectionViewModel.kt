@@ -139,7 +139,7 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
             if (cardDetail != null &&
                 (rarities.isEmpty() || rarities.contains(cardDetail.rarity)) &&
                 (editions.isEmpty() || editions.contains(card.edition)) &&
-                (elements.isEmpty() || elements.contains(cardDetail.color)) &&
+                (elements.isEmpty() || elements.contains(cardDetail.color) || elements.contains(cardDetail.secondary_color)) &&
                 (roles.isEmpty() || roles.contains(cardDetail.type)) &&
                 (foils.isEmpty() || foils.contains(card.getFoilId()))
             ) {
