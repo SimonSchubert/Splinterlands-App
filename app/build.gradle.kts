@@ -37,7 +37,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
     lint {
         abortOnError = false
@@ -58,9 +58,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation("androidx.activity:activity-compose:1.7.1")
-    implementation("androidx.compose.material:material:1.4.2")
-    implementation("androidx.compose.animation:animation:1.4.2")
-    implementation("androidx.compose.ui:ui-tooling:1.4.2")
+    implementation("androidx.compose.material:material:1.4.3")
+    implementation("androidx.compose.animation:animation:1.4.3")
+    implementation("androidx.compose.ui:ui-tooling:1.4.3")
     implementation("androidx.navigation:navigation-compose:2.5.3")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
@@ -76,8 +76,8 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.2")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.2")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.2")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
 }
