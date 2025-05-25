@@ -194,9 +194,9 @@ class Requests(val cache: Cache) {
                 val date = json.getJSONObject("trx_info").getString("created_date")
 
                 println(resultJson)
-                    val minor = resultJson.getJSONObject("rewards").getJSONObject("minor")
-                        val major = resultJson.getJSONObject("rewards").getJSONObject("major")
-                            val ultimate = resultJson.getJSONObject("rewards").getJSONObject("ultimate")
+                val minor = resultJson.getJSONObject("rewards").getJSONObject("minor")
+                val major = resultJson.getJSONObject("rewards").getJSONObject("major")
+                val ultimate = resultJson.getJSONObject("rewards").getJSONObject("ultimate")
 
                 listOf(minor, major, ultimate).forEach {
                     it.getJSONObject("result").getJSONArray("rewards").toObjectList().forEach {

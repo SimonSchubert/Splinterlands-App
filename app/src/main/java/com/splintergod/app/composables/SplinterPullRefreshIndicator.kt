@@ -15,7 +15,7 @@ import coil.compose.AsyncImage
 import com.splintergod.app.R
 
 @Composable
-fun BoxScope.SplinterPullRefreshIndicator(pullRefreshState: PullRefreshState, hide: Boolean = false) {
+fun BoxScope.SplinterPullRefreshIndicator(pullRefreshState: PullRefreshState) {
 
     AsyncImage(
         modifier = Modifier

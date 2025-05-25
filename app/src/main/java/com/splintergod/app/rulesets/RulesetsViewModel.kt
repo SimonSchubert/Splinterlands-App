@@ -12,7 +12,8 @@ import kotlinx.coroutines.launch
 
 class RulesetsViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
-    private val _state = MutableStateFlow<RulesetsViewState>(RulesetsViewState.Loading { onRefresh() })
+    private val _state =
+        MutableStateFlow<RulesetsViewState>(RulesetsViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->

@@ -1,175 +1,79 @@
 package com.splintergod.app
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
-import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import com.splintergod.app.abilities.AbilitiesFragment
-import com.splintergod.app.balances.BalancesFragment
-import com.splintergod.app.collection.CollectionFragment
-import com.splintergod.app.databinding.ActivityMainBinding
-import com.splintergod.app.focuses.FocusesFragment
-import com.splintergod.app.login.LoginFragment
-import com.splintergod.app.rewards.RewardsFragment
-import com.splintergod.app.rulesets.RulesetsFragment
+import androidx.compose.material.Text
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.splintergod.app.abilities.AbilitiesScreen
+import com.splintergod.app.accountdetails.AccountDetailsScreen
+import com.splintergod.app.balances.BalancesScreen
+import com.splintergod.app.carddetail.CardDetailScreen
+import com.splintergod.app.login.LoginScreen
+import com.splintergod.app.rulesets.RulesetsScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
 
     private val viewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
-
-        binding.bottomNavigation.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.collection -> setCurrentFragment(CollectionFragment())
-                R.id.balances -> setCurrentFragment(BalancesFragment())
-            }
-            true
-        }
-
-        if (savedInstanceState == null || !viewModel.isInitialized) {
-            if (viewModel.isLoggedIn()) {
-                setCurrentFragment(BalancesFragment())
+        setContent {
+            val navController = rememberNavController()
+            val startDestination = if (viewModel.isLoggedIn()) {
+                "account_details/${viewModel.getPlayerName()}"
             } else {
-                setCurrentFragment(LoginFragment())
+                "login"
             }
-        }
 
-        supportFragmentManager.addOnBackStackChangedListener {
-            val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.include)
-            val homeAsUpEnabled =
-                fragment !is LoginFragment && fragment !is CollectionFragment && fragment !is BalancesFragment
-            supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
-        }
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (supportFragmentManager.backStackEntryCount > 1) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    finish()
+            NavHost(navController = navController, startDestination = startDestination) {
+                composable("login") {
+                    LoginScreen(navController = navController)
+                }
+                composable(
+                    route = "account_details/{playerName}",
+                    arguments = listOf(navArgument("playerName") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val playerName = backStackEntry.arguments?.getString("playerName")
+                    if (playerName != null) {
+                        AccountDetailsScreen(navController = navController, playerName = playerName)
+                    } else {
+                        // Handle error: playerName is null
+                        Text("Error: Player name not found")
+                    }
+                }
+                composable(
+                    route = "card_detail/{cardId}/{level}",
+                    arguments = listOf(
+                        navArgument("cardId") { type = NavType.StringType },
+                        navArgument("level") { type = NavType.StringType }
+                    )
+                ) { backStackEntry ->
+                    val cardId = backStackEntry.arguments?.getString("cardId") ?: ""
+                    val levelString = backStackEntry.arguments?.getString("level") ?: "1"
+                    CardDetailScreen(
+                        navController = navController,
+                        cardId = cardId,
+                        levelString = levelString
+                    )
+                }
+                composable("rulesets") {
+                    RulesetsScreen(navController = navController)
+                }
+                composable("abilities") {
+                    AbilitiesScreen(navController = navController)
+                }
+                composable("balances") {
+                    BalancesScreen(navController = navController)
                 }
             }
-        })
-    }
-
-
-    fun setCurrentFragment(fragment: Fragment) {
-        if (fragment is LoginFragment ||
-            fragment is CollectionFragment ||
-            fragment is BalancesFragment
-        ) {
-            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        }
-        supportFragmentManager.popBackStack(fragment.javaClass.simpleName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.include, fragment, fragment.javaClass.simpleName)
-            addToBackStack(fragment.javaClass.simpleName)
-            commit()
-        }
-        if (fragment is LoginFragment) {
-            binding.bottomNavigation.isVisible = false
-        }
-        invalidateOptionsMenu()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        menu.findItem(R.id.menu_logout).isVisible = viewModel.isLoggedIn()
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                supportFragmentManager.popBackStack()
-                return true
-            }
-
-            R.id.menu_rewards -> {
-                setCurrentFragment(RewardsFragment())
-                return true
-            }
-
-            R.id.menu_focuses -> {
-                setCurrentFragment(FocusesFragment())
-                return true
-            }
-
-            R.id.menu_rulesets -> {
-                setCurrentFragment(RulesetsFragment())
-                return true
-            }
-
-            R.id.menu_abilities -> {
-                setCurrentFragment(AbilitiesFragment())
-                return true
-            }
-
-            R.id.menu_logout -> {
-                viewModel.logout()
-                setCurrentFragment(LoginFragment())
-                return true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
     }
-}
-
-
-@Composable
-fun Main() {
-//
-//    val navController = rememberNavController()
-//    Scaffold(
-//        bottomBar = {
-//            BottomNavigation {
-//                val navBackStackEntry by navController.currentBackStackEntryAsState()
-//                val currentDestination = navBackStackEntry?.destination
-//                items.forEach { screen ->
-//                    BottomNavigationItem(
-//                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-//                        label = { Text(stringResource(screen.resourceId)) },
-//                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-//                        onClick = {
-//                            navController.navigate(screen.route) {
-//                                // Pop up to the start destination of the graph to
-//                                // avoid building up a large stack of destinations
-//                                // on the back stack as users select items
-//                                popUpTo(navController.graph.findStartDestination().id) {
-//                                    saveState = true
-//                                }
-//                                // Avoid multiple copies of the same destination when
-//                                // reselecting the same item
-//                                launchSingleTop = true
-//                                // Restore state when reselecting a previously selected item
-//                                restoreState = true
-//                            }
-//                        }
-//                    )
-//                }
-//            }
-//        }
-//    ) { innerPadding ->
-//        NavHost(navController, startDestination = Screen.Profile.route, Modifier.padding(innerPadding)) {
-//            composable(Screen.Profile.route) { Profile(navController) }
-//            composable(Screen.FriendsList.route) { FriendsList(navController) }
-//        }
-//    }
 }

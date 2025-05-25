@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class RewardsViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
+class RewardsViewModel(val session: Session, val cache: Cache, val requests: Requests) :
+    ViewModel() {
 
-    private val _state = MutableStateFlow<RewardsViewState>(RewardsViewState.Loading { onRefresh() })
+    private val _state =
+        MutableStateFlow<RewardsViewState>(RewardsViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->

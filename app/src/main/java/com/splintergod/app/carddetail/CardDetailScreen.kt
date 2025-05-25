@@ -2,10 +2,7 @@
 
 package com.splintergod.app.carddetail
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,10 +20,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,14 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
@@ -51,47 +54,47 @@ import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Balances
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
+import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun CardDetailScreen(
+    navController: NavHostController,
+    cardId: String,
+    levelString: String,
+    viewModel: CardDetailViewModel = koinViewModel()
+) {
+    val cardName by viewModel.cardNameStateFlow.collectAsState()
+    val state by viewModel.state.collectAsState()
 
-/**
- * Balances fragment
- */
-class CardDetailFragment : Fragment() {
-
-    private val viewModel: CardDetailViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        viewModel.cardName.observe(viewLifecycleOwner) {
-            activity?.title = it
-        }
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value)
-            }
-        }
+    LaunchedEffect(cardId, levelString) {
+        viewModel.loadCard(cardId, levelString.toIntOrNull() ?: 1)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.loadCard()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(cardName) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) {
+        // Pass the state to the Content Composable
+        Content(state = state, cardDetailViewModel = viewModel)
     }
 }
 
 @Composable
-fun Content(state: CardDetailViewState) {
+fun Content(state: CardDetailViewState, cardDetailViewModel: CardDetailViewModel) {
     val context = LocalContext.current
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = state.isRefreshing,
-        onRefresh = { state.onRefresh(context) })
+        onRefresh = { cardDetailViewModel.loadCardFromSession() }) // Adjusted for potential direct refresh
 
     Box(
         modifier = Modifier
@@ -164,7 +167,8 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    val ownedCount = state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
+                    val ownedCount =
+                        state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
                     if (ownedCount > 0) {
                         Box(
                             contentAlignment = Alignment.TopCenter
@@ -231,11 +235,13 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                         )
                     }
 
-                    val rowAbilities = state.cardDetail.stats.abilities?.take(rowIndex + 1)?.flatten()
+                    val rowAbilities =
+                        state.cardDetail.stats.abilities?.take(rowIndex + 1)?.flatten()
 
                     repeat(allAbilitiesCount) { index ->
 
-                        val abilityImageUrl = state.abilities.firstOrNull { it.name == rowAbilities?.getOrNull(index) }
+                        val abilityImageUrl =
+                            state.abilities.firstOrNull { it.name == rowAbilities?.getOrNull(index) }
 
                         if (abilityImageUrl != null) {
                             AsyncImage(
@@ -322,12 +328,12 @@ fun StatsText(text: String) {
 
 @Composable
 @Preview
-fun BalancesPreview() {
+fun BalancesPreview() { // This Preview is from the original fragment, might need adjustment or removal
     val mockBalances = listOf(
         Balances("", "LICENSE", 1f),
         Balances("", "CHAOS", 6f),
         Balances("", "NIGHTMARE", 18f),
         Balances("", "PLOT", 3f)
     )
-    // ReadyScreen(mockBalances)
+    // ReadyScreen(mockBalances) // ReadyScreen now expects CardDetailViewState.Success
 }

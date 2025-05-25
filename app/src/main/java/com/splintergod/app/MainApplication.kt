@@ -12,14 +12,13 @@ import com.splintergod.app.abilities.AbilitiesViewModel
 import com.splintergod.app.balances.BalancesViewModel
 import com.splintergod.app.carddetail.CardDetailViewModel
 import com.splintergod.app.collection.CollectionViewModel
-import com.splintergod.app.focuses.FocusesViewModel
 import com.splintergod.app.login.LoginViewModel
 import com.splintergod.app.rewards.RewardsViewModel
 import com.splintergod.app.rulesets.RulesetsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 class MainApplication : Application(), ImageLoaderFactory {
@@ -45,13 +44,13 @@ class MainApplication : Application(), ImageLoaderFactory {
             Session(get())
         }
         viewModel { MainActivityViewModel(get(), get(), get()) }
-        viewModel { LoginViewModel(get(), get()) }
+        viewModel { LoginViewModel(get(), get(), get()) }
         viewModel { RulesetsViewModel(get(), get()) }
-        viewModel { FocusesViewModel(get(), get()) }
         viewModel { AbilitiesViewModel(get()) }
         viewModel { RewardsViewModel(get(), get(), get()) }
         viewModel { BalancesViewModel(get(), get(), get()) }
         viewModel { CollectionViewModel(get(), get(), get()) }
+        viewModel { CardDetailViewModel(get(), get(), get()) }
         viewModel { CardDetailViewModel(get(), get(), get()) }
     }
 
