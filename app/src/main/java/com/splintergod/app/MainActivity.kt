@@ -40,15 +40,7 @@ class MainActivity : AppCompatActivity() {
 
             NavHost(navController = navController, startDestination = startDestination) {
                 composable("login") {
-                    val loginViewModel: LoginViewModel = koinViewModel()
-                    LoginScreen(
-                        navController = navController,
-                        viewModel = loginViewModel,
-                        state = loginViewModel.state.collectAsState().value,
-                        onClickPlayer = { player ->
-                            navController.navigate("account_details/$player")
-                        }
-                    )
+                    LoginScreen(navController = navController)
                 }
                 composable(
                     route = "account_details/{playerName}",

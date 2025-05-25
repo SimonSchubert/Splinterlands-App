@@ -9,8 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.splintergod.app.Session
 
-class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
+class LoginViewModel(val cache: Cache, val requests: Requests, val session: Session) : ViewModel() {
 
     private val _state = MutableStateFlow<LoginViewState>(LoginViewState.Loading { onRefresh() })
     val state = _state.asStateFlow()
@@ -77,8 +78,8 @@ class LoginViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
                     onClickBack = { loadPlayerData() })
             } else {
                 cache.writePlayerToList(player)
-
-                loadPlayerData()
+                session.setCurrentPlayer(player) // Set current player in session
+                loadPlayerData() // This will refresh the list and UI
             }
         }
     }

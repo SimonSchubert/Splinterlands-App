@@ -48,14 +48,16 @@ fun AbilitiesScreen(
     navController: NavHostController,
     viewModel: AbilitiesViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val screenState by viewModel.state.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    LaunchedEffect(Unit) {
-        // The ViewModel's init block handles initial loading.
-        // The pull-to-refresh will use the onRefresh lambda from the state.
-        // If an explicit initial load outside of init was ever needed, it would go here.
-        // For now, relying on ViewModel's init.
-    }
+    // ViewModel's init block handles initial loading.
+    // LaunchedEffect(Unit) { viewModel.refreshAbilities() } // Could be used if init didn't load.
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = { viewModel.refreshAbilities() }
+    )
 
     Scaffold(
         topBar = {
@@ -68,23 +70,29 @@ fun AbilitiesScreen(
                 }
             )
         }
-    ) {
-        Content(state = state)
+    ) { paddingValues -> // Renamed to paddingValues to avoid clash if Content uses 'it'
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues) // Apply padding from Scaffold
+                .pullRefresh(pullRefreshState)
+        ) {
+            Content(state = screenState) // Pass the screenState to Content
+            SplinterPullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
     }
 }
 
 @Composable
 fun Content(state: AbilitiesViewState) {
-    // state.onRefresh is a lambda provided by the ViewModel's state
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = state.isRefreshing, // isRefreshing should be part of AbilitiesViewState
-        onRefresh = { state.onRefresh() }
-    )
-
+    // This Composable now just defines the content based on the state.
+    // Pull-to-refresh is handled by the caller (AbilitiesScreen).
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState),
+        modifier = Modifier.fillMaxSize(), // Content itself fills the Box provided by AbilitiesScreen
         contentAlignment = Alignment.Center
     ) {
         BackgroundImage(resId = R.drawable.bg_gate)
@@ -92,11 +100,10 @@ fun Content(state: AbilitiesViewState) {
         when (state) {
             is AbilitiesViewState.Loading -> LoadingScreen(R.drawable.loading)
             is AbilitiesViewState.Success -> ReadyScreen(abilities = state.abilities)
-            is AbilitiesViewState.Error -> ErrorScreen(onRefresh = { state.onRefresh() }) // Pass the onRefresh lambda
+            // ErrorScreen from composables might not need onRefresh, or could take a refresh lambda
+            is AbilitiesViewState.Error -> ErrorScreen() // ViewModel handles refresh via pullRefreshState
         }
-        if (state !is AbilitiesViewState.Loading) { // Show indicator only when not initially loading
-            SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
-        }
+        // SplinterPullRefreshIndicator is now in AbilitiesScreen
     }
 }
 

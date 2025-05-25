@@ -52,11 +52,16 @@ fun BalancesScreen(
     navController: NavHostController,
     viewModel: BalancesViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val screenState by viewModel.state.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadRewards()
-    }
+    // ViewModel's init block calls refreshBalances()
+    // LaunchedEffect(Unit) { viewModel.refreshBalances() } // Not needed due to init
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = { viewModel.refreshBalances() }
+    )
 
     Scaffold(
         topBar = {
@@ -69,23 +74,29 @@ fun BalancesScreen(
                 }
             )
         }
-    ) {
-        Content(state = state)
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues) // Apply padding from Scaffold
+                .pullRefresh(pullRefreshState)
+        ) {
+            Content(state = screenState)
+            SplinterPullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
     }
 }
 
 @Composable
 fun Content(state: BalancesViewState) {
-    val context = LocalContext.current // Still needed if state.onRefresh takes context
-
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = state.isRefreshing,
-        onRefresh = { state.onRefresh(context) }) // Assuming onRefresh still needs context
-
+    // Pull-to-refresh is handled by the caller (BalancesScreen).
+    // Context is no longer needed here for onRefresh.
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -94,10 +105,9 @@ fun Content(state: BalancesViewState) {
         when (state) {
             is BalancesViewState.Loading -> LoadingScreen(R.drawable.balances)
             is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
-            is BalancesViewState.Error -> ErrorScreen(onRefresh = { state.onRefresh(context) }) // Pass onRefresh
+            is BalancesViewState.Error -> ErrorScreen() // ViewModel handles refresh via pullRefreshState
         }
-
-        SplinterPullRefreshIndicator(pullRefreshState)
+        // SplinterPullRefreshIndicator is now in BalancesScreen
     }
 }
 

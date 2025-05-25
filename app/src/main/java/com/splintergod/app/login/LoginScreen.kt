@@ -41,12 +41,15 @@ import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import org.koin.androidx.compose.koinViewModel // Correct import for koinViewModel in Composables
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+import com.splintergod.app.MainActivityViewModel
+
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = koinViewModel() // Use koinViewModel for Composables
+    loginViewModel: LoginViewModel = koinViewModel(),
+    mainActivityViewModel: MainActivityViewModel = koinViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by loginViewModel.state.collectAsState()
     val context = LocalContext.current
 
     // This was how LoginFragment.Content was structured.
@@ -65,7 +68,7 @@ fun LoginScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loadPlayerData()
+        loginViewModel.loadPlayerData()
     }
 
     Box(
@@ -79,11 +82,11 @@ fun LoginScreen(
         when (val viewState = state) { // Use a stable variable for the when expression
             is LoginViewState.Loading -> LoadingScreen(R.drawable.loading)
             is LoginViewState.Success -> ReadyScreen(
-                navController = navController, // Pass NavController
+                navController = navController,
+                mainActivityViewModel = mainActivityViewModel, // Pass it down
                 players = viewState.players,
-                // onClickPlayer is handled by navController in ReadyScreen/PlayerItem
-                onDeletePlayer = viewState.onDeletePlayer,
-                onAddPlayer = viewState.onAddPlayer
+                onDeletePlayer = viewState.onDeletePlayer, // This comes from LoginViewModel's state
+                onAddPlayer = viewState.onAddPlayer     // This comes from LoginViewModel's state
             )
             is LoginViewState.CouldNotFindPlayerError -> CouldNotFindPlayerErrorScreen(
                 player = viewState.player,
@@ -140,7 +143,8 @@ fun CouldNotFindPlayerErrorScreen(
 
 @Composable
 fun ReadyScreen(
-    navController: NavHostController, // Added NavController
+    navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel, // Added mainActivityViewModel
     players: List<LoginViewModel.PlayerRowInfo>,
     onDeletePlayer: (player: String) -> Unit,
     onAddPlayer: (player: String) -> Unit
@@ -170,13 +174,14 @@ fun ReadyScreen(
             }
         } else {
             AccountsList(
-                navController = navController, // Pass NavController
+                navController = navController,
+                mainActivityViewModel = mainActivityViewModel, // Pass it down
                 players = players,
                 onDelete = onDeletePlayer
             )
         }
         Spacer(Modifier.height(12.dp))
-        AddAccountCard(onAddPlayer, "")
+        AddAccountCard(onAddPlayer, "") // onAddPlayer here is loginViewModel.onAddPlayer via state
     }
 }
 
@@ -234,7 +239,8 @@ fun AddAccountCard(onAddPlayer: (player: String) -> Unit, prefilledPlayer: Strin
 
 @Composable
 fun AccountsList(
-    navController: NavHostController, // Added NavController
+    navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel, // Added mainActivityViewModel
     players: List<LoginViewModel.PlayerRowInfo>,
     onDelete: (player: String) -> Unit
 ) {
@@ -253,7 +259,8 @@ fun AccountsList(
             val textMinWidth = remember { mutableStateOf(0.dp) }
             players.forEach {
                 PlayerItem(
-                    navController = navController, // Pass NavController
+                    navController = navController,
+                    mainActivityViewModel = mainActivityViewModel, // Pass it down
                     player = it,
                     minTextWidth = textMinWidth,
                     onDelete = onDelete
@@ -266,7 +273,8 @@ fun AccountsList(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlayerItem(
-    navController: NavHostController, // Added NavController
+    navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel, // Added mainActivityViewModel
     player: LoginViewModel.PlayerRowInfo,
     minTextWidth: MutableState<Dp>,
     onDelete: (player: String) -> Unit
@@ -275,7 +283,7 @@ fun PlayerItem(
 
     ListItem(modifier = Modifier
         .clickable {
-            // Navigate to account details, this was the original intent of onClickPlayer
+            mainActivityViewModel.setPlayer(player.name) // Set player in session via MainActivityViewModel
             navController.navigate("account_details/${player.name}")
         },
         text = {
