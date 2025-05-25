@@ -2,10 +2,6 @@
 
 package com.splintergod.app.rewards
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,54 +18,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.splintergod.app.MainActivity
 import com.splintergod.app.R
-import com.splintergod.app.carddetail.CardDetailFragment
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 
-
-/**
- * Rewards fragment
- */
-class RewardsFragment : Fragment() {
-
-    private val viewModel: RewardsViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        activity?.title = getString(R.string.rewards)
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value) {
-                    viewModel.session.currentCardDetailId = it.cardId.toString()
-                    viewModel.session.currentCardDetailLevel = 1
-                    (requireActivity() as MainActivity).setCurrentFragment(CardDetailFragment())
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun Content(state: RewardsViewState, onClickCard: (id: CardReward) -> Unit) {
-
+fun RewardScreen(
+    navController: NavHostController,
+    viewModel: RewardsViewModel = koinViewModel()
+) {
+    val state = viewModel.state.collectAsState().value
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
@@ -82,7 +52,10 @@ fun Content(state: RewardsViewState, onClickCard: (id: CardReward) -> Unit) {
 
         when (state) {
             is RewardsViewState.Loading -> LoadingScreen(R.drawable.chest)
-            is RewardsViewState.Success -> ReadyScreen(rewardGroups = state.rewardsGroups, onClickCard)
+            is RewardsViewState.Success -> ReadyScreen(
+                navController = navController, // Pass navController
+                rewardGroups = state.rewardsGroups
+            )
             is RewardsViewState.Error -> ErrorScreen()
         }
 
@@ -92,7 +65,8 @@ fun Content(state: RewardsViewState, onClickCard: (id: CardReward) -> Unit) {
 
 @Composable
 fun ReadyScreen(
-    rewardGroups: List<RewardGroup>, onClickCard: (id: CardReward) -> Unit
+    navController: NavHostController, // Added navController
+    rewardGroups: List<RewardGroup>
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -111,14 +85,20 @@ fun ReadyScreen(
                 )
             }
             items(rewardGroup.rewards.size) { balance ->
-                RewardItem(rewardGroup.rewards[balance], onClickCard)
+                RewardItem(
+                    navController = navController, // Pass navController
+                    reward = rewardGroup.rewards[balance]
+                )
             }
         }
     }
 }
 
 @Composable
-fun RewardItem(reward: Reward, onClickCard: (id: CardReward) -> Unit) {
+fun RewardItem(
+    navController: NavHostController, // Added navController
+    reward: Reward
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -129,7 +109,7 @@ fun RewardItem(reward: Reward, onClickCard: (id: CardReward) -> Unit) {
                     .padding(2.dp)
                     .fillMaxWidth()
                     .clickable {
-                        onClickCard(reward)
+                        navController.navigate("card_detail/${reward.cardId}/1") // Updated navigation
                     }
             } else {
                 Modifier
@@ -183,5 +163,8 @@ fun RewardsPreview() {
             )
         )
     )
-    ReadyScreen(rewardGroups = mockRewards) {}
+    // This preview won't work directly with NavHostController,
+    // but the structure is for compilation and basic layout check.
+    // For full preview, you might need to mock NavHostController or adjust the Composable.
+    // ReadyScreen(navController = rememberNavController(), rewardGroups = mockRewards)
 }

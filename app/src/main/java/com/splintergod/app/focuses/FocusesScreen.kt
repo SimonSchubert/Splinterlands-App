@@ -2,20 +2,25 @@
 
 package com.splintergod.app.focuses
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
@@ -33,34 +38,33 @@ import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Focus
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun FocusesScreen(
+    navController: NavHostController,
+    viewModel: FocusesViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
 
-/**
- * Focuses fragment
- */
-class FocusesFragment : Fragment() {
-
-    private val viewModel: FocusesViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        activity?.title = getString(R.string.focuses)
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value)
-            }
-        }
+    LaunchedEffect(Unit) {
+        viewModel.loadRewards()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.loadRewards()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Focuses") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) {
+        Content(state = state)
     }
 }
 
@@ -92,7 +96,7 @@ fun ReadyScreen(
     focuses: List<Focus>
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
         items(focuses.size) { index ->
@@ -103,7 +107,7 @@ fun ReadyScreen(
 
 @Composable
 fun FocusItem(focus: Focus) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) { // Reduced horizontal padding, added vertical
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -145,7 +149,8 @@ fun FocusItem(focus: Focus) {
 
 @Composable
 @Preview
-fun RewardsPreview() {
+fun FocusesPreview() { // Renamed from RewardsPreview for clarity
     val mockFocuses = emptyList<Focus>()
-    ReadyScreen(focuses = mockFocuses)
+    // ReadyScreen(focuses = mockFocuses) // Scaffold padding makes direct preview of ReadyScreen tricky
+    // For a more useful preview, you might wrap ReadyScreen in a Box or similar with padding.
 }

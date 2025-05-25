@@ -34,6 +34,8 @@ class MainActivityViewModel(val session: Session, val cache: Cache, val requests
         return session.player.isNotEmpty()
     }
 
+    fun getPlayerName(): String = session.player
+
     fun logout() {
         session.logout()
     }

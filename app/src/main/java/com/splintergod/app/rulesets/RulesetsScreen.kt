@@ -2,10 +2,7 @@
 
 package com.splintergod.app.rulesets
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,21 +11,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
@@ -36,34 +40,33 @@ import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Ruleset
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun RulesetsScreen(
+    navController: NavHostController,
+    viewModel: RulesetsViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
 
-/**
- * Rewards fragment
- */
-class RulesetsFragment : Fragment() {
-
-    private val viewModel: RulesetsViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        activity?.title = getString(R.string.rulesets)
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value)
-            }
-        }
+    LaunchedEffect(Unit) {
+        viewModel.loadRewards()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.loadRewards()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Rulesets") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) {
+        Content(state = state)
     }
 }
 
@@ -95,7 +98,7 @@ fun ReadyScreen(
     rulesets: List<Ruleset>
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
         items(rulesets.size) { index ->
@@ -106,7 +109,7 @@ fun ReadyScreen(
 
 @Composable
 fun RulesetItem(ruleset: Ruleset) {
-    Column {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) { // Added vertical padding
 
         ListItem(icon = {
             AsyncImage(
@@ -134,7 +137,7 @@ fun RulesetItem(ruleset: Ruleset) {
 
 @Composable
 @Preview
-fun RewardsPreview() {
+fun RulesetsPreview() { // Renamed for clarity
     val mockRulesets = emptyList<Ruleset>()
-    ReadyScreen(rulesets = mockRulesets)
+    // ReadyScreen(rulesets = mockRulesets) // Scaffold padding makes direct preview tricky
 }

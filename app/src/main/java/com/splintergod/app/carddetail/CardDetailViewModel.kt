@@ -1,6 +1,5 @@
 package com.splintergod.app.carddetail
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
@@ -16,22 +15,27 @@ import kotlinx.coroutines.launch
 
 class CardDetailViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
-    private val _state = MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { onRefresh() })
+    private val _state = MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { loadCardFromSession() }) // Default onRefresh can call loadCardFromSession or a specific load
     val state = _state.asStateFlow()
 
-    var cardName = MutableLiveData("")
+    private val _cardNameStateFlow = MutableStateFlow("")
+    val cardNameStateFlow = _cardNameStateFlow.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = CardDetailViewState.Error { onRefresh() }
+        _state.value = CardDetailViewState.Error { loadCardFromSession() } // Default onRefresh
     }
 
-    fun loadCard() {
+    fun loadCard(cardId: String, level: Int) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _state.value = CardDetailViewState.Loading { onRefresh() }
+            _state.value = CardDetailViewState.Loading { loadCard(cardId, level) } // Specific onRefresh
+
+            // Set session values if needed by other parts of the app, though CardDetailScreen uses arguments
+            session.currentCardDetailId = cardId
+            session.currentCardDetailLevel = level
 
             val cardDetails = cache.getCardDetails()
-            val cardDetail = cardDetails.firstOrNull { it.id == session.currentCardDetailId }
+            val cardDetail = cardDetails.firstOrNull { it.id == cardId }
 
 
             if (cardDetail != null) {
@@ -46,7 +50,7 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                     else -> R.drawable.asset_dec
                 }
 
-                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, session.currentCardDetailLevel)
+                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, level)
                 card.setStats(cardDetail)
 
                 val cards = cache.getCollection(session.player)
@@ -55,10 +59,10 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                     card.regularLevels = it.regularLevels
                 }
 
-                cardName.postValue(card.name)
+                _cardNameStateFlow.value = card.name
 
                 _state.value = CardDetailViewState.Success(
-                    onRefresh = { onRefresh() },
+                    onRefresh = { loadCard(cardId, level) }, // Specific onRefresh
                     colorIcon = colorIcon,
                     card = card,
                     cardDetail = cardDetail,
@@ -66,16 +70,19 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                 )
             } else {
                 _state.value = CardDetailViewState.Error(
-                    onRefresh = { onRefresh() }
+                    onRefresh = { loadCard(cardId, level) } // Specific onRefresh
                 )
             }
         }
     }
 
-    private fun onRefresh() {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _state.value = CardDetailViewState.Loading { onRefresh() }
-
+    // Renamed the original loadCard to loadCardFromSession for clarity if needed by onRefresh in Content
+    fun loadCardFromSession() {
+        if (session.currentCardDetailId.isNotEmpty()) {
+            loadCard(session.currentCardDetailId, session.currentCardDetailLevel)
+        } else {
+            // Handle case where session might not have card details (e.g. direct link or error)
+            _state.value = CardDetailViewState.Error { /* Decide on a refresh strategy */ }
         }
     }
 }

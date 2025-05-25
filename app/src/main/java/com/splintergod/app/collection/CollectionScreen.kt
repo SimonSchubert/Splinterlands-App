@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
+@file:OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 
 package com.splintergod.app.collection
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,51 +46,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.splintergod.app.MainActivity
 import com.splintergod.app.R
-import com.splintergod.app.carddetail.CardDetailFragment
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
-/**
- * Collection fragment
- */
-class CollectionFragment : Fragment() {
-
-    private val viewModel: CollectionViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        activity?.title = getString(R.string.collection)
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value) {
-                    viewModel.session.currentCardDetailId = it.cardId
-                    viewModel.session.currentCardDetailLevel = it.level
-                    (requireActivity() as MainActivity).setCurrentFragment(CardDetailFragment())
-                }
-            }
-        }
-    }
-}
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun Content(state: CollectionViewState, onClickCard: (id: CardViewState) -> Unit) {
-
+fun CollectionScreen(
+    navController: NavHostController,
+    viewModel: CollectionViewModel = koinViewModel()
+) {
+    val state = viewModel.state.collectAsState().value
     val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
@@ -122,7 +92,9 @@ fun Content(state: CollectionViewState, onClickCard: (id: CardViewState) -> Unit
                 sortingStates = state.sortingElementStates,
                 selectedSorting = state.selectedSorting,
                 onClickSorting = state.onClickSorting,
-                onClickCard = onClickCard
+                onClickCard = { card ->
+                    navController.navigate("card_detail/${card.cardId}/${card.level}")
+                }
             )
 
             is CollectionViewState.Error -> ErrorScreen()

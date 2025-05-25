@@ -2,10 +2,7 @@
 
 package com.splintergod.app.abilities
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,51 +11,75 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
+import com.splintergod.app.composables.ErrorScreen // Using common ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
+import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Ability
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun AbilitiesScreen(
+    navController: NavHostController,
+    viewModel: AbilitiesViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
 
-class AbilitiesFragment : Fragment() {
+    LaunchedEffect(Unit) {
+        // The ViewModel's init block handles initial loading.
+        // The pull-to-refresh will use the onRefresh lambda from the state.
+        // If an explicit initial load outside of init was ever needed, it would go here.
+        // For now, relying on ViewModel's init.
+    }
 
-    private val viewModel: AbilitiesViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        activity?.title = getString(R.string.abilities)
-
-        return ComposeView(requireContext()).apply {
-            setContent {
-                Content(viewModel.state.collectAsState().value)
-            }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Abilities") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
         }
+    ) {
+        Content(state = state)
     }
 }
 
 @Composable
 fun Content(state: AbilitiesViewState) {
-    val pullRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = { state.onRefresh })
+    // state.onRefresh is a lambda provided by the ViewModel's state
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = state.isRefreshing, // isRefreshing should be part of AbilitiesViewState
+        onRefresh = { state.onRefresh() }
+    )
 
     Box(
         modifier = Modifier
@@ -71,7 +92,10 @@ fun Content(state: AbilitiesViewState) {
         when (state) {
             is AbilitiesViewState.Loading -> LoadingScreen(R.drawable.loading)
             is AbilitiesViewState.Success -> ReadyScreen(abilities = state.abilities)
-            is AbilitiesViewState.Error -> ErrorScreen()
+            is AbilitiesViewState.Error -> ErrorScreen(onRefresh = { state.onRefresh() }) // Pass the onRefresh lambda
+        }
+        if (state !is AbilitiesViewState.Loading) { // Show indicator only when not initially loading
+            SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
         }
     }
 }
@@ -81,7 +105,7 @@ fun ReadyScreen(
     abilities: List<Ability>
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
         items(abilities.size) { index ->
@@ -91,23 +115,8 @@ fun ReadyScreen(
 }
 
 @Composable
-fun ErrorScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Something went wrong",
-            color = Color.White
-        )
-    }
-}
-
-@Composable
 fun AbilityItem(ability: Ability) {
-    Column {
-
+    Column(modifier = Modifier.padding(vertical = 8.dp)) { // Added vertical padding
         ListItem(icon = {
             AsyncImage(
                 model = ability.getImageUrl(),
@@ -134,9 +143,9 @@ fun AbilityItem(ability: Ability) {
 
 @Composable
 @Preview
-fun RewardsPreview() {
+fun AbilitiesPreview() { // Renamed for clarity
     val mockAbilities = listOf(
-        Ability("", "")
+        Ability(name = "Flying", desc = "Has an increased chance of evading Melee or Ranged attacks from Monsters who do not have the Flying ability.")
     )
-    ReadyScreen(abilities = mockAbilities)
+    // ReadyScreen(abilities = mockAbilities) // Scaffold padding makes direct preview tricky
 }
