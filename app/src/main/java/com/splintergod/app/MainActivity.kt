@@ -4,22 +4,17 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.splintergod.app.accountdetails.AccountDetailsScreen
-import com.splintergod.app.carddetail.CardDetailScreen
-import com.splintergod.app.focuses.FocusesScreen
 import com.splintergod.app.abilities.AbilitiesScreen
-import com.splintergod.app.login.LoginScreen
+import com.splintergod.app.accountdetails.AccountDetailsScreen
 import com.splintergod.app.balances.BalancesScreen
-import com.splintergod.app.login.LoginViewModel
+import com.splintergod.app.carddetail.CardDetailScreen
+import com.splintergod.app.login.LoginScreen
 import com.splintergod.app.rulesets.RulesetsScreen
-import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -63,10 +58,11 @@ class MainActivity : AppCompatActivity() {
                 ) { backStackEntry ->
                     val cardId = backStackEntry.arguments?.getString("cardId") ?: ""
                     val levelString = backStackEntry.arguments?.getString("level") ?: "1"
-                    CardDetailScreen(navController = navController, cardId = cardId, levelString = levelString)
-                }
-                composable("focuses") {
-                    FocusesScreen(navController = navController)
+                    CardDetailScreen(
+                        navController = navController,
+                        cardId = cardId,
+                        levelString = levelString
+                    )
                 }
                 composable("rulesets") {
                     RulesetsScreen(navController = navController)

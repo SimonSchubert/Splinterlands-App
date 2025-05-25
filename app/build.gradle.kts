@@ -70,7 +70,7 @@ dependencies {
 
     implementation("io.insert-koin:koin-core:4.0.4")
     implementation("io.insert-koin:koin-android:4.0.4")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.6") // Or the version compatible with Koin 4.0.4
+    implementation("io.insert-koin:koin-androidx-compose:4.0.4") // Or the version compatible with Koin 4.0.4
 
     androidTestImplementation("io.ktor:ktor-client-mock:3.1.3")
 

@@ -6,20 +6,16 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainActivityViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
+class MainActivityViewModel(val session: Session, val cache: Cache, val requests: Requests) :
+    ViewModel() {
 
     var isInitialized = false
-
-    fun setPlayer(playerName: String) {
-        session.setCurrentPlayer(playerName)
-        init()
-    }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
 
-    fun init() {
+    init {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             cache.getSettings()?.let {
                 assetUrl = it.assetUrl
@@ -28,6 +24,10 @@ class MainActivityViewModel(val session: Session, val cache: Cache, val requests
             assetUrl = gameSettings.assetUrl
         }
         isInitialized = true
+    }
+
+    fun setPlayer(playerName: String) {
+        session.setCurrentPlayer(playerName)
     }
 
     fun isLoggedIn(): Boolean {

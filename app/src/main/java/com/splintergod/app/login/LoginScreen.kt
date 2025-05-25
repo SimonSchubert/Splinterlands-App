@@ -2,26 +2,48 @@
 
 package com.splintergod.app.login
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ListItem
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,14 +56,12 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.splintergod.app.MainActivityViewModel
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import org.koin.androidx.compose.koinViewModel // Correct import for koinViewModel in Composables
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
-import com.splintergod.app.MainActivityViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
@@ -50,22 +70,16 @@ fun LoginScreen(
     mainActivityViewModel: MainActivityViewModel = koinViewModel()
 ) {
     val state by loginViewModel.state.collectAsState()
-    val context = LocalContext.current
 
     // This was how LoginFragment.Content was structured.
     // The original LoginFragment.Content also had an onClickPlayer lambda,
     // but in the Compose Navigation setup, navigation is handled directly by navController.
     // So, onClickPlayer is passed down to ReadyScreen which then uses navController.
 
-    var refreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = {
-        refreshing = true
-        state.onRefresh(context) // Assuming onRefresh is part of the state and takes context
-    })
-
-    if (refreshing && state is LoginViewState.Success) {
-        refreshing = state.isRefreshing // isRefreshing should be part of the Success state
-    }
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = state is LoginViewState.Loading, onRefresh = {
+            state.onRefresh() // Assuming onRefresh is part of the state and takes context
+        })
 
     LaunchedEffect(Unit) {
         loginViewModel.loadPlayerData()
@@ -88,13 +102,14 @@ fun LoginScreen(
                 onDeletePlayer = viewState.onDeletePlayer, // This comes from LoginViewModel's state
                 onAddPlayer = viewState.onAddPlayer     // This comes from LoginViewModel's state
             )
+
             is LoginViewState.CouldNotFindPlayerError -> CouldNotFindPlayerErrorScreen(
                 player = viewState.player,
                 onAddPlayer = viewState.onAddPlayer,
                 onClickBack = viewState.onClickBack
             )
         }
-        SplinterPullRefreshIndicator(pullRefreshState, refreshing) // Pass refreshing state to indicator
+        SplinterPullRefreshIndicator(pullRefreshState) // Pass refreshing state to indicator
     }
 }
 
@@ -230,7 +245,11 @@ fun AddAccountCard(onAddPlayer: (player: String) -> Unit, prefilledPlayer: Strin
                     onAddPlayer(text.text)
                     text = TextFieldValue("")
                 }) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "Add", tint = Color.White) // Added contentDescription
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Add",
+                        tint = Color.White
+                    ) // Added contentDescription
                 }
             }
         }
@@ -281,11 +300,12 @@ fun PlayerItem(
 ) {
     val showDeleteDialog = remember { mutableStateOf(false) }
 
-    ListItem(modifier = Modifier
-        .clickable {
-            mainActivityViewModel.setPlayer(player.name) // Set player in session via MainActivityViewModel
-            navController.navigate("account_details/${player.name}")
-        },
+    ListItem(
+        modifier = Modifier
+            .clickable {
+                mainActivityViewModel.setPlayer(player.name) // Set player in session via MainActivityViewModel
+                navController.navigate("account_details/${player.name}")
+            },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val localDensity = LocalDensity.current
@@ -316,7 +336,11 @@ fun PlayerItem(
         },
         trailing = {
             IconButton(onClick = { showDeleteDialog.value = true }) {
-                Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete", tint = Color.White) // Added contentDescription
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.White
+                ) // Added contentDescription
             }
         }
     )

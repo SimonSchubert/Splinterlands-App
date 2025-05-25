@@ -4,16 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.splintergod.app.Cache
 import com.splintergod.app.Requests
+import com.splintergod.app.Session
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.splintergod.app.Session
 
 class LoginViewModel(val cache: Cache, val requests: Requests, val session: Session) : ViewModel() {
 
-    private val _state = MutableStateFlow<LoginViewState>(LoginViewState.Loading { onRefresh() })
+    private val _state =
+        MutableStateFlow<LoginViewState>(LoginViewState.Loading(onRefresh = ::onRefresh))
     val state = _state.asStateFlow()
 
     private val players = mutableListOf<PlayerRowInfo>()
@@ -48,8 +49,8 @@ class LoginViewModel(val cache: Cache, val requests: Requests, val session: Sess
     }
 
     private fun updateSuccessState(isRefreshing: Boolean) {
-        _state.value = LoginViewState.Success(players = players,
-            isRefreshing = isRefreshing,
+        _state.value = LoginViewState.Success(
+            players = players,
             onDeletePlayer = { onDelete(it) },
             onAddPlayer = { onAddPlayer(it) },
             onRefresh = { onRefresh() }

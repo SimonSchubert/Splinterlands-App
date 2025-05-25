@@ -65,7 +65,8 @@ fun CollectionScreen(
     viewModel: CollectionViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -216,7 +217,8 @@ fun FilterDialog(
                         )
                     }
 
-                    DropdownMenu(expanded = mExpanded.value,
+                    DropdownMenu(
+                        expanded = mExpanded.value,
                         onDismissRequest = { mExpanded.value = false }) {
 
                         sortingStates.forEach { sorting ->
@@ -239,7 +241,8 @@ fun FilterDialog(
 
                 Spacer(Modifier.height(6.dp))
 
-                FilterGroup("Rarity",
+                FilterGroup(
+                    "Rarity",
                     content = {
                         filterRarityStates.forEach { rarityState ->
                             Box(
@@ -252,7 +255,8 @@ fun FilterDialog(
 
                 Spacer(Modifier.height(6.dp))
 
-                FilterGroup("Editions",
+                FilterGroup(
+                    "Editions",
                     content = {
                         filterEditionStates.forEach { editionState ->
                             Box(
@@ -299,7 +303,8 @@ fun BasicFilterGroup(
     filterStates: List<FilterState.Basic>,
     onClick: (String) -> Unit
 ) {
-    FilterGroup(title,
+    FilterGroup(
+        title,
         content = {
             filterStates.forEach { roleState ->
                 Box(

@@ -1,14 +1,28 @@
 package com.splintergod.app.accountdetails
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -22,9 +36,16 @@ import com.splintergod.app.collection.CollectionScreen
 import com.splintergod.app.rewards.RewardScreen
 import org.koin.androidx.compose.koinViewModel
 
-sealed class AccountDetailsScreenTabs(val route: String, val label: String, val iconResId: Int, val contentDescription: String) {
-    object Collection : AccountDetailsScreenTabs("collection", "Collection", R.drawable.collection, "Collection")
-    object Reward : AccountDetailsScreenTabs("reward", "Reward", R.drawable.chest, "Reward")
+sealed class AccountDetailsScreenTabs(
+    val route: String,
+    val label: String,
+    val iconResId: Int,
+    val contentDescription: String
+) {
+    data object Collection :
+        AccountDetailsScreenTabs("collection", "Collection", R.drawable.collection, "Collection")
+
+    data object Reward : AccountDetailsScreenTabs("reward", "Reward", R.drawable.chest, "Reward")
 }
 
 val accountDetailsTabs = listOf(
@@ -55,7 +76,7 @@ fun AccountDetailsScreen(
                             }
                         }
                     }) {
-                        Icon(Icons.Filled.ExitToApp, contentDescription = "Logout")
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
                     }
 
                     IconButton(onClick = { showMenu = !showMenu }) {
@@ -66,12 +87,6 @@ fun AccountDetailsScreen(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
-                        DropdownMenuItem(onClick = {
-                            navController.navigate("focuses")
-                            showMenu = false
-                        }) {
-                            Text("Focuses")
-                        }
                         DropdownMenuItem(onClick = {
                             navController.navigate("rulesets")
                             showMenu = false
@@ -101,7 +116,13 @@ fun AccountDetailsScreen(
 
                 accountDetailsTabs.forEach { screen ->
                     BottomNavigationItem(
-                        icon = { Icon(painterResource(id = screen.iconResId), contentDescription = screen.contentDescription) },
+                        icon = {
+                            Image(
+                                painterResource(id = screen.iconResId),
+                                modifier = Modifier.size(32.dp),
+                                contentDescription = screen.contentDescription
+                            )
+                        },
                         label = { Text(screen.label) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {

@@ -55,7 +55,6 @@ import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Balances
 import org.koin.androidx.compose.koinViewModel
-import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -168,7 +167,8 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    val ownedCount = state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
+                    val ownedCount =
+                        state.card.regularLevels.count { it == rowIndex + 1 } + state.card.goldLevels.count { it == rowIndex + 1 }
                     if (ownedCount > 0) {
                         Box(
                             contentAlignment = Alignment.TopCenter
@@ -235,11 +235,13 @@ fun ReadyScreen(state: CardDetailViewState.Success) {
                         )
                     }
 
-                    val rowAbilities = state.cardDetail.stats.abilities?.take(rowIndex + 1)?.flatten()
+                    val rowAbilities =
+                        state.cardDetail.stats.abilities?.take(rowIndex + 1)?.flatten()
 
                     repeat(allAbilitiesCount) { index ->
 
-                        val abilityImageUrl = state.abilities.firstOrNull { it.name == rowAbilities?.getOrNull(index) }
+                        val abilityImageUrl =
+                            state.abilities.firstOrNull { it.name == rowAbilities?.getOrNull(index) }
 
                         if (abilityImageUrl != null) {
                             AsyncImage(

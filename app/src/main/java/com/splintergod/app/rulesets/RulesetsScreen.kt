@@ -73,7 +73,8 @@ fun RulesetsScreen(
 @Composable
 fun Content(state: RulesetsViewState) {
 
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -89,7 +90,7 @@ fun Content(state: RulesetsViewState) {
             is RulesetsViewState.Error -> ErrorScreen()
         }
 
-        SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
+        SplinterPullRefreshIndicator(pullRefreshState)
     }
 }
 
@@ -98,7 +99,9 @@ fun ReadyScreen(
     rulesets: List<Ruleset>
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
         items(rulesets.size) { index ->
@@ -111,13 +114,14 @@ fun ReadyScreen(
 fun RulesetItem(ruleset: Ruleset) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) { // Added vertical padding
 
-        ListItem(icon = {
-            AsyncImage(
-                model = ruleset.getImageUrl(),
-                modifier = Modifier.size(50.dp, 50.dp),
-                contentDescription = ""
-            )
-        },
+        ListItem(
+            icon = {
+                AsyncImage(
+                    model = ruleset.getImageUrl(),
+                    modifier = Modifier.size(50.dp, 50.dp),
+                    contentDescription = ""
+                )
+            },
             text = {
                 Text(
                     text = ruleset.name.uppercase(),

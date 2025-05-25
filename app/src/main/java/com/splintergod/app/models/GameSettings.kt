@@ -1,7 +1,6 @@
 package com.splintergod.app.models
 
-import com.google.gson.*
-import com.google.gson.annotations.*
+import com.google.gson.annotations.SerializedName
 
 data class GameSettings(
     @SerializedName("asset_url") val assetUrl: String = "",

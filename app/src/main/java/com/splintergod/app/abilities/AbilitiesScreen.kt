@@ -22,7 +22,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,7 +35,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.splintergod.app.R
 import com.splintergod.app.composables.BackgroundImage
-import com.splintergod.app.composables.ErrorScreen // Using common ErrorScreen
+import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Ability
@@ -79,9 +78,7 @@ fun AbilitiesScreen(
         ) {
             Content(state = screenState) // Pass the screenState to Content
             SplinterPullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
+                pullRefreshState
             )
         }
     }
@@ -112,7 +109,9 @@ fun ReadyScreen(
     abilities: List<Ability>
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 300.dp)
     ) {
         items(abilities.size) { index ->
@@ -124,13 +123,14 @@ fun ReadyScreen(
 @Composable
 fun AbilityItem(ability: Ability) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) { // Added vertical padding
-        ListItem(icon = {
-            AsyncImage(
-                model = ability.getImageUrl(),
-                modifier = Modifier.size(50.dp, 50.dp),
-                contentDescription = ""
-            )
-        },
+        ListItem(
+            icon = {
+                AsyncImage(
+                    model = ability.getImageUrl(),
+                    modifier = Modifier.size(50.dp, 50.dp),
+                    contentDescription = ""
+                )
+            },
             text = {
                 Text(
                     text = ability.name.uppercase(),
@@ -152,7 +152,10 @@ fun AbilityItem(ability: Ability) {
 @Preview
 fun AbilitiesPreview() { // Renamed for clarity
     val mockAbilities = listOf(
-        Ability(name = "Flying", desc = "Has an increased chance of evading Melee or Ranged attacks from Monsters who do not have the Flying ability.")
+        Ability(
+            name = "Flying",
+            desc = "Has an increased chance of evading Melee or Ranged attacks from Monsters who do not have the Flying ability."
+        )
     )
     // ReadyScreen(abilities = mockAbilities) // Scaffold padding makes direct preview tricky
 }

@@ -13,9 +13,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CardDetailViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
+class CardDetailViewModel(val session: Session, val cache: Cache, val requests: Requests) :
+    ViewModel() {
 
-    private val _state = MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { loadCardFromSession() }) // Default onRefresh can call loadCardFromSession or a specific load
+    private val _state =
+        MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { loadCardFromSession() }) // Default onRefresh can call loadCardFromSession or a specific load
     val state = _state.asStateFlow()
 
     private val _cardNameStateFlow = MutableStateFlow("")
@@ -28,7 +30,8 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
 
     fun loadCard(cardId: String, level: Int) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _state.value = CardDetailViewState.Loading { loadCard(cardId, level) } // Specific onRefresh
+            _state.value =
+                CardDetailViewState.Loading { loadCard(cardId, level) } // Specific onRefresh
 
             // Set session values if needed by other parts of the app, though CardDetailScreen uses arguments
             session.currentCardDetailId = cardId
@@ -50,7 +53,12 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
                     else -> R.drawable.asset_dec
                 }
 
-                val card = Card(cardDetail.id, cardDetail.editions.split(",").first().toInt(), false, level)
+                val card = Card(
+                    cardDetail.id,
+                    cardDetail.editions.split(",").first().toInt(),
+                    false,
+                    level
+                )
                 card.setStats(cardDetail)
 
                 val cards = cache.getCollection(session.player)

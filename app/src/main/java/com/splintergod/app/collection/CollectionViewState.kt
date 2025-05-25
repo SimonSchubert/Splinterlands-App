@@ -31,7 +31,8 @@ sealed class CollectionViewState(open val isRefreshing: Boolean) {
 sealed class FilterState(open val id: String, open var selected: Boolean = false) {
     data class Basic(override var id: String, @DrawableRes val imageRes: Int) : FilterState(id)
     data class Rarity(val rarity: Int, val color: Color) : FilterState(rarity.toString())
-    data class Edition(val edition: Int, @DrawableRes val imageRes: Int) : FilterState(edition.toString())
+    data class Edition(val edition: Int, @DrawableRes val imageRes: Int) :
+        FilterState(edition.toString())
 }
 
 data class CardViewState(

@@ -8,13 +8,15 @@ import com.splintergod.app.Session
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.StateFlow
 
-class BalancesViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
+class BalancesViewModel(val session: Session, val cache: Cache, val requests: Requests) :
+    ViewModel() {
 
-    private val _state = MutableStateFlow<BalancesViewState>(BalancesViewState.Loading)
+    private val _state =
+        MutableStateFlow<BalancesViewState>(BalancesViewState.Loading(onRefresh = ::refreshBalances))
     val state: StateFlow<BalancesViewState> = _state.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -22,7 +24,7 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = BalancesViewState.Error
+        _state.value = BalancesViewState.Error(onRefresh = ::refreshBalances)
         _isRefreshing.value = false // Ensure refreshing is stopped on error
     }
 
@@ -33,7 +35,7 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
     fun refreshBalances() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             _isRefreshing.value = true
-            _state.value = BalancesViewState.Loading
+            _state.value = BalancesViewState.Loading(onRefresh = ::refreshBalances)
             try {
                 // The problem description states loadRewards() loads balances.
                 // The original loadRewards() first showed cached, then fetched.
@@ -41,14 +43,21 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
                 // Consolidating to fetch directly for refreshBalances().
                 val balances = requests.getBalances(session.player)
                 if (balances.isNotEmpty()) {
-                    _state.value = BalancesViewState.Success(balances = balances)
+                    _state.value = BalancesViewState.Success(
+                        onRefresh = ::refreshBalances,
+                        balances = balances
+                    )
                 } else {
                     // Assuming empty balances is a valid success state, not an error.
-                    _state.value = BalancesViewState.Success(balances = emptyList())
+                    _state.value = BalancesViewState.Success(
+                        onRefresh = ::refreshBalances,
+                        balances = emptyList()
+                    )
                 }
             } catch (e: Exception) {
                 // Handled by coroutineExceptionHandler
-                _state.value = BalancesViewState.Error // Explicitly set error state
+                _state.value =
+                    BalancesViewState.Error(onRefresh = ::refreshBalances) // Explicitly set error state
             } finally {
                 _isRefreshing.value = false
             }

@@ -4,7 +4,12 @@ package com.splintergod.app.rewards
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,7 +35,17 @@ import com.splintergod.app.composables.BackgroundImage
 import com.splintergod.app.composables.ErrorScreen
 import com.splintergod.app.composables.LoadingScreen
 import com.splintergod.app.composables.SplinterPullRefreshIndicator
-import com.splintergod.app.models.*
+import com.splintergod.app.models.CardReward
+import com.splintergod.app.models.CreditsReward
+import com.splintergod.app.models.DecReward
+import com.splintergod.app.models.GlintReward
+import com.splintergod.app.models.GoldPotionReward
+import com.splintergod.app.models.LegendaryPotionReward
+import com.splintergod.app.models.MeritsReward
+import com.splintergod.app.models.PackReward
+import com.splintergod.app.models.Reward
+import com.splintergod.app.models.RewardGroup
+import com.splintergod.app.models.SPSReward
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -40,7 +55,8 @@ fun RewardScreen(
     viewModel: RewardsViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
-    val pullRefreshState = rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
+    val pullRefreshState =
+        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -56,10 +72,11 @@ fun RewardScreen(
                 navController = navController, // Pass navController
                 rewardGroups = state.rewardsGroups
             )
+
             is RewardsViewState.Error -> ErrorScreen()
         }
 
-        SplinterPullRefreshIndicator(pullRefreshState, state.isRefreshing)
+        SplinterPullRefreshIndicator(pullRefreshState)
     }
 }
 

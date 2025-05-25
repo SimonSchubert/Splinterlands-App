@@ -21,13 +21,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +40,7 @@ import com.splintergod.app.composables.SplinterPullRefreshIndicator
 import com.splintergod.app.models.Balances
 import org.koin.androidx.compose.koinViewModel
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 
 private val numberFormat: NumberFormat = NumberFormat.getNumberInstance(Locale.US)
 
@@ -82,11 +80,7 @@ fun BalancesScreen(
                 .pullRefresh(pullRefreshState)
         ) {
             Content(state = screenState)
-            SplinterPullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+            SplinterPullRefreshIndicator(pullRefreshState)
         }
     }
 }
@@ -114,7 +108,9 @@ fun Content(state: BalancesViewState) {
 @Composable
 fun ReadyScreen(balances: List<Balances>) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize().padding(8.dp), // Added padding
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp), // Added padding
         columns = GridCells.Adaptive(minSize = 96.dp)
     ) {
         items(balances.size, key = { balances[it].token }) { index -> // Changed key usage
