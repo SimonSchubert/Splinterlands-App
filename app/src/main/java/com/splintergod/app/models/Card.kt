@@ -35,6 +35,7 @@ data class Card(
 
     fun getImageUrl(cardDetail: CardDetail, level: Int): String {
         val editionPath = when (edition) {
+            13 -> "rebellion"
             10 -> "soulbound"
             8 -> "rift"
             7 -> "chaos"
@@ -52,6 +53,7 @@ data class Card(
         } else {
             ""
         }
+        println("${assetUrl}cards_by_level/$editionPath/${cardDetail.name}_lv${level}${isGoldPath}.png")
         return "${assetUrl}cards_by_level/$editionPath/${cardDetail.name}_lv${level}${isGoldPath}.png"
     }
 

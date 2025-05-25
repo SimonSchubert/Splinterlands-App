@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.splintergod.app.abilities.AbilitiesFragment
 import com.splintergod.app.balances.BalancesFragment
-import com.splintergod.app.battles.BattlesFragment
 import com.splintergod.app.collection.CollectionFragment
 import com.splintergod.app.databinding.ActivityMainBinding
 import com.splintergod.app.focuses.FocusesFragment
@@ -37,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.battles -> setCurrentFragment(BattlesFragment())
                 R.id.collection -> setCurrentFragment(CollectionFragment())
                 R.id.balances -> setCurrentFragment(BalancesFragment())
             }
@@ -45,12 +43,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null || !viewModel.isInitialized) {
-            viewModel.init {
-                binding.bottomNavigation.isVisible = true
-                binding.bottomNavigation.selectedItemId = R.id.battles
-            }
             if (viewModel.isLoggedIn()) {
-                setCurrentFragment(BattlesFragment())
+                setCurrentFragment(BalancesFragment())
             } else {
                 setCurrentFragment(LoginFragment())
             }
@@ -59,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.addOnBackStackChangedListener {
             val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.include)
             val homeAsUpEnabled =
-                fragment !is LoginFragment && fragment !is BattlesFragment && fragment !is CollectionFragment && fragment !is BalancesFragment
+                fragment !is LoginFragment && fragment !is CollectionFragment && fragment !is BalancesFragment
             supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
         }
 
@@ -77,7 +71,6 @@ class MainActivity : AppCompatActivity() {
 
     fun setCurrentFragment(fragment: Fragment) {
         if (fragment is LoginFragment ||
-            fragment is BattlesFragment ||
             fragment is CollectionFragment ||
             fragment is BalancesFragment
         ) {
@@ -91,8 +84,6 @@ class MainActivity : AppCompatActivity() {
         }
         if (fragment is LoginFragment) {
             binding.bottomNavigation.isVisible = false
-        } else if (fragment is BattlesFragment) {
-            binding.bottomNavigation.isVisible = true
         }
         invalidateOptionsMenu()
     }

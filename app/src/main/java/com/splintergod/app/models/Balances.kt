@@ -6,6 +6,8 @@ import com.splintergod.app.R
 data class Balances(val player: String, var token: String, var balance: Float) {
     fun getDrawableResource(): Int {
         return when (token) {
+            "VOUCHER" -> R.drawable.asset_voucher
+            "GLINT" -> R.drawable.asset_glint
             "DEC" -> R.drawable.asset_dec
             "DEC-B" -> R.drawable.asset_dec_b
             "CREDITS" -> R.drawable.asset_credits

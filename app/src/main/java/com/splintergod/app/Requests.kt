@@ -12,6 +12,7 @@ import com.splintergod.app.models.CollectionResponse
 import com.splintergod.app.models.CreditsReward
 import com.splintergod.app.models.DecReward
 import com.splintergod.app.models.GameSettings
+import com.splintergod.app.models.GlintReward
 import com.splintergod.app.models.GoldPotionReward
 import com.splintergod.app.models.LegendaryPotionReward
 import com.splintergod.app.models.MeritsReward
@@ -23,7 +24,9 @@ import com.splintergod.app.models.RewardsInfo
 import com.splintergod.app.models.SPSReward
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -49,12 +52,25 @@ class Requests(val cache: Cache) {
     private val gson = GsonBuilder()
         .create()
 
-    private val client = HttpClient(CIO)
+    private val client = HttpClient {
+
+        install(Logging) {
+            logger = DebugKtorLogger()
+            level = LogLevel.BODY
+        }
+    }
+
+    class DebugKtorLogger : Logger {
+        override fun log(message: String) {
+            println("[KTOR] $message")
+        }
+    }
 
     private val endpoint = "https://api2.splinterlands.com"
 
     suspend fun getSettings(): GameSettings {
         val response: HttpResponse = client.get("$endpoint/settings")
+        println(response.bodyAsText())
         cache.write("game_settings.json", response.bodyAsText())
         return gson.fromJson(
             response.bodyAsText(),
@@ -122,6 +138,7 @@ class Requests(val cache: Cache) {
             client.get("$endpoint/battle/history2?player=$player&username=$player&format=modern")
         cache.write("battles_${player}_modern.json", responseModern.bodyAsText())
 
+        println(responseWild.bodyAsText())
         val battles = gson.fromJson(responseWild.bodyAsText(), BattleHistory::class.java).battles +
                 gson.fromJson(responseModern.bodyAsText(), BattleHistory::class.java).battles
         return battles.sortedByDescending { it.createdDate }
@@ -149,6 +166,7 @@ class Requests(val cache: Cache) {
             header("accept", "*/*")
             setBody(TextContent(jsonBody, ContentType.Application.Json))
         }.body()
+        println(request.bodyAsText())
         val json = JSONObject(request.bodyAsText())
         json.getJSONArray("result").toArrayList().reversed().forEach {
             val obj = it.getJSONObject(1)
@@ -175,44 +193,55 @@ class Requests(val cache: Cache) {
 
                 val date = json.getJSONObject("trx_info").getString("created_date")
 
-                resultJson.getJSONArray("rewards").toObjectList().forEach {
-                    when (it.getString("type")) {
-                        "potion" -> {
-                            if (it.getString("potion_type") == "gold") {
-                                rewards.add(GoldPotionReward(it.getInt("quantity")))
-                            } else {
-                                rewards.add(LegendaryPotionReward(it.getInt("quantity")))
+                println(resultJson)
+                    val minor = resultJson.getJSONObject("rewards").getJSONObject("minor")
+                        val major = resultJson.getJSONObject("rewards").getJSONObject("major")
+                            val ultimate = resultJson.getJSONObject("rewards").getJSONObject("ultimate")
+
+                listOf(minor, major, ultimate).forEach {
+                    it.getJSONObject("result").getJSONArray("rewards").toObjectList().forEach {
+                        when (it.getString("type")) {
+                            "potion" -> {
+                                if (it.getString("potion_type") == "gold") {
+                                    rewards.add(GoldPotionReward(it.getInt("quantity")))
+                                } else {
+                                    rewards.add(LegendaryPotionReward(it.getInt("quantity")))
+                                }
                             }
-                        }
 
-                        "reward_card" -> {
-                            val cardJson = it.getJSONObject("card")
-                            val cardDetailId = cardJson.getInt("card_detail_id")
-                            val isGold = cardJson.getBoolean("gold")
-                            val edition = cardJson.optInt("edition", 3)
-                            repeat(it.optInt("quantity", 1)) {
-                                rewards.add(CardReward(cardDetailId, isGold, edition))
+                            "reward_card" -> {
+                                val cardJson = it.getJSONObject("card")
+                                val cardDetailId = cardJson.getInt("card_detail_id")
+                                val isGold = cardJson.getBoolean("gold")
+                                val edition = cardJson.optInt("edition", 3)
+                                repeat(it.optInt("quantity", 1)) {
+                                    rewards.add(CardReward(cardDetailId, isGold, edition))
+                                }
                             }
-                        }
 
-                        "credits" -> {
-                            rewards.add(CreditsReward(it.getInt("quantity")))
-                        }
+                            "glint" -> {
+                                rewards.add(GlintReward(it.getInt("quantity")))
+                            }
 
-                        "merits" -> {
-                            rewards.add(MeritsReward(it.getInt("quantity")))
-                        }
+                            "credits" -> {
+                                rewards.add(CreditsReward(it.getInt("quantity")))
+                            }
 
-                        "sps" -> {
-                            rewards.add(SPSReward(it.getDouble("quantity").toFloat()))
-                        }
+                            "merits" -> {
+                                rewards.add(MeritsReward(it.getInt("quantity")))
+                            }
 
-                        "dec" -> {
-                            rewards.add(DecReward(it.getInt("quantity")))
-                        }
+                            "sps" -> {
+                                rewards.add(SPSReward(it.getDouble("quantity").toFloat()))
+                            }
 
-                        "pack" -> {
-                            rewards.add(PackReward)
+                            "dec" -> {
+                                rewards.add(DecReward(it.getInt("quantity")))
+                            }
+
+                            "pack" -> {
+                                rewards.add(PackReward)
+                            }
                         }
                     }
                 }

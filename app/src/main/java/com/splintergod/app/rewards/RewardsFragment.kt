@@ -153,7 +153,6 @@ fun RewardItem(reward: Reward, onClickCard: (id: CardReward) -> Unit) {
     }
 }
 
-@Composable
 fun getModel(reward: Reward): Any {
     return if (reward is CardReward) {
         reward.url
@@ -166,6 +165,7 @@ fun getModel(reward: Reward): Any {
             is LegendaryPotionReward -> R.drawable.asset_potion_legendary
             is MeritsReward -> R.drawable.asset_merits
             is PackReward -> R.drawable.asset_pack_chaos
+            is GlintReward -> R.drawable.asset_pack_chaos
             else -> throw Exception()
         }
     }

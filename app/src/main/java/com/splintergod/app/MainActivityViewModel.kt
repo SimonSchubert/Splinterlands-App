@@ -9,19 +9,17 @@ import kotlinx.coroutines.launch
 class MainActivityViewModel(val session: Session, val cache: Cache, val requests: Requests) : ViewModel() {
 
     var isInitialized = false
-    var onLoginCallback = {}
 
     fun setPlayer(playerName: String) {
         session.setCurrentPlayer(playerName)
-        onLoginCallback()
+        init()
     }
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
     }
 
-    fun init(onLogin: () -> (Unit)) {
-        onLoginCallback = onLogin
+    fun init() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             cache.getSettings()?.let {
                 assetUrl = it.assetUrl

@@ -29,6 +29,12 @@ data class DecReward(val quantity: Int) : Reward() {
     }
 }
 
+data class GlintReward(val quantity: Int) : Reward() {
+    override fun getTitle(): String {
+        return "$quantity GLINT"
+    }
+}
+
 data class CreditsReward(val quantity: Int) : Reward() {
     override fun getTitle(): String {
         return "$quantity CREDITS"
@@ -59,7 +65,7 @@ data class LegendaryPotionReward(val quantity: Int) : Reward() {
     }
 }
 
-object PackReward : Reward() {
+data object PackReward : Reward() {
     override fun getTitle(): String {
         return "PACK"
     }
