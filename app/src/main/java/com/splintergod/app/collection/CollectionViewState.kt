@@ -3,12 +3,10 @@ package com.splintergod.app.collection
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 
-sealed class CollectionViewState(open val isRefreshing: Boolean) {
-    abstract val onRefresh: () -> Unit
+sealed class CollectionViewState {
 
-    data class Loading(override val onRefresh: () -> Unit) : CollectionViewState(true)
+    data class Loading() : CollectionViewState()
     data class Success(
-        override val onRefresh: () -> Unit,
         val cards: List<CardViewState>,
         val filterRarityStates: List<FilterState.Rarity>,
         val onClickRarity: (String) -> Unit,
@@ -23,9 +21,9 @@ sealed class CollectionViewState(open val isRefreshing: Boolean) {
         val sortingElementStates: List<SortingState>,
         val selectedSorting: SortingState?,
         val onClickSorting: (CollectionViewModel.Sorting) -> Unit
-    ) : CollectionViewState(false)
+    ) : CollectionViewState()
 
-    data class Error(override val onRefresh: () -> Unit) : CollectionViewState(false)
+    data class Error(val message: String? = null) : CollectionViewState()
 }
 
 sealed class FilterState(open val id: String, open var selected: Boolean = false) {

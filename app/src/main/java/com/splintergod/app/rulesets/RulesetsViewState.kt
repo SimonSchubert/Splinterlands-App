@@ -2,12 +2,11 @@ package com.splintergod.app.rulesets
 
 import com.splintergod.app.models.Ruleset
 
-sealed class RulesetsViewState(val isRefreshing: Boolean) {
-    abstract val onRefresh: () -> Unit
+sealed class RulesetsViewState {
 
-    data class Loading(override val onRefresh: () -> Unit) : RulesetsViewState(true)
-    data class Success(override val onRefresh: () -> Unit, val rulesets: List<Ruleset>) :
-        RulesetsViewState(false)
+    data class Loading() : RulesetsViewState()
+    data class Success(val rulesets: List<Ruleset>) :
+        RulesetsViewState()
 
-    data class Error(override val onRefresh: () -> Unit) : RulesetsViewState(false)
+    data class Error(val message: String? = null) : RulesetsViewState()
 }

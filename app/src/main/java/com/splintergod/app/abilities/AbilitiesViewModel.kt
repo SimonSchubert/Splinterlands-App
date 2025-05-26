@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class AbilitiesViewModel(val cache: Cache) : ViewModel() {
 
     private val _state =
-        MutableStateFlow<AbilitiesViewState>(AbilitiesViewState.Loading(onRefresh = ::refreshAbilities))
+        MutableStateFlow<AbilitiesViewState>(AbilitiesViewState.Loading())
     val state: StateFlow<AbilitiesViewState> = _state.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -21,35 +21,22 @@ class AbilitiesViewModel(val cache: Cache) : ViewModel() {
 
     fun refreshAbilities() {
         // This ViewModel doesn't have async calls, so isRefreshing might be very brief.
-        // If it had async calls, it would be:
-        // viewModelScope.launch {
-        //     _isRefreshing.value = true
-        //     _state.value = AbilitiesViewState.Loading // Optional: also set data state to Loading
-        //     try {
-        //         val abilities = cache.getAbilities() // Or async call
-        //         _state.value = AbilitiesViewState.Success(abilities = abilities)
-        //     } catch (e: Exception) {
-        //         _state.value = AbilitiesViewState.Error
-        //     } finally {
-        //         _isRefreshing.value = false
-        //     }
-        // }
-
-        // Simplified for synchronous cache call
-        _isRefreshing.value = true // For pull-to-refresh UI consistency
-        _state.value = AbilitiesViewState.Loading(onRefresh = ::refreshAbilities)
-        val abilities = cache.getAbilities()
-        if (abilities.isNotEmpty()) { // Assuming empty list is not an error but could be success with empty data
-            _state.value =
-                AbilitiesViewState.Success(onRefresh = ::refreshAbilities, abilities = abilities)
-        } else {
-            // Decide if empty abilities list is an error or just empty success state
-            // For now, let it be success with empty list. If error:
-            // _state.value = AbilitiesViewState.Error
-            _state.value =
-                AbilitiesViewState.Success(onRefresh = ::refreshAbilities, abilities = abilities)
+        // For consistency with async ViewModels, we use a similar structure.
+        _isRefreshing.value = true
+        _state.value = AbilitiesViewState.Loading()
+        try {
+            val abilities = cache.getAbilities()
+            // Assuming getAbilities() itself doesn't throw for "empty" or "error" scenarios,
+            // and instead returns a list (empty or not).
+            // If an actual exception occurs during cache.getAbilities(), it will be caught.
+            _state.value = AbilitiesViewState.Success(abilities = abilities)
+        } catch (e: Exception) {
+            // Handle any unexpected errors during the synchronous call
+            _state.value = AbilitiesViewState.Error(e.message ?: "Failed to load abilities.")
+            // Optionally log the exception e
+        } finally {
+            _isRefreshing.value = false
         }
-        _isRefreshing.value = false
     }
 
     // Keep the old onRefresh for a moment if state objects still refer to it,

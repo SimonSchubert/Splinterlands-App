@@ -98,7 +98,7 @@ fun Content(state: AbilitiesViewState) {
             is AbilitiesViewState.Loading -> LoadingScreen(R.drawable.loading)
             is AbilitiesViewState.Success -> ReadyScreen(abilities = state.abilities)
             // ErrorScreen from composables might not need onRefresh, or could take a refresh lambda
-            is AbilitiesViewState.Error -> ErrorScreen() // ViewModel handles refresh via pullRefreshState
+            is AbilitiesViewState.Error -> ErrorScreen(message = state.message) // ViewModel handles refresh via pullRefreshState
         }
         // SplinterPullRefreshIndicator is now in AbilitiesScreen
     }

@@ -91,9 +91,10 @@ fun CardDetailScreen(
 @Composable
 fun Content(state: CardDetailViewState, cardDetailViewModel: CardDetailViewModel) {
     val context = LocalContext.current
+    val isRefreshing by cardDetailViewModel.isRefreshing.collectAsState()
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = state.isRefreshing,
+        refreshing = isRefreshing,
         onRefresh = { cardDetailViewModel.loadCardFromSession() }) // Adjusted for potential direct refresh
 
     Box(
@@ -107,7 +108,7 @@ fun Content(state: CardDetailViewState, cardDetailViewModel: CardDetailViewModel
         when (state) {
             is CardDetailViewState.Loading -> LoadingScreen(R.drawable.balances)
             is CardDetailViewState.Success -> ReadyScreen(state)
-            is CardDetailViewState.Error -> ErrorScreen()
+            is CardDetailViewState.Error -> ErrorScreen(message = state.message)
         }
 
         SplinterPullRefreshIndicator(pullRefreshState)

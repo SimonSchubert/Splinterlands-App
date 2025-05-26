@@ -18,12 +18,16 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
     ViewModel() {
 
     private val _state =
-        MutableStateFlow<RewardsViewState>(RewardsViewState.Loading { onRefresh() })
+        MutableStateFlow<RewardsViewState>(RewardsViewState.Loading())
     val state = _state.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = RewardsViewState.Error { onRefresh() }
+        _state.value = RewardsViewState.Error(throwable.message ?: "Failed to load rewards.")
+        _isRefreshing.value = false // Ensure refreshing is stopped on error
     }
 
     init {
@@ -32,11 +36,11 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
 
     private fun onRefresh() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-
-            _state.value = RewardsViewState.Loading { onRefresh() }
-
-            var cardDetails = cache.getCardDetails()
-            if (cardDetails.isEmpty()) {
+            _isRefreshing.value = true
+            _state.value = RewardsViewState.Loading()
+            try {
+                var cardDetails = cache.getCardDetails()
+                if (cardDetails.isEmpty()) {
                 cardDetails = requests.getCardDetails()
             }
 
@@ -68,23 +72,29 @@ class RewardsViewModel(val session: Session, val cache: Cache, val requests: Req
                     rewardGroups.sortBy { it.getSecondsAgo() }
 
                     _state.value = RewardsViewState.Success(
-                        onRefresh = { onRefresh() },
-                        isRefreshing = true,
                         rewardsGroups = rewardGroups.toList()
                     )
                 }
             }
 
-            _state.value = RewardsViewState.Success(
-                onRefresh = { onRefresh() },
-                isRefreshing = false,
-                rewardsGroups = rewardGroups.toList()
-            )
-
-            if (rewardGroups.isEmpty()) {
-                _state.value = RewardsViewState.Error { onRefresh() }
+                // Consolidate state updates to after the loop and data processing.
+                if (rewardGroups.isNotEmpty()) {
+                    _state.value = RewardsViewState.Success(
+                        rewardsGroups = rewardGroups.toList().sortedBy { it.getSecondsAgo() }
+                    )
+                } else {
+                    // If players list was empty, or no rewards found for any player
+                    _state.value = RewardsViewState.Error("No rewards found.") // Or Success with empty list, depending on desired UX
+                }
+            } catch (e: Exception) {
+                // This will be caught by coroutineExceptionHandler if it's a coroutine exception
+                // or if any other exception occurs in the try block.
+                _state.value = RewardsViewState.Error(e.message ?: "Failed to process rewards.")
+                // Log e
+                // No need to re-throw if CEH handles _isRefreshing.value = false
+            } finally {
+                _isRefreshing.value = false
             }
-
         }
     }
 }

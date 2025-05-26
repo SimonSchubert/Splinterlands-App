@@ -13,12 +13,16 @@ import kotlinx.coroutines.launch
 class RulesetsViewModel(val cache: Cache, val requests: Requests) : ViewModel() {
 
     private val _state =
-        MutableStateFlow<RulesetsViewState>(RulesetsViewState.Loading { onRefresh() })
+        MutableStateFlow<RulesetsViewState>(RulesetsViewState.Loading())
     val state = _state.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = RulesetsViewState.Error { onRefresh() }
+        _state.value = RulesetsViewState.Error(throwable.message ?: "Failed to load rulesets.")
+        _isRefreshing.value = false // Ensure refreshing is stopped on error
     }
 
     fun loadRewards() {
@@ -27,22 +31,28 @@ class RulesetsViewModel(val cache: Cache, val requests: Requests) : ViewModel() 
 
     private fun onRefresh(forceRefresh: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _isRefreshing.value = true
+            _state.value = RulesetsViewState.Loading()
+            try {
+                var rulesets = cache.getSettings()?.battles?.rulesets?.filter { it.active }
 
-            _state.value = RulesetsViewState.Loading { onRefresh() }
+                if (rulesets.isNullOrEmpty() || forceRefresh) {
+                    rulesets = requests.getSettings().battles.rulesets.filter { it.active }
+                }
 
-            var rulesets = cache.getSettings()?.battles?.rulesets?.filter { it.active }
-
-            if (rulesets.isNullOrEmpty() || forceRefresh) {
-                rulesets = requests.getSettings().battles.rulesets.filter { it.active }
-            }
-
-            if (rulesets.isNotEmpty()) {
-                _state.value = RulesetsViewState.Success(
-                    onRefresh = { onRefresh() },
-                    rulesets = rulesets
-                )
-            } else {
-                _state.value = RulesetsViewState.Error { onRefresh() }
+                if (rulesets.isNotEmpty()) {
+                    _state.value = RulesetsViewState.Success(
+                        rulesets = rulesets
+                    )
+                } else {
+                _state.value = RulesetsViewState.Error("No rulesets found.")
+                }
+            } catch (e: Exception) {
+                // This will be caught by coroutineExceptionHandler if it's a coroutine exception
+            _state.value = RulesetsViewState.Error(e.message ?: "Failed to process rulesets.")
+                // Log e
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

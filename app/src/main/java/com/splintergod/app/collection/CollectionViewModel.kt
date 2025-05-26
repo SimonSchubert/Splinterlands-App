@@ -19,8 +19,11 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
     ViewModel() {
 
     private val _state =
-        MutableStateFlow<CollectionViewState>(CollectionViewState.Loading { onRefresh() })
+        MutableStateFlow<CollectionViewState>(CollectionViewState.Loading())
     val state = _state.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private var unfilteredCollection = listOf<Card>()
     private var cardDetails = listOf<CardDetail>()
@@ -88,6 +91,8 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
+        _state.value = CollectionViewState.Error(throwable.message ?: "Failed to load collection.")
+        _isRefreshing.value = false // Ensure refreshing is stopped
     }
 
     init {
@@ -96,19 +101,30 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
 
     fun onRefresh(forceRefresh: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            _isRefreshing.value = true
+            _state.value = CollectionViewState.Loading()
+            try {
+                unfilteredCollection = cache.getCollection(session.player)
+                if (unfilteredCollection.isEmpty() || forceRefresh) {
+                    unfilteredCollection = requests.getCollection(session.player)
+                }
 
-            _state.value = CollectionViewState.Loading { onRefresh() }
-
-            unfilteredCollection = cache.getCollection(session.player)
-            if (unfilteredCollection.isEmpty() || forceRefresh) {
-                unfilteredCollection = requests.getCollection(session.player)
+                cardDetails = cache.getCardDetails()
+                if (cardDetails.isEmpty() || forceRefresh) {
+                    cardDetails = requests.getCardDetails()
+                }
+                // updateState will set Success or Error if lists are empty and that's an error
+                // However, if requests throw, CEH handles it.
+                updateState()
+            } catch (e: Exception) {
+                // This catch block might be redundant if CEH handles all exceptions.
+                // However, it's good for safety if any part of the try isn't covered by CEH
+                // or if CEH is removed/changed.
+                _state.value = CollectionViewState.Error(e.message ?: "Failed to process collection.")
+                // Log e here
+            } finally {
+                _isRefreshing.value = false
             }
-
-            cardDetails = cache.getCardDetails()
-            if (cardDetails.isEmpty() || forceRefresh) {
-                cardDetails = requests.getCardDetails()
-            }
-            updateState()
         }
     }
 
@@ -176,7 +192,6 @@ class CollectionViewModel(val session: Session, val cache: Cache, val requests: 
         }
 
         _state.value = CollectionViewState.Success(
-            onRefresh = { onRefresh() },
             cards = cards,
             filterRarityStates = filterRaritiesStates,
             onClickRarity = {

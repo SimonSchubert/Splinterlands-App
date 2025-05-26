@@ -65,32 +65,36 @@ fun RulesetsScreen(
                 }
             )
         }
-    ) {
-        Content(state = state)
+    ) { paddingValues ->
+        val isRefreshing by viewModel.isRefreshing.collectAsState()
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isRefreshing,
+            onRefresh = { viewModel.onRefresh() }
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues) // Apply padding from Scaffold
+                .pullRefresh(pullRefreshState),
+            contentAlignment = Alignment.Center
+        ) {
+            Content(state = state) // Content now just renders based on state
+            SplinterPullRefreshIndicator(pullRefreshState)
+        }
     }
 }
 
 @Composable
 fun Content(state: RulesetsViewState) {
+    // The Box with pullRefresh modifier and SplinterPullRefreshIndicator are now in RulesetsScreen
+    // This composable just decides what to show based on the state.
+    BackgroundImage(resId = R.drawable.bg_gate) // Keep background consistent if it was inside the Box
 
-    val pullRefreshState =
-        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState),
-        contentAlignment = Alignment.Center
-    ) {
-        BackgroundImage(resId = R.drawable.bg_gate)
-
-        when (state) {
-            is RulesetsViewState.Loading -> LoadingScreen(R.drawable.faq)
-            is RulesetsViewState.Success -> ReadyScreen(rulesets = state.rulesets)
-            is RulesetsViewState.Error -> ErrorScreen()
-        }
-
-        SplinterPullRefreshIndicator(pullRefreshState)
+    when (state) {
+        is RulesetsViewState.Loading -> LoadingScreen(R.drawable.faq)
+        is RulesetsViewState.Success -> ReadyScreen(rulesets = state.rulesets)
+        is RulesetsViewState.Error -> ErrorScreen(message = state.message)
     }
 }
 

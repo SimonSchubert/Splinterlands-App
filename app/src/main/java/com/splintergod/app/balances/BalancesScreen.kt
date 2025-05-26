@@ -99,7 +99,7 @@ fun Content(state: BalancesViewState) {
         when (state) {
             is BalancesViewState.Loading -> LoadingScreen(R.drawable.balances)
             is BalancesViewState.Success -> ReadyScreen(balances = state.balances)
-            is BalancesViewState.Error -> ErrorScreen() // ViewModel handles refresh via pullRefreshState
+            is BalancesViewState.Error -> ErrorScreen(message = state.message) // ViewModel handles refresh via pullRefreshState
         }
         // SplinterPullRefreshIndicator is now in BalancesScreen
     }

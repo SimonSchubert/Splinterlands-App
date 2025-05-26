@@ -17,69 +17,72 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
     ViewModel() {
 
     private val _state =
-        MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading { loadCardFromSession() }) // Default onRefresh can call loadCardFromSession or a specific load
+        MutableStateFlow<CardDetailViewState>(CardDetailViewState.Loading()) // Default onRefresh can call loadCardFromSession or a specific load
     val state = _state.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private val _cardNameStateFlow = MutableStateFlow("")
     val cardNameStateFlow = _cardNameStateFlow.asStateFlow()
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = CardDetailViewState.Error { loadCardFromSession() } // Default onRefresh
+        _state.value = CardDetailViewState.Error(throwable.message ?: "Failed to load card details.")
+        _isRefreshing.value = false // Ensure refreshing is stopped on error
     }
 
     fun loadCard(cardId: String, level: Int) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            _state.value =
-                CardDetailViewState.Loading { loadCard(cardId, level) } // Specific onRefresh
+            _isRefreshing.value = true
+            _state.value = CardDetailViewState.Loading()
+            try {
+                // Set session values if needed by other parts of the app, though CardDetailScreen uses arguments
+                session.currentCardDetailId = cardId
+                session.currentCardDetailLevel = level
 
-            // Set session values if needed by other parts of the app, though CardDetailScreen uses arguments
-            session.currentCardDetailId = cardId
-            session.currentCardDetailLevel = level
+                val cardDetails = cache.getCardDetails()
+                val cardDetail = cardDetails.firstOrNull { it.id == cardId }
 
-            val cardDetails = cache.getCardDetails()
-            val cardDetail = cardDetails.firstOrNull { it.id == cardId }
+                if (cardDetail != null) {
+                    val colorIcon = when (cardDetail.color) {
+                        "Red" -> R.drawable.element_fire
+                        "Blue" -> R.drawable.element_water
+                        "Green" -> R.drawable.element_earth
+                        "White" -> R.drawable.element_life
+                        "Black" -> R.drawable.element_death
+                        "Gold" -> R.drawable.element_dragon
+                        "Gray" -> R.drawable.element_neutral
+                        else -> R.drawable.asset_dec
+                    }
 
+                    val card = Card(
+                        cardDetail.id,
+                        cardDetail.editions.split(",").first().toInt(),
+                        false,
+                        level
+                    )
+                    card.setStats(cardDetail)
 
-            if (cardDetail != null) {
-                val colorIcon = when (cardDetail.color) {
-                    "Red" -> R.drawable.element_fire
-                    "Blue" -> R.drawable.element_water
-                    "Green" -> R.drawable.element_earth
-                    "White" -> R.drawable.element_life
-                    "Black" -> R.drawable.element_death
-                    "Gold" -> R.drawable.element_dragon
-                    "Gray" -> R.drawable.element_neutral
-                    else -> R.drawable.asset_dec
+                    val cards = cache.getCollection(session.player)
+                    cards.firstOrNull { it.cardDetailId == cardDetail.id }?.let {
+                        card.goldLevels = it.goldLevels
+                        card.regularLevels = it.regularLevels
+                    }
+
+                    _cardNameStateFlow.value = card.name
+
+                    _state.value = CardDetailViewState.Success(
+                        colorIcon = colorIcon,
+                        card = card,
+                        cardDetail = cardDetail,
+                        abilities = cache.getAbilities()
+                    )
+                } else {
+                _state.value = CardDetailViewState.Error("Card detail not found.")
                 }
-
-                val card = Card(
-                    cardDetail.id,
-                    cardDetail.editions.split(",").first().toInt(),
-                    false,
-                    level
-                )
-                card.setStats(cardDetail)
-
-                val cards = cache.getCollection(session.player)
-                cards.firstOrNull { it.cardDetailId == cardDetail.id }?.let {
-                    card.goldLevels = it.goldLevels
-                    card.regularLevels = it.regularLevels
-                }
-
-                _cardNameStateFlow.value = card.name
-
-                _state.value = CardDetailViewState.Success(
-                    onRefresh = { loadCard(cardId, level) }, // Specific onRefresh
-                    colorIcon = colorIcon,
-                    card = card,
-                    cardDetail = cardDetail,
-                    abilities = cache.getAbilities()
-                )
-            } else {
-                _state.value = CardDetailViewState.Error(
-                    onRefresh = { loadCard(cardId, level) } // Specific onRefresh
-                )
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }
@@ -90,7 +93,7 @@ class CardDetailViewModel(val session: Session, val cache: Cache, val requests: 
             loadCard(session.currentCardDetailId, session.currentCardDetailLevel)
         } else {
             // Handle case where session might not have card details (e.g. direct link or error)
-            _state.value = CardDetailViewState.Error { /* Decide on a refresh strategy */ }
+            _state.value = CardDetailViewState.Error("No card selected in session.")
         }
     }
 }

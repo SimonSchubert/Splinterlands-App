@@ -54,9 +54,10 @@ fun RewardScreen(
     navController: NavHostController,
     viewModel: RewardsViewModel = koinViewModel()
 ) {
-    val state = viewModel.state.collectAsState().value
+    val state by viewModel.state.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val pullRefreshState =
-        rememberPullRefreshState(refreshing = state.isRefreshing, onRefresh = { state.onRefresh() })
+        rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { viewModel.onRefresh() })
 
     Box(
         modifier = Modifier
@@ -73,7 +74,7 @@ fun RewardScreen(
                 rewardGroups = state.rewardsGroups
             )
 
-            is RewardsViewState.Error -> ErrorScreen()
+            is RewardsViewState.Error -> ErrorScreen(message = state.message)
         }
 
         SplinterPullRefreshIndicator(pullRefreshState)

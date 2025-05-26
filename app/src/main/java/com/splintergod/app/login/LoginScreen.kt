@@ -76,9 +76,10 @@ fun LoginScreen(
     // but in the Compose Navigation setup, navigation is handled directly by navController.
     // So, onClickPlayer is passed down to ReadyScreen which then uses navController.
 
+    val isRefreshing by loginViewModel.isRefreshing.collectAsState()
     val pullRefreshState =
-        rememberPullRefreshState(refreshing = state is LoginViewState.Loading, onRefresh = {
-            state.onRefresh() // Assuming onRefresh is part of the state and takes context
+        rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
+            loginViewModel.onRefresh()
         })
 
     LaunchedEffect(Unit) {
@@ -108,6 +109,7 @@ fun LoginScreen(
                 onAddPlayer = viewState.onAddPlayer,
                 onClickBack = viewState.onClickBack
             )
+            is LoginViewState.Error -> com.splintergod.app.composables.ErrorScreen(message = viewState.message)
         }
         SplinterPullRefreshIndicator(pullRefreshState) // Pass refreshing state to indicator
     }

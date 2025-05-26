@@ -6,20 +6,18 @@ import com.splintergod.app.models.Ability
 import com.splintergod.app.models.Card
 import com.splintergod.app.models.CardDetail
 
-sealed class CardDetailViewState(val isRefreshing: Boolean) {
-    abstract val onRefresh: (context: Context) -> Unit
+sealed class CardDetailViewState {
 
-    data class Loading(override val onRefresh: (context: Context) -> Unit) :
-        CardDetailViewState(true)
+    data class Loading() :
+        CardDetailViewState()
 
     data class Success(
-        override val onRefresh: (context: Context) -> Unit,
         @DrawableRes val colorIcon: Int,
         val card: Card,
         val cardDetail: CardDetail,
         val abilities: List<Ability>
-    ) : CardDetailViewState(false)
+    ) : CardDetailViewState()
 
-    data class Error(override val onRefresh: (context: Context) -> Unit) :
-        CardDetailViewState(false)
+    data class Error(val message: String? = null) :
+        CardDetailViewState()
 }

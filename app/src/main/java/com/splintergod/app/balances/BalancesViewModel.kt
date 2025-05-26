@@ -16,7 +16,7 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
     ViewModel() {
 
     private val _state =
-        MutableStateFlow<BalancesViewState>(BalancesViewState.Loading(onRefresh = ::refreshBalances))
+        MutableStateFlow<BalancesViewState>(BalancesViewState.Loading())
     val state: StateFlow<BalancesViewState> = _state.asStateFlow()
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -24,7 +24,7 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
-        _state.value = BalancesViewState.Error(onRefresh = ::refreshBalances)
+        _state.value = BalancesViewState.Error(throwable.message ?: "Failed to load balances.")
         _isRefreshing.value = false // Ensure refreshing is stopped on error
     }
 
@@ -35,7 +35,7 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
     fun refreshBalances() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             _isRefreshing.value = true
-            _state.value = BalancesViewState.Loading(onRefresh = ::refreshBalances)
+            _state.value = BalancesViewState.Loading()
             try {
                 // The problem description states loadRewards() loads balances.
                 // The original loadRewards() first showed cached, then fetched.
@@ -44,20 +44,18 @@ class BalancesViewModel(val session: Session, val cache: Cache, val requests: Re
                 val balances = requests.getBalances(session.player)
                 if (balances.isNotEmpty()) {
                     _state.value = BalancesViewState.Success(
-                        onRefresh = ::refreshBalances,
                         balances = balances
                     )
                 } else {
                     // Assuming empty balances is a valid success state, not an error.
                     _state.value = BalancesViewState.Success(
-                        onRefresh = ::refreshBalances,
                         balances = emptyList()
                     )
                 }
             } catch (e: Exception) {
                 // Handled by coroutineExceptionHandler
                 _state.value =
-                    BalancesViewState.Error(onRefresh = ::refreshBalances) // Explicitly set error state
+                    BalancesViewState.Error(e.message ?: "Failed to process balances.") // Explicitly set error state
             } finally {
                 _isRefreshing.value = false
             }

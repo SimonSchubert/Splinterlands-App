@@ -2,12 +2,11 @@ package com.splintergod.app.balances
 
 import com.splintergod.app.models.Balances
 
-sealed class BalancesViewState(val isRefreshing: Boolean) {
-    abstract val onRefresh: () -> Unit
+sealed class BalancesViewState {
 
-    data class Loading(override val onRefresh: () -> Unit) : BalancesViewState(true)
-    data class Success(override val onRefresh: () -> Unit, val balances: List<Balances>) :
-        BalancesViewState(false)
+    data class Loading() : BalancesViewState()
+    data class Success(val balances: List<Balances>) :
+        BalancesViewState()
 
-    data class Error(override val onRefresh: () -> Unit) : BalancesViewState(false)
+    data class Error(val message: String? = null) : BalancesViewState()
 }
